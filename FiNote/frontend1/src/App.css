@@ -1,0 +1,685 @@
+/* ========================================
+   LOGIN PAGE
+======================================== */
+
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+
+  display: grid;
+  grid-template-columns: 50% 50%;
+
+  overflow: hidden;
+}
+
+
+/* ========================================
+   LOGIN - BAGIAN KIRI
+======================================== */
+
+.login-left {
+  width: 100%;
+  min-height: 100vh;
+
+  background: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+.login-left img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: fill;
+}
+
+
+/* ========================================
+   LOGIN - BAGIAN KANAN
+======================================== */
+
+.login-right {
+  width: 100%;
+  min-height: 100vh;
+
+  background: #f0f3ff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 42px;
+
+  box-sizing: border-box;
+}
+
+
+/* ========================================
+   LOGIN - CONTAINER FORM
+======================================== */
+
+.login-container {
+  width: 100%;
+  max-width: 434px;
+}
+
+
+/* ========================================
+   LOGIN - JUDUL
+======================================== */
+
+.login-container h1 {
+  margin: 0;
+
+  color: #26344d;
+
+  font-size: 28px;
+  line-height: 1.2;
+
+  font-weight: 700;
+}
+
+.login-subtitle {
+  margin: 19px 0 34px;
+
+  color: #526078;
+
+  font-size: 16px;
+  line-height: 1.4;
+
+  font-weight: 600;
+}
+
+
+/* ========================================
+   LOGIN - INPUT
+======================================== */
+
+.login-input {
+  width: 100%;
+  height: 41px;
+
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 17px;
+
+  background: #ffffff;
+
+  border: 1px solid #8c8c8c;
+
+  box-sizing: border-box;
+}
+
+.input-icon {
+  width: 54px;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  color: #111111;
+}
+
+.login-input input {
+  flex: 1;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #526078;
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.login-input input::placeholder {
+  color: #526078;
+
+  opacity: 1;
+}
+
+
+/* ========================================
+   PASSWORD BUTTON
+======================================== */
+
+.password-button {
+  width: 50px;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #111111;
+
+  cursor: pointer;
+}
+
+.password-button:hover {
+  color: #26344d;
+}
+
+
+/* ========================================
+   LOGIN - BUTTON MASUK
+======================================== */
+
+.login-button {
+  width: 100%;
+  height: 43px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 39px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 6px;
+
+  background: #4285ed;
+
+  color: #ffffff;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.login-button:hover {
+  background: #3478df;
+}
+
+.login-button:active {
+  transform: translateY(1px);
+}
+
+.login-button:disabled {
+  background: #9bbcf2;
+
+  cursor: not-allowed;
+}
+
+.login-button:disabled:hover {
+  background: #9bbcf2;
+}
+
+
+/* ========================================
+   LOGIN - REGISTER LINK
+======================================== */
+
+.register-text {
+  margin: 26px 0 0;
+
+  text-align: center;
+
+  color: #526078;
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.register-link {
+  color: #347ff1;
+
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
+.register-link-button {
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  font: inherit;
+
+  cursor: pointer;
+}
+
+
+/* ========================================
+   LOGIN - PESAN ERROR
+======================================== */
+
+.login-error {
+  margin: -14px 0 20px;
+  padding: 10px 14px;
+
+  background: #fdecec;
+  border: 1px solid #f1aeb5;
+  border-radius: 6px;
+
+  color: #b42318;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+
+/* ========================================
+   REGISTER PAGE
+======================================== */
+
+.register-page {
+  width: 100%;
+  min-height: 100vh;
+
+  display: grid;
+  grid-template-columns: 50% 50%;
+
+  overflow: hidden;
+}
+
+
+/* ========================================
+   REGISTER - BAGIAN KIRI
+======================================== */
+
+.register-left {
+  width: 100%;
+  min-height: 100vh;
+
+  background: #f0f3ff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 44px;
+
+  box-sizing: border-box;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 690px;
+}
+
+.register-container h1 {
+  margin: 0 0 38px;
+
+  color: #26344d;
+
+  font-size: 32px;
+  line-height: 1.2;
+
+  font-weight: 700;
+}
+
+
+/* ========================================
+   REGISTER - INPUT
+======================================== */
+
+.register-input {
+  width: 100%;
+  height: 59px;
+
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 17px;
+
+  background: #ffffff;
+
+  border: 1px solid #8c8c8c;
+
+  box-sizing: border-box;
+}
+
+.register-input .input-icon {
+  width: 70px;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  color: #111111;
+}
+
+.register-input input {
+  flex: 1;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #526078;
+
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.register-input input::placeholder {
+  color: #526078;
+
+  opacity: 1;
+}
+
+
+/* ========================================
+   REGISTER - PASSWORD BUTTON
+======================================== */
+
+.register-input .password-button {
+  width: 58px;
+}
+
+
+/* ========================================
+   REGISTER - ERROR
+======================================== */
+
+.register-error {
+  min-height: 27px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin: 8px 0 20px;
+
+  color: #ef1515;
+
+  font-size: 20px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+.register-error-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+
+/* ========================================
+   REGISTER - BUTTON
+======================================== */
+
+.register-button {
+  width: 100%;
+  height: 63px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 18px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #4285ed;
+
+  color: #ffffff;
+
+  font-size: 21px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.register-button:hover {
+  background: #3478df;
+}
+
+.register-button:active {
+  transform: translateY(1px);
+}
+
+.register-button:disabled {
+  background: #9bbcf2;
+
+  cursor: not-allowed;
+}
+
+.register-button:disabled:hover {
+  background: #9bbcf2;
+}
+
+
+/* ========================================
+   REGISTER - LOGIN LINK
+======================================== */
+
+.login-text {
+  margin: 84px 0 0;
+
+  color: #526078;
+
+  font-size: 21px;
+  font-weight: 600;
+
+  text-align: center;
+}
+
+.login-link {
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #347ff1;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+
+/* ========================================
+   REGISTER - BAGIAN KANAN
+======================================== */
+
+.register-right {
+  width: 100%;
+  min-height: 100vh;
+
+  background: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+.register-right img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+/* ========================================
+   DASHBOARD SEMENTARA
+======================================== */
+
+.dashboard-placeholder {
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+  padding: 24px;
+
+  background: #f0f3ff;
+
+  color: #26344d;
+
+  text-align: center;
+}
+
+.dashboard-placeholder h1 {
+  margin: 0;
+
+  font-size: 28px;
+}
+
+.dashboard-placeholder p {
+  margin: 0;
+
+  color: #526078;
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.dashboard-logout {
+  width: 160px;
+
+  margin-top: 24px;
+}
+
+
+/* ========================================
+   SESSION LOADING
+======================================== */
+
+.session-loading {
+  margin: 0;
+  padding: 40px;
+
+  color: #526078;
+
+  text-align: center;
+}
+
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 900px) {
+  .login-page,
+  .register-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-left,
+  .register-right {
+    display: none;
+  }
+
+  .login-right,
+  .register-left {
+    min-height: 100vh;
+
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-right,
+  .register-left {
+    padding: 24px 18px;
+  }
+
+  .login-container h1,
+  .register-container h1 {
+    font-size: 25px;
+  }
+
+  .login-subtitle {
+    margin-bottom: 28px;
+  }
+
+  .register-input {
+    height: 52px;
+  }
+
+  .register-input input {
+    font-size: 16px;
+  }
+
+  .register-error {
+    font-size: 15px;
+  }
+
+  .register-button {
+    height: 52px;
+
+    font-size: 16px;
+  }
+
+  .login-text {
+    margin-top: 50px;
+
+    font-size: 16px;
+  }
+
+  .register-text {
+    font-size: 14px;
+  }
+}
