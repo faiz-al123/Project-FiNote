@@ -1,0 +1,64 @@
+
+/* FINote skeleton: tampilan sementara sebelum login muncul */
+
+.fn-skeleton {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Gambar menyesuaikan ukuran viewport */
+.fn-skeleton-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Menutupi kotak abu-abu lama di kanan atas */
+.fn-skeleton-old-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 11.72%;
+  height: 17.38%;
+  background: #f7f7f7;
+  pointer-events: none;
+}
+
+/* Kotak dipindahkan ke kiri atas, tidak menempel tepi */
+.fn-skeleton-new-corner {
+  position: absolute;
+  top: 3.5%;
+  left: 3.5%;
+  width: clamp(64px, 8vw, 120px);
+  height: clamp(64px, 8vw, 120px);
+  background: #e8e8e8;
+  pointer-events: none;
+}
+
+/* Penyesuaian untuk layar kecil */
+@media (max-width: 760px) {
+  .fn-skeleton-image {
+    object-fit: fill;
+  }
+
+  .fn-skeleton-old-corner {
+    width: 11.72%;
+    height: 12%;
+  }
+
+  .fn-skeleton-new-corner {
+    top: 2.5%;
+    left: 4%;
+    width: clamp(48px, 12vw, 76px);
+    height: clamp(48px, 12vw, 76px);
+  }
+}
