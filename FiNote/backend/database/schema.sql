@@ -18,8 +18,7 @@ CREATE TABLE IF NOT EXISTS User (
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Kategori (
   kategori_id     INTEGER PRIMARY KEY AUTOINCREMENT,
-  nama_kategori   TEXT NOT NULL,
-  tipe            TEXT NOT NULL CHECK (tipe IN ('pemasukan', 'pengeluaran'))
+  nama_kategori   TEXT NOT NULL UNIQUE
 );
 
 -- ------------------------------------------------------------
@@ -30,13 +29,18 @@ CREATE TABLE IF NOT EXISTS Transaksi (
   transaksi_id   INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id        INTEGER NOT NULL,
   kategori_id    INTEGER NOT NULL,
-  jenis          TEXT NOT NULL CHECK (jenis IN ('pemasukan', 'pengeluaran')),
   jumlah         REAL NOT NULL CHECK (jumlah > 0),
   tanggal        TEXT NOT NULL,
   catatan        TEXT,
   created_at     TEXT NOT NULL DEFAULT (datetime('now')),
-  FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
-  FOREIGN KEY (kategori_id) REFERENCES Kategori(kategori_id) ON DELETE RESTRICT
+
+  FOREIGN KEY (user_id)
+      REFERENCES User(user_id)
+      ON DELETE CASCADE,
+
+  FOREIGN KEY (kategori_id)
+      REFERENCES Kategori(kategori_id)
+      ON DELETE RESTRICT
 );
 
 -- ------------------------------------------------------------
@@ -48,9 +52,16 @@ CREATE TABLE IF NOT EXISTS Budget (
   user_id        INTEGER NOT NULL,
   kategori_id    INTEGER NOT NULL,
   jumlah_limit   REAL NOT NULL CHECK (jumlah_limit > 0),
-  periode        TEXT NOT NULL,  -- format 'YYYY-MM' untuk budget bulanan
-  FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
-  FOREIGN KEY (kategori_id) REFERENCES Kategori(kategori_id) ON DELETE RESTRICT,
+  periode        TEXT NOT NULL,
+
+  FOREIGN KEY (user_id)
+    REFERENCES User(user_id)
+    ON DELETE CASCADE,
+
+  FOREIGN KEY (kategori_id)
+    REFERENCES Kategori(kategori_id)
+    ON DELETE RESTRICT,
+
   UNIQUE (user_id, kategori_id, periode)
 );
 
@@ -60,14 +71,18 @@ CREATE TABLE IF NOT EXISTS Budget (
 -- lingkupnya - lihat catatan klarifikasi di charter)
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Tagihan (
-  tagihan_id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id             INTEGER NOT NULL,
-  nama_tagihan        TEXT NOT NULL,
-  jumlah              REAL NOT NULL CHECK (jumlah > 0),
-  tanggal_jatuh_tempo TEXT NOT NULL,
-  status              TEXT NOT NULL DEFAULT 'belum_dibayar'
+    tagihan_id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id             INTEGER NOT NULL,
+    nama_tagihan        TEXT NOT NULL,
+    jumlah              REAL NOT NULL CHECK (jumlah > 0),
+    tanggal_jatuh_tempo TEXT NOT NULL,
+    status              TEXT NOT NULL
+                        DEFAULT 'belum_dibayar'
                         CHECK (status IN ('belum_dibayar', 'sudah_dibayar')),
-  FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
+
+    FOREIGN KEY (user_id)
+        REFERENCES User(user_id)
+        ON DELETE CASCADE
 );
 
 -- ------------------------------------------------------------
