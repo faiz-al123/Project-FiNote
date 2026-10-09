@@ -2,7 +2,9 @@ import { useState } from 'react'
 import loginImage from '../../assets/login1.png'
 import { login, saveSession } from '../../api/auth.api'
 
-function UserIcon() {
+// --- IKON ---
+
+function EmailIcon() {
   return (
     <svg
       width="20"
@@ -15,8 +17,8 @@ function UserIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7" />
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3 7l9 6 9-6" />
     </svg>
   )
 }
@@ -91,6 +93,8 @@ function EyeIcon({ hidden }) {
   )
 }
 
+// --- KOMPONEN UTAMA ---
+
 function LoginPage({
   onLoginSuccess,
   onRegisterClick,
@@ -127,7 +131,7 @@ function LoginPage({
       formData.identifier.trim()
 
     if (!identifier || !formData.password) {
-      return 'Username/email dan password wajib diisi.'
+      return '⚠︎ Email atau kata sandi yang Anda masukkan salah silahkan coba kembali.'
     }
 
     return ''
@@ -193,16 +197,6 @@ function LoginPage({
             masuk ke akun FiNote kamu
           </p>
 
-          {/* PESAN ERROR */}
-          {errorMessage && (
-            <p
-              className="login-error"
-              role="alert"
-            >
-              {errorMessage}
-            </p>
-          )}
-
           <form
             onSubmit={handleSubmit}
             noValidate
@@ -211,7 +205,7 @@ function LoginPage({
             {/* USERNAME / EMAIL */}
             <div className="login-input">
               <span className="input-icon">
-                <UserIcon />
+                <EmailIcon />
               </span>
 
               <input
@@ -262,6 +256,16 @@ function LoginPage({
                 />
               </button>
             </div>
+
+            {/* PESAN ERROR (DIPINDAHKAN KE SINI) */}
+            {errorMessage && (
+              <p
+                className="login-error"
+                role="alert"
+              >
+                {errorMessage}
+              </p>
+            )}
 
             {/* LOGIN BUTTON */}
             <button

@@ -5,13 +5,12 @@
 .login-page {
   width: 100%;
   min-height: 100vh;
-
+  min-height: 100dvh;
   display: grid;
-  grid-template-columns: 50% 50%;
-
-  overflow: hidden;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  overflow-x: hidden;
+  background: #ffffff;
 }
-
 
 /* ========================================
    LOGIN - BAGIAN KIRI
@@ -19,26 +18,27 @@
 
 .login-left {
   width: 100%;
+  min-width: 0;
   min-height: 100vh;
-
-  background: #ffffff;
-
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  padding: 24px;
+  box-sizing: border-box;
+  background: #ffffff;
   overflow: hidden;
 }
 
 .login-left img {
   display: block;
-
   width: 100%;
-  height: 100%;
-
-  object-fit: fill;
+  max-width: 620px;
+  height: auto;
+  max-height: calc(100dvh - 48px);
+  object-fit: contain;
+  object-position: center;
 }
-
 
 /* ========================================
    LOGIN - BAGIAN KANAN
@@ -46,19 +46,17 @@
 
 .login-right {
   width: 100%;
+  min-width: 0;
   min-height: 100vh;
-
-  background: #f0f3ff;
-
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 40px 42px;
-
+  padding: 56px clamp(32px, 5vw, 80px);
   box-sizing: border-box;
+  background: #f0f3ff;
+  border-left: none;
 }
-
 
 /* ========================================
    LOGIN - CONTAINER FORM
@@ -66,9 +64,10 @@
 
 .login-container {
   width: 100%;
-  max-width: 434px;
+  max-width: 560px;
+  min-width: 0;
+  margin: 0 auto;
 }
-
 
 /* ========================================
    LOGIN - JUDUL
@@ -76,26 +75,20 @@
 
 .login-container h1 {
   margin: 0;
-
   color: #26344d;
-
-  font-size: 28px;
-  line-height: 1.2;
-
+  font-size: clamp(30px, 2.4vw, 38px);
   font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
 }
 
 .login-subtitle {
-  margin: 19px 0 34px;
-
+  margin: 16px 0 38px;
   color: #526078;
-
-  font-size: 16px;
-  line-height: 1.4;
-
+  font-size: 18px;
   font-weight: 600;
+  line-height: 1.5;
 }
-
 
 /* ========================================
    LOGIN - INPUT
@@ -103,88 +96,121 @@
 
 .login-input {
   width: 100%;
-  height: 41px;
-
+  height: 58px;
   display: flex;
   align-items: center;
-
-  margin-bottom: 17px;
-
+  margin-bottom: 20px;
   background: #ffffff;
-
-  border: 1px solid #8c8c8c;
-
+  border: 1px solid #a3a9b4;
+  border-radius: 2px;
   box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.input-icon {
-  width: 54px;
-  height: 100%;
+.login-input:focus-within {
+  border-color: #4285ed;
+  box-shadow: 0 0 0 2px rgba(66, 133, 237, 0.12);
+}
 
+.login-input .input-icon {
+  width: 62px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
+  color: #222222;
+}
 
-  color: #111111;
+.login-input .input-icon svg {
+  width: 21px;
+  height: 21px;
 }
 
 .login-input input {
   flex: 1;
-
+  min-width: 0;
   width: 100%;
   height: 100%;
-
-  padding: 0;
-
+  padding: 0 8px 0 0;
   border: none;
   outline: none;
-
   background: transparent;
-
-  color: #526078;
-
-  font-size: 16px;
+  color: #26344d;
+  font-size: 17px;
   font-weight: 600;
 }
 
 .login-input input::placeholder {
   color: #526078;
-
   opacity: 1;
 }
-
 
 /* ========================================
    PASSWORD BUTTON
 ======================================== */
 
-.password-button {
-  width: 50px;
+.login-input .password-button {
+  width: 54px;
   height: 100%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   padding: 0;
-
   border: none;
-
   background: transparent;
-
-  color: #111111;
-
+  color: #333333;
   cursor: pointer;
 }
 
-.password-button:hover {
-  color: #26344d;
+.login-input .password-button svg {
+  width: 22px;
+  height: 22px;
 }
 
+.login-input .password-button:hover {
+  color: #4285ed;
+}
+
+/* ========================================
+   LOGIN - PESAN ERROR
+   (CSS ini untuk tampilan error seperti Gambar BENAR)
+   Pastikan di JSX, elemen ini diletakkan SETELAH input password.
+======================================== */
+
+.login-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: -10px 0 22px; /* Rapat ke input di atasnya */
+  padding: 0; /* Hilangkan padding box */
+  background: transparent; /* Hilangkan background box */
+  border: none; /* Hilangkan border box */
+  color: #e51c23;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Jika Anda ingin error tetap berbentuk box seperti Gambar SALAH, 
+   gunakan kode di bawah ini sebagai gantinya: */
+/*
+.login-error {
+  display: block;
+  margin: -10px 0 22px;
+  padding: 10px 14px;
+  background: #fff0f0;
+  border: 1px solid #ffcaca;
+  border-radius: 5px;
+  color: #e51c23;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+*/
 
 /* ========================================
    LOGIN - BUTTON MASUK
@@ -192,31 +218,20 @@
 
 .login-button {
   width: 100%;
-  height: 43px;
-
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  margin-top: 39px;
-
-  padding: 0;
-
+  margin-top: 36px;
+  padding: 12px 20px;
   border: none;
   border-radius: 6px;
-
   background: #4285ed;
-
   color: #ffffff;
-
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
-
   cursor: pointer;
-
-  transition:
-    background-color 0.2s ease,
-    transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .login-button:hover {
@@ -227,37 +242,28 @@
   transform: translateY(1px);
 }
 
-.login-button:disabled {
-  background: #9bbcf2;
-
-  cursor: not-allowed;
-}
-
+.login-button:disabled,
 .login-button:disabled:hover {
   background: #9bbcf2;
+  cursor: not-allowed;
 }
-
 
 /* ========================================
    LOGIN - REGISTER LINK
 ======================================== */
 
 .register-text {
-  margin: 26px 0 0;
-
+  margin: 28px 0 0;
   text-align: center;
-
   color: #526078;
-
   font-size: 16px;
   font-weight: 600;
+  line-height: 1.6;
 }
 
 .register-link {
   color: #347ff1;
-
   font-weight: 700;
-
   text-decoration: none;
 }
 
@@ -267,36 +273,11 @@
 
 .register-link-button {
   padding: 0;
-
   border: none;
-
   background: transparent;
-
   font: inherit;
-
   cursor: pointer;
 }
-
-
-/* ========================================
-   LOGIN - PESAN ERROR
-======================================== */
-
-.login-error {
-  margin: -14px 0 20px;
-  padding: 10px 14px;
-
-  background: #fdecec;
-  border: 1px solid #f1aeb5;
-  border-radius: 6px;
-
-  color: #b42318;
-
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
 
 /* ========================================
    REGISTER PAGE
@@ -305,13 +286,10 @@
 .register-page {
   width: 100%;
   min-height: 100vh;
-
   display: grid;
   grid-template-columns: 50% 50%;
-
   overflow: hidden;
 }
-
 
 /* ========================================
    REGISTER - BAGIAN KIRI
@@ -320,15 +298,11 @@
 .register-left {
   width: 100%;
   min-height: 100vh;
-
   background: #f0f3ff;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 40px 44px;
-
   box-sizing: border-box;
 }
 
@@ -339,15 +313,11 @@
 
 .register-container h1 {
   margin: 0 0 38px;
-
   color: #26344d;
-
   font-size: 32px;
   line-height: 1.2;
-
   font-weight: 700;
 }
-
 
 /* ========================================
    REGISTER - INPUT
@@ -356,57 +326,41 @@
 .register-input {
   width: 100%;
   height: 59px;
-
   display: flex;
   align-items: center;
-
   margin-bottom: 17px;
-
   background: #ffffff;
-
   border: 1px solid #8c8c8c;
-
   box-sizing: border-box;
 }
 
 .register-input .input-icon {
   width: 70px;
   height: 100%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   color: #111111;
 }
 
 .register-input input {
   flex: 1;
-
   width: 100%;
   height: 100%;
-
   padding: 0;
-
   border: none;
   outline: none;
-
   background: transparent;
-
   color: #526078;
-
   font-size: 21px;
   font-weight: 600;
 }
 
 .register-input input::placeholder {
   color: #526078;
-
   opacity: 1;
 }
-
 
 /* ========================================
    REGISTER - PASSWORD BUTTON
@@ -416,26 +370,20 @@
   width: 58px;
 }
 
-
 /* ========================================
    REGISTER - ERROR
 ======================================== */
 
 .register-error {
   min-height: 27px;
-
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-
   margin: 8px 0 20px;
-
   color: #ef1515;
-
   font-size: 20px;
   font-weight: 700;
-
   text-align: center;
 }
 
@@ -444,7 +392,6 @@
   line-height: 1;
 }
 
-
 /* ========================================
    REGISTER - BUTTON
 ======================================== */
@@ -452,30 +399,19 @@
 .register-button {
   width: 100%;
   height: 63px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   margin-top: 18px;
-
   padding: 0;
-
   border: none;
   border-radius: 8px;
-
   background: #4285ed;
-
   color: #ffffff;
-
   font-size: 21px;
   font-weight: 700;
-
   cursor: pointer;
-
-  transition:
-    background-color 0.2s ease,
-    transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .register-button:hover {
@@ -488,7 +424,6 @@
 
 .register-button:disabled {
   background: #9bbcf2;
-
   cursor: not-allowed;
 }
 
@@ -496,41 +431,31 @@
   background: #9bbcf2;
 }
 
-
 /* ========================================
    REGISTER - LOGIN LINK
 ======================================== */
 
 .login-text {
   margin: 84px 0 0;
-
   color: #526078;
-
   font-size: 21px;
   font-weight: 600;
-
   text-align: center;
 }
 
 .login-link {
   padding: 0;
-
   border: none;
-
   background: transparent;
-
   color: #347ff1;
-
   font: inherit;
   font-weight: 700;
-
   cursor: pointer;
 }
 
 .login-link:hover {
   text-decoration: underline;
 }
-
 
 /* ========================================
    REGISTER - BAGIAN KANAN
@@ -539,25 +464,19 @@
 .register-right {
   width: 100%;
   min-height: 100vh;
-
   background: #ffffff;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   overflow: hidden;
 }
 
 .register-right img {
   display: block;
-
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
-
 
 /* ========================================
    DASHBOARD SEMENTARA
@@ -565,43 +484,33 @@
 
 .dashboard-placeholder {
   min-height: 100vh;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   gap: 8px;
   padding: 24px;
-
   background: #f0f3ff;
-
   color: #26344d;
-
   text-align: center;
 }
 
 .dashboard-placeholder h1 {
   margin: 0;
-
   font-size: 28px;
 }
 
 .dashboard-placeholder p {
   margin: 0;
-
   color: #526078;
-
   font-size: 16px;
   font-weight: 600;
 }
 
 .dashboard-logout {
   width: 160px;
-
   margin-top: 24px;
 }
-
 
 /* ========================================
    SESSION LOADING
@@ -610,12 +519,9 @@
 .session-loading {
   margin: 0;
   padding: 40px;
-
   color: #526078;
-
   text-align: center;
 }
-
 
 /* ========================================
    RESPONSIVE
@@ -635,8 +541,101 @@
   .login-right,
   .register-left {
     min-height: 100vh;
-
     padding: 32px 24px;
+  }
+}
+
+@media (max-width: 760px) {
+  .login-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .login-left {
+    display: none;
+  }
+
+  .login-right {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 40px 28px;
+    border-left: none;
+  }
+
+  .login-container {
+    max-width: 520px;
+  }
+
+  .login-container h1 {
+    font-size: 30px;
+  }
+
+  .login-subtitle {
+    margin: 12px 0 32px;
+    font-size: 16px;
+  }
+
+  .login-input {
+    height: 54px;
+    margin-bottom: 18px;
+  }
+
+  .login-input input {
+    font-size: 16px;
+  }
+
+  .login-button {
+    min-height: 54px;
+    margin-top: 30px;
+    font-size: 16px;
+  }
+
+  .register-text {
+    font-size: 14px;
+  }
+
+  .register-page {
+    grid-template-columns: minmax(0, 1fr);
+    overflow: visible;
+  }
+
+  .register-left {
+    min-height: auto;
+    padding: 36px 24px;
+  }
+
+  .register-container {
+    max-width: 520px;
+  }
+
+  .register-container h1 {
+    margin-bottom: 28px;
+    font-size: 30px;
+  }
+
+  .register-input {
+    height: 54px;
+  }
+
+  .register-input input {
+    font-size: 16px;
+  }
+
+  .register-button {
+    height: 54px;
+    font-size: 17px;
+  }
+
+  .register-error {
+    font-size: 15px;
+  }
+
+  .login-text {
+    margin-top: 30px;
+    font-size: 15px;
+  }
+
+  .register-right {
+    display: none;
   }
 }
 
@@ -669,17 +668,37 @@
 
   .register-button {
     height: 52px;
-
     font-size: 16px;
   }
 
   .login-text {
     margin-top: 50px;
-
     font-size: 16px;
   }
 
   .register-text {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .login-right {
+    padding: 28px 20px;
+  }
+
+  .login-container h1 {
+    font-size: 27px;
+  }
+
+  .login-input .input-icon {
+    width: 48px;
+  }
+
+  .login-input .password-button {
+    width: 44px;
+  }
+
+  .register-left {
+    padding: 28px 18px;
   }
 }
