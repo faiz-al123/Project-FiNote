@@ -583,7 +583,7 @@ Response `201 Created`:
 }
 ```
 
-## 3. Daftar transaksi
+## 3. Daftar transaksi pengeluaran
 
 ```http
 GET /api/transaksi
@@ -597,7 +597,6 @@ Authorization: Bearer <token>
 
 Query params opsional:
 
-- `jenis`: `pemasukan` atau `pengeluaran`
 - `kategori_id`: id kategori
 - `tanggal`: format `YYYY-MM-DD`
 - `periode`: `harian`, `bulanan`, `tahunan`
@@ -616,7 +615,6 @@ Response `200 OK`:
         "user_id": 1,
         "kategori_id": 1,
         "nama_kategori": "Makanan",
-        "jenis": "pengeluaran",
         "jumlah": 25000,
         "tanggal": "2026-10-12",
         "catatan": "Makan siang",
@@ -627,7 +625,7 @@ Response `200 OK`:
 }
 ```
 
-## 4. Tambah transaksi
+## 4. Tambah transaksi pengeluaran
 
 ```http
 POST /api/transaksi
@@ -638,7 +636,6 @@ Request:
 ```json
 {
   "kategori_id": 1,
-  "jenis": "pengeluaran",
   "jumlah": 25000,
   "tanggal": "2026-10-12",
   "catatan": "Makan siang"
@@ -648,7 +645,6 @@ Request:
 Validasi:
 
 - `kategori_id` wajib ada dan valid
-- `jenis` wajib bernilai `pemasukan` atau `pengeluaran`
 - `jumlah` wajib > 0
 - `tanggal` wajib diisi dengan format `YYYY-MM-DD`
 - `catatan` bersifat optional
@@ -664,7 +660,6 @@ Response `201 Created`:
       "transaksi_id": 10,
       "user_id": 1,
       "kategori_id": 1,
-      "jenis": "pengeluaran",
       "jumlah": 25000,
       "tanggal": "2026-10-12",
       "catatan": "Makan siang",
@@ -674,7 +669,7 @@ Response `201 Created`:
 }
 ```
 
-## 5. Detail transaksi
+## 5. Detail transaksi pengeluaran
 
 ```http
 GET /api/transaksi/:transaksi_id
@@ -692,7 +687,6 @@ Response `200 OK`:
       "user_id": 1,
       "kategori_id": 1,
       "nama_kategori": "Makanan",
-      "jenis": "pengeluaran",
       "jumlah": 25000,
       "tanggal": "2026-10-12",
       "catatan": "Makan siang",
@@ -702,7 +696,7 @@ Response `200 OK`:
 }
 ```
 
-## 6. Update transaksi
+## 6. Update transaksi pengeluaran
 
 ```http
 PUT /api/transaksi/:transaksi_id
@@ -713,7 +707,6 @@ Request:
 ```json
 {
   "kategori_id": 2,
-  "jenis": "pengeluaran",
   "jumlah": 30000,
   "tanggal": "2026-10-13",
   "catatan": "Transport ke kantor"
@@ -730,7 +723,6 @@ Response `200 OK`:
     "transaction": {
       "transaksi_id": 10,
       "kategori_id": 2,
-      "jenis": "pengeluaran",
       "jumlah": 30000,
       "tanggal": "2026-10-13",
       "catatan": "Transport ke kantor"
@@ -739,7 +731,7 @@ Response `200 OK`:
 }
 ```
 
-## 7. Hapus transaksi
+## 7. Hapus transaksi pengeluaran
 
 ```http
 DELETE /api/transaksi/:transaksi_id
@@ -755,7 +747,7 @@ Response `200 OK`:
 }
 ```
 
-## 8. Ringkasan jumlah pengeluaran
+## 8. Ringkasan total pengeluaran
 
 ```http
 GET /api/transaksi/summary
@@ -775,15 +767,13 @@ Response `200 OK`:
   "message": "Ringkasan pengeluaran berhasil diambil.",
   "data": {
     "total_pengeluaran": 125000,
-    "total_pemasukan": 250000,
-    "saldo": 125000,
     "periode": "bulanan",
     "bulan": "2026-10"
   }
 }
 ```
 
-## 9. Ringkasan dashboard
+## 9. Ringkasan dashboard pengeluaran
 
 ```http
 GET /api/dashboard/summary
