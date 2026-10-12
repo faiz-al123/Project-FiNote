@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import LoginPage from './pages/auth/LoginPage'
-import RegisterPage from './pages/auth/RegisterPage'
+import RegisterPage from './pages/auth/RegisterPageWithSkeleton'
+//import RegisterPage from './pages/auth/RegisterPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import {
   clearSession,

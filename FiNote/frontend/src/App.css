@@ -366,8 +366,47 @@
    REGISTER - PASSWORD BUTTON
 ======================================== */
 
+
 .register-input .password-button {
   width: 58px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: #333333;
+
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition: color 0.2s ease;
+}
+
+.register-input .password-button svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+
+.register-input .password-button:hover {
+  color: #4285ed;
+}
+
+.register-input .password-button:focus-visible {
+  outline: 2px solid #4285ed;
+  outline-offset: -4px;
+}
+
+.register-input .password-button:active {
+  background: transparent;
 }
 
 /* ========================================
@@ -701,4 +740,18 @@
   .register-left {
     padding: 28px 18px;
   }
+}
+
+
+/* Menghilangkan tombol mata bawaan browser Edge */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Menghilangkan tombol bawaan browser Chromium jika tersedia */
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
 }
