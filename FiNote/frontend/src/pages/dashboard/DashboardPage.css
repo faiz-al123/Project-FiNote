@@ -1,0 +1,270 @@
+
+/* ========================================
+   DASHBOARD LOW FIDELITY
+======================================== */
+
+.dashboard-layout {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #ffffff;
+  color: #000000;
+}
+
+/* ========================================
+   SIDEBAR
+======================================== */
+
+.dashboard-sidebar {
+  position: relative;
+  display: flex;
+  flex: 0 0 228px;
+  flex-direction: column;
+  width: 228px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  border: 1px solid #222222;
+  background: #ffffff;
+}
+
+/* ========================================
+   AREA PROFIL
+======================================== */
+
+.dashboard-profile {
+  display: flex;
+  width: 100%;
+  height: 169px;
+  flex-shrink: 0;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0;
+  border-bottom: 1px solid #222222;
+  background: #ffffff;
+}
+
+.dashboard-profile-placeholder {
+  width: 170px;
+  height: 160px;
+  flex-shrink: 0;
+  background: #e8e8e8;
+}
+
+/* ========================================
+   NAVIGASI
+======================================== */
+
+.dashboard-navigation {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: 66px;
+  flex-shrink: 0;
+  padding: 0 48px;
+  border: none;
+  border-radius: 0;
+  background: #ffffff;
+  color: #000000;
+  text-align: left;
+}
+
+.dashboard-menu-item.active {
+  background: #999999;
+  color: #ffffff;
+}
+
+.dashboard-menu-item:not(.active):hover {
+  background: #f3f3f3;
+}
+
+.dashboard-menu-icon {
+  display: flex;
+  width: 24px;
+  height: 28px;
+  flex: 0 0 24px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-menu-icon svg {
+  display: block;
+  width: 25px;
+  height: 25px;
+}
+
+/* ========================================
+   GARIS PENGGANTI TEKS
+======================================== */
+
+.dashboard-menu-placeholder {
+  display: block;
+  width: 61px;
+  height: 8px;
+  flex: 0 0 61px;
+  border-radius: 10px;
+  background: #000000;
+}
+
+.dashboard-menu-item.active .dashboard-menu-placeholder {
+  width: 75px;
+  flex-basis: 75px;
+  background: #ffffff;
+}
+
+/* ========================================
+   MENU BAGIAN BAWAH
+======================================== */
+
+.dashboard-sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: auto;
+  padding-bottom: 18px;
+}
+
+.dashboard-settings {
+  height: 66px;
+}
+
+.dashboard-settings .dashboard-menu-icon {
+  width: 24px;
+}
+
+.dashboard-settings .settings-placeholder {
+  width: 80px;
+  flex-basis: 80px;
+}
+
+/* Tombol keluar tetap tersedia agar pengguna
+   dapat mengakhiri sesi login. */
+
+.dashboard-logout {
+  align-self: flex-start;
+  margin: 8px 0 0 48px;
+  padding: 5px 0;
+  border: none;
+  background: transparent;
+  color: #555555;
+  font-size: 12px;
+}
+
+.dashboard-logout:hover {
+  color: #000000;
+  text-decoration: underline;
+}
+
+/* ========================================
+   AREA KONTEN UTAMA
+======================================== */
+
+.dashboard-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #ffffff;
+}
+
+/* Teks aksesibilitas tidak ditampilkan secara visual. */
+
+.dashboard-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 600px) {
+  .dashboard-sidebar {
+    flex-basis: 180px;
+    width: 180px;
+  }
+
+  .dashboard-profile {
+    height: 140px;
+  }
+
+  .dashboard-profile-placeholder {
+    width: 130px;
+    height: 130px;
+  }
+
+  .dashboard-menu-item {
+    gap: 14px;
+    padding-right: 12px;
+    padding-left: 24px;
+  }
+
+  .dashboard-menu-placeholder {
+    width: 55px;
+    flex-basis: 55px;
+  }
+
+  .dashboard-menu-item.active .dashboard-menu-placeholder {
+    width: 65px;
+    flex-basis: 65px;
+  }
+
+  .dashboard-settings .settings-placeholder {
+    width: 65px;
+    flex-basis: 65px;
+  }
+
+  .dashboard-logout {
+    margin-left: 24px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-sidebar {
+    flex-basis: 150px;
+    width: 150px;
+  }
+
+  .dashboard-profile-placeholder {
+    width: 110px;
+  }
+
+  .dashboard-menu-item {
+    gap: 10px;
+    padding-left: 16px;
+  }
+
+  .dashboard-menu-placeholder {
+    width: 48px;
+    flex-basis: 48px;
+  }
+
+  .dashboard-menu-item.active .dashboard-menu-placeholder {
+    width: 55px;
+    flex-basis: 55px;
+  }
+
+  .dashboard-settings .settings-placeholder {
+    width: 55px;
+    flex-basis: 55px;
+  }
+
+  .dashboard-logout {
+    margin-left: 16px;
+  }
+}
