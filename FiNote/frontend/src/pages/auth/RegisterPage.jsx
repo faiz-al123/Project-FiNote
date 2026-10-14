@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import registerImage from '../../assets/register.png'
 import { register, saveSession } from '../../api/auth.api'
@@ -128,28 +129,50 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
     }
   }
 
+  // VALIDASI FORM REGISTER
   const validateForm = () => {
     const username = formData.username.trim()
     const email = formData.email.trim()
+    const password = formData.password
+    const confirmPassword = formData.confirmPassword
 
-    if (
-      !username ||
-      !email ||
-      !formData.password ||
-      !formData.confirmPassword
-    ) {
-      return 'Username dan email wajib diisi.'
+    // Username wajib diisi
+    if (!username) {
+      return 'Username wajib diisi.'
     }
 
+    // Username minimal 3 karakter
+    if (username.length < 3) {
+      return 'Username minimal 3 karakter.'
+    }
+
+    // Email wajib diisi
+    if (!email) {
+      return 'Email wajib diisi.'
+    }
+
+    // Format email harus valid
     if (!EMAIL_REGEX.test(email)) {
       return 'Format email tidak valid.'
     }
 
-    if (formData.password.length < 8) {
+    // Password wajib diisi
+    if (!password) {
+      return 'Password kosong.'
+    }
+
+    // Password minimal 8 karakter
+    if (password.length < 8) {
       return 'Password minimal 8 karakter.'
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    // Konfirmasi password wajib diisi
+    if (!confirmPassword) {
+      return 'Konfirmasi password kosong.'
+    }
+
+    // Password dan konfirmasi harus sama
+    if (password !== confirmPassword) {
       return 'Konfirmasi password tidak sesuai.'
     }
 
@@ -194,17 +217,12 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
 
   return (
     <main className="register-page">
-
-      {/* =========================
-          BAGIAN KIRI
-      ========================== */}
+      {/* BAGIAN KIRI */}
       <section className="register-left">
         <div className="register-container">
-
           <h1>Daftar Akun</h1>
 
           <form onSubmit={handleSubmit} noValidate>
-
             {/* USERNAME */}
             <div className="register-input">
               <span className="input-icon">
@@ -307,7 +325,7 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
               </p>
             )}
 
-            {/* DAFTAR */}
+            {/* TOMBOL DAFTAR */}
             <button
               type="submit"
               className="register-button"
@@ -315,10 +333,9 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
             >
               {isLoading ? 'Memproses...' : 'Daftar'}
             </button>
-
           </form>
 
-          {/* LOGIN */}
+          {/* LINK LOGIN */}
           <p className="login-text">
             Sudah punya akun?{' '}
             <button
@@ -329,20 +346,16 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
               masuk disini
             </button>
           </p>
-
         </div>
       </section>
 
-      {/* =========================
-          BAGIAN KANAN
-      ========================== */}
+      {/* BAGIAN KANAN */}
       <section className="register-right">
         <img
           src={registerImage}
           alt="FiNote - Kelola Keuangan, Raih Masa Depan"
         />
       </section>
-
     </main>
   )
 }
