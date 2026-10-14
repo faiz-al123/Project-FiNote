@@ -138,7 +138,7 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
       !formData.password ||
       !formData.confirmPassword
     ) {
-      return 'Username, email, dan password wajib diisi.'
+      return 'Username dan email wajibdiisi.'
     }
 
     if (!EMAIL_REGEX.test(email)) {
