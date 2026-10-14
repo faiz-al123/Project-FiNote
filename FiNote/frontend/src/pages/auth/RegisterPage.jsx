@@ -136,42 +136,52 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
     const password = formData.password
     const confirmPassword = formData.confirmPassword
 
-    // Username wajib diisi
+    // 1. Username wajib diisi
     if (!username) {
       return 'Username wajib diisi.'
     }
 
-    // Username minimal 3 karakter
+    // 2. Username minimal 3 karakter
     if (username.length < 3) {
       return 'Username minimal 3 karakter.'
     }
 
-    // Email wajib diisi
+    // 3. Email wajib diisi
     if (!email) {
       return 'Email wajib diisi.'
     }
 
-    // Format email harus valid
+    // 4. Format email harus valid
     if (!EMAIL_REGEX.test(email)) {
       return 'Format email tidak valid.'
     }
 
-    // Password wajib diisi
+    // 5. Password wajib diisi
     if (!password) {
       return 'Password kosong.'
     }
 
-    // Password minimal 8 karakter
+    // 6. Password tidak boleh mengandung spasi
+    if (/\s/.test(password)) {
+      return 'Password tidak boleh mengandung spasi.'
+    }
+
+    // 7. Password minimal 8 karakter
     if (password.length < 8) {
       return 'Password minimal 8 karakter.'
     }
 
-    // Konfirmasi password wajib diisi
+    // 8. Konfirmasi password wajib diisi
     if (!confirmPassword) {
       return 'Konfirmasi password kosong.'
     }
 
-    // Password dan konfirmasi harus sama
+    // 9. Konfirmasi password juga tidak boleh mengandung spasi
+    if (/\s/.test(confirmPassword)) {
+      return 'Konfirmasi password tidak boleh mengandung spasi.'
+    }
+
+    // 10. Password dan konfirmasi harus sama
     if (password !== confirmPassword) {
       return 'Konfirmasi password tidak sesuai.'
     }
@@ -208,7 +218,9 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
       if (error.status === 409) {
         setErrorMessage('akun anda sudah pernah terdaftar')
       } else {
-        setErrorMessage(error.message)
+        setErrorMessage(
+          error.message || 'Registrasi gagal. Silakan coba kembali.'
+        )
       }
     } finally {
       setIsLoading(false)
