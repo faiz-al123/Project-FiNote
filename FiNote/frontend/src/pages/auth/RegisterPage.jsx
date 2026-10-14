@@ -168,7 +168,7 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
 
     // 7. Password minimal 8 karakter
     if (password.length < 8) {
-      return 'Password minimal 8 karakter.'
+      return 'Password minimal 8 karakter tanpa spasi.'
     }
 
     // 8. Konfirmasi password wajib diisi
@@ -183,7 +183,7 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
 
     // 10. Password dan konfirmasi harus sama
     if (password !== confirmPassword) {
-      return 'Konfirmasi password tidak sesuai.'
+      return 'Password tidak sesuai.'
     }
 
     return ''
