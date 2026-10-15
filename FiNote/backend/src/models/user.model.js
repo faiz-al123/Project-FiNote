@@ -20,6 +20,14 @@ function findByIdentifier(identifier) {
     .get(identifier, identifier);
 }
 
+// Mencari user berdasarkan nama (tanpa membedakan huruf besar/kecil).
+// Dipakai saat register untuk mencegah nama kembar.
+function findByNama(nama) {
+  return db
+    .prepare('SELECT user_id FROM User WHERE LOWER(nama) = LOWER(?)')
+    .get(nama);
+}
+
 function findById(userId) {
   return db
     .prepare(`
@@ -43,6 +51,7 @@ function create({ nama, email, hashedPassword }) {
 
 module.exports = {
   findByEmail,
+  findByNama,
   findByIdentifier,
   findById,
   create,

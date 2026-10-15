@@ -124,3 +124,24 @@ test('login ditolak kalau email tidak terdaftar (pesan harus sama dengan passwor
   assert.strictEqual(error.statusCode, 401);
   assert.strictEqual(error.message, 'Email atau password salah.');
 });
+
+test('login berhasil memakai nama (username) sebagai identifier', async () => {
+  const { res, error } = await panggilController(authController.login, {
+    identifier: 'siti maria', // huruf kecil pun harus tetap cocok
+    password: 'passwordAman123',
+  });
+  assert.strictEqual(error, null);
+  assert.strictEqual(res.statusCode, 200);
+  assert.ok(res.body.data.token, 'token harus ada');
+});
+
+test('register ditolak kalau nama sudah dipakai (beda huruf besar/kecil pun sama)', async () => {
+  const { error } = await panggilController(authController.register, {
+    nama: 'SITI MARIA',
+    email: 'lain@example.com', // email beda, nama sama
+    password: 'passwordLain123',
+  });
+  assert.ok(error, 'harus melempar error ke next()');
+  assert.strictEqual(error.statusCode, 409);
+  assert.strictEqual(error.message, 'Nama sudah dipakai.');
+});
