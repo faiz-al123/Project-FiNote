@@ -36,6 +36,10 @@ async function register({ nama, email, password }) {
     throw new AppError('Email sudah terdaftar.', 409);
   }
 
+  if (userModel.findByNama(nama)) {
+    throw new AppError('Nama sudah dipakai.', 409);
+  }
+
   try {
     const hashedPassword = await bcrypt.hash(
       password,
@@ -53,14 +57,14 @@ async function register({ nama, email, password }) {
       token: buatToken(userBaru),
     };
   } catch (err) {
-    if (
-      err.code === 'SQLITE_CONSTRAINT_UNIQUE' ||
-      err.code === 'SQLITE_CONSTRAINT'
-    ) {
-      throw new AppError(
-        'Email sudah terdaftar.',
-        409,
-      );
+    // node:sqlite tidak memberi kode khusus, jadi dibedakan lewat isi pesan error
+    const pesan = String(err.message || '');
+
+    if (pesan.includes('UNIQUE constraint failed: User.nama')) {
+      throw new AppError('Nama sudah dipakai.', 409);
+    }
+    if (pesan.includes('UNIQUE constraint failed: User.email')) {
+      throw new AppError('Email sudah terdaftar.', 409);
     }
 
     throw err;
