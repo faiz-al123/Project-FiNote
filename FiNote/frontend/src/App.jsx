@@ -1,18 +1,20 @@
+
 import { useEffect, useState } from 'react'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPageWithSkeleton'
-//import RegisterPage from './pages/auth/RegisterPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
+import DashboardSkeleton from './components/DashboardSkeleton'
+
 import {
   clearSession,
   getCurrentUser,
   getToken,
 } from './api/auth.api'
+
 import './App.css'
 
 function App() {
   const [user, setUser] = useState(null)
-
   const [page, setPage] = useState('login')
 
   const [checkingSession, setCheckingSession] = useState(() =>
@@ -35,7 +37,6 @@ function App() {
         }
       })
       .catch((error) => {
-        // Token kedaluwarsa / tidak valid / user sudah dihapus.
         if (error.status === 401 || error.status === 404) {
           clearSession()
         }
@@ -73,10 +74,12 @@ function App() {
 
   if (user) {
     return (
-      <DashboardPage
-        user={user}
-        onLogout={handleLogout}
-      />
+      <DashboardSkeleton>
+        <DashboardPage
+          user={user}
+          onLogout={handleLogout}
+        />
+      </DashboardSkeleton>
     )
   }
 
