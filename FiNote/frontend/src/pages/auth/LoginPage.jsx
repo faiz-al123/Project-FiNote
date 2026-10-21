@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import loginImage from '../../assets/login1.png'
 import { login, saveSession } from '../../api/auth.api'
@@ -36,13 +37,7 @@ function LockIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <rect
-        x="5"
-        y="10"
-        width="14"
-        height="10"
-        rx="1"
-      />
+      <rect x="5" y="10" width="14" height="10" rx="1" />
       <path d="M8 10V7a4 4 0 0 1 8 0v3" />
       <circle cx="12" cy="15" r="1" />
     </svg>
@@ -65,12 +60,8 @@ function EyeIcon({ hidden }) {
       >
         <path d="M3 3l18 18" />
         <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
-        <path
-          d="M9.9 5.2A10.8 10.8 0 0 1 12 5c5 0 8.5 4 9.5 7-.4 1.2-1.2 2.5-2.3 3.6"
-        />
-        <path
-          d="M6.2 6.2C4.4 7.4 3.2 9.2 2.5 12c1 3 4.5 7 9.5 7 1 0 1.9-.2 2.8-.5"
-        />
+        <path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c5 0 8.5 4 9.5 7-.4 1.2-1.2 2.5-2.3 3.6" />
+        <path d="M6.2 6.2C4.4 7.4 3.2 9.2 2.5 12c1 3 4.5 7 9.5 7 1 0 1.9-.2 2.8-.5" />
       </svg>
     )
   }
@@ -99,19 +90,16 @@ function LoginPage({
   onLoginSuccess,
   onRegisterClick,
 }) {
-  const [showPassword, setShowPassword] =
-    useState(false)
-
-  const [isLoading, setIsLoading] =
-    useState(false)
-
-  const [errorMessage, setErrorMessage] =
-    useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const [formData, setFormData] = useState({
     identifier: '',
     password: '',
   })
+
+  // --- PERUBAHAN INPUT ---
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -121,21 +109,51 @@ function LoginPage({
       [name]: value,
     }))
 
+    // Hapus pesan lama ketika pengguna mulai memperbaiki input.
     if (errorMessage) {
       setErrorMessage('')
     }
   }
 
-  const validateForm = () => {
-    const identifier =
-      formData.identifier.trim()
+  // --- VALIDASI FORM ---
 
-    if (!identifier || !formData.password) {
-      return '⚠︎ Email atau kata sandi yang Anda masukkan salah silahkan coba kembali.'
+  const validateForm = () => {
+    const identifier = formData.identifier.trim()
+    const password = formData.password
+
+    if (!identifier && !password) {
+      return 'Username/email dan password wajib diisi.'
+    }
+
+    if (!identifier) {
+      return 'Username/email dan passwordS wajib diisi.'
+    }
+
+    if (!password) {
+      return 'Password wajib diisi.'
     }
 
     return ''
   }
+
+  // --- PENANGANAN ERROR LOGIN ---
+
+  const getLoginErrorMessage = (error) => {
+    // Status 401: akun tidak ditemukan atau password salah.
+    // Keduanya menggunakan pesan yang sama.
+    if (error?.status === 401) {
+      return 'Username/email atau password salah. Silakan coba kembali.'
+    }
+
+    // Cadangan jika pesan backend tidak tersedia.
+    if (!error?.message) {
+      return 'Login gagal. Silakan coba kembali.'
+    }
+
+    return error.message
+  }
+
+  // --- PROSES LOGIN ---
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -154,8 +172,7 @@ function LoginPage({
 
     try {
       const { user, token } = await login({
-        identifier:
-          formData.identifier.trim(),
+        identifier: formData.identifier.trim(),
         password: formData.password,
       })
 
@@ -166,7 +183,7 @@ function LoginPage({
 
       onLoginSuccess(user)
     } catch (error) {
-      setErrorMessage(error.message)
+      setErrorMessage(getLoginErrorMessage(error))
     } finally {
       setIsLoading(false)
     }
@@ -175,9 +192,7 @@ function LoginPage({
   return (
     <main className="login-page">
 
-      {/* =========================
-          BAGIAN KIRI
-      ========================== */}
+      {/* BAGIAN KIRI */}
       <section className="login-left">
         <img
           src={loginImage}
@@ -185,9 +200,7 @@ function LoginPage({
         />
       </section>
 
-      {/* =========================
-          BAGIAN KANAN
-      ========================== */}
+      {/* BAGIAN KANAN */}
       <section className="login-right">
         <div className="login-container">
 
@@ -197,10 +210,7 @@ function LoginPage({
             masuk ke akun FiNote kamu
           </p>
 
-          <form
-            onSubmit={handleSubmit}
-            noValidate
-          >
+          <form onSubmit={handleSubmit} noValidate>
 
             {/* USERNAME / EMAIL */}
             <div className="login-input">
@@ -215,6 +225,8 @@ function LoginPage({
                 value={formData.identifier}
                 onChange={handleChange}
                 autoComplete="username"
+                aria-label="Username atau Email"
+                aria-invalid={Boolean(errorMessage)}
               />
             </div>
 
@@ -225,25 +237,21 @@ function LoginPage({
               </span>
 
               <input
-                type={
-                  showPassword
-                    ? 'text'
-                    : 'password'
-                }
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
                 autoComplete="current-password"
+                aria-label="Password"
+                aria-invalid={Boolean(errorMessage)}
               />
 
               <button
                 type="button"
                 className="password-button"
                 onClick={() =>
-                  setShowPassword(
-                    (previous) => !previous,
-                  )
+                  setShowPassword((previous) => !previous)
                 }
                 aria-label={
                   showPassword
@@ -251,31 +259,28 @@ function LoginPage({
                     : 'Tampilkan password'
                 }
               >
-                <EyeIcon
-                  hidden={!showPassword}
-                />
+                <EyeIcon hidden={!showPassword} />
               </button>
             </div>
 
-            {/* PESAN ERROR (DIPINDAHKAN KE SINI) */}
+            {/* PESAN ERROR */}
             {errorMessage && (
               <p
                 className="login-error"
                 role="alert"
+                aria-live="polite"
               >
                 {errorMessage}
               </p>
             )}
 
-            {/* LOGIN BUTTON */}
+            {/* TOMBOL LOGIN */}
             <button
               type="submit"
               className="login-button"
               disabled={isLoading}
             >
-              {isLoading
-                ? 'Memproses...'
-                : 'Masuk'}
+              {isLoading ? 'Memproses...' : 'Masuk'}
             </button>
 
           </form>
