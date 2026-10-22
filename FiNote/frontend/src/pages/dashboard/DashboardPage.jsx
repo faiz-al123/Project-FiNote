@@ -8,8 +8,6 @@ import './DashboardPage.css'
 function DashboardPage({ user, onLogout }) {
   const [activeMenu, setActiveMenu] = useState('dashboard')
 
-  // Nama dari backend saat ini tersimpan sebagai user.nama.
-  // username dan name menjadi fallback bila format user berubah.
   const username =
     user?.username ||
     user?.nama ||
@@ -70,14 +68,6 @@ function DashboardPage({ user, onLogout }) {
           </svg>
         )
 
-      case 'pengaturan':
-        return (
-          <svg {...props}>
-            <circle cx="12" cy="12" r="3" />
-            <path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 0 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 0 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z" />
-          </svg>
-        )
-
       default:
         return null
     }
@@ -118,28 +108,8 @@ function DashboardPage({ user, onLogout }) {
           ))}
         </nav>
 
-        {/* MENU BAWAH */}
+        {/* PROFIL DAN TOMBOL KELUAR */}
         <div className="dashboard-sidebar-bottom">
-          <button
-            type="button"
-            className={`dashboard-menu-item dashboard-settings ${
-              activeMenu === 'pengaturan' ? 'active' : ''
-            }`}
-            aria-current={
-              activeMenu === 'pengaturan' ? 'page' : undefined
-            }
-            onClick={() => setActiveMenu('pengaturan')}
-          >
-            <span className="dashboard-menu-icon">
-              {renderIcon('pengaturan')}
-            </span>
-
-            <span className="dashboard-menu-label">
-              Pengaturan
-            </span>
-          </button>
-
-          {/* NAMA PENGGUNA */}
           <div className="dashboard-user-profile">
             <img
               src={ProfileIcon}
@@ -161,7 +131,6 @@ function DashboardPage({ user, onLogout }) {
             </div>
           </div>
 
-          {/* TOMBOL KELUAR TETAP DIPERTAHANKAN */}
           <button
             type="button"
             className="dashboard-logout"
@@ -172,10 +141,9 @@ function DashboardPage({ user, onLogout }) {
         </div>
       </aside>
 
-      {/* AREA KONTEN */}
+      {/* KONTEN DASHBOARD */}
       <div className="dashboard-workspace">
         <main className="dashboard-main">
-          {/* HEADER */}
           <header className="dashboard-header">
             <div className="dashboard-heading">
               <h1>Halo, sahabat Finote !</h1>
@@ -195,12 +163,10 @@ function DashboardPage({ user, onLogout }) {
             </button>
           </header>
 
-          {/* BANNER KETIKA BELUM ADA TRANSAKSI */}
           <div className="dashboard-empty-message" role="status">
             silahkan klik “Transaksi” untuk mencatat pengeluaran mu
           </div>
 
-          {/* KARTU RINGKASAN */}
           <section
             className="dashboard-summary"
             aria-label="Ringkasan pengeluaran"
