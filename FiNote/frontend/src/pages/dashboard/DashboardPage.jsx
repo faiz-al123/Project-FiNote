@@ -133,7 +133,7 @@ function DashboardPage({ user, onLogout }) {
 
           <button
             type="button"
-            className="dashboard-logout"
+            className="logout-btn"
             onClick={onLogout}
           >
             Keluar

@@ -586,3 +586,17 @@
     font-size: 18px;
   }
 }
+
+/* Tombol Keluar pada Dashboard */
+.logout-btn {
+  color: #dc2626;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+/* Efek ketika kursor diarahkan ke tombol */
+.logout-btn:hover {
+  color: #b91c1c;
+}
