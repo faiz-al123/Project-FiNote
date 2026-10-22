@@ -3,7 +3,7 @@ const router = express.Router();
 
 const authRoutes = require('./auth.routes');
 const categoryRoutes = require('./category.routes');
-const transaksiRoutes = require('./transaksi.routes');
+const transaksiRoutes = require('./transaction.routes');
 const dashboardRoutes = require('./dashboard.routes');
 
 router.use('/auth', authRoutes);

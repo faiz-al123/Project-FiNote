@@ -95,3 +95,7 @@ CREATE INDEX IF NOT EXISTS idx_budget_user_periode ON Budget(user_id, periode);
 CREATE INDEX IF NOT EXISTS idx_tagihan_user_status ON Tagihan(user_id, status);
 -- Nama (dipakai sebagai username) tidak boleh kembar, huruf besar/kecil dianggap sama
 CREATE UNIQUE INDEX IF NOT EXISTS idx_user_nama_unik ON User(nama COLLATE NOCASE);
+
+-- Kategori bawaan sistem (BE-04)
+INSERT OR IGNORE INTO Kategori (nama_kategori) VALUES
+  ('Makanan'), ('Transportasi'), ('Belanja'), ('Tagihan'), ('Hiburan'), ('Lainnya');
