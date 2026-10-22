@@ -1,14 +1,6 @@
 const db = require('../config/db');
 const AppError = require('../utils/appError');
-
-// Tanggal hari ini (zona waktu server) dalam format YYYY-MM-DD.
-function tanggalHariIni() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const t = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${t}`;
-}
+const { tanggalHariIni } = require('../utils/dateHelper');
 
 function findById(transaksiId) {
   return db
