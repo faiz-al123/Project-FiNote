@@ -646,7 +646,7 @@ Validasi:
 
 - `kategori_id` wajib ada dan valid
 - `jumlah` wajib > 0
-- `tanggal` wajib diisi dengan format `YYYY-MM-DD`
+- `tanggal` opsional, format `YYYY-MM-DD`. Jika kosong, otomatis diisi tanggal hari ini
 - `catatan` bersifat optional
 
 Response `201 Created`:
@@ -806,33 +806,3 @@ Response `200 OK`:
 | `GET` | `/health` | Tidak | Mengecek status backend |
 
 ---
-
-# Status Implementasi API
-
-### Sudah tersedia
-
-- [x] Register
-- [x] Login
-- [x] JWT Authentication
-- [x] Current User (`/auth/me`)
-- [x] Health Check
-- [x] Validasi input register/login
-- [x] Error response standar
-- [x] CORS
-- [x] SQLite database
-
-### Belum tersedia
-
-- [ ] CRUD Transaksi
-- [ ] CRUD Kategori
-- [ ] CRUD Budget
-- [ ] CRUD Tagihan
-- [ ] Refresh Token
-- [ ] Logout endpoint
-- [ ] Custom 404 JSON handler
-
----
-
-# Catatan Akhir
-
-Dokumen ini mengikuti gaya dokumentasi referensi yang kamu kirim, tetapi tetap disesuaikan dengan keadaan project FiNote saat ini: autentikasi sudah selesai, sementara arus pengeluaran dan ringkasan dashboard masih menjadi fitur lanjutan yang akan dikembangkan di backend.
