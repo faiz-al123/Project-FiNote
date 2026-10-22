@@ -197,19 +197,15 @@
 /* TOMBOL KELUAR TETAP ADA */
 
 .dashboard-sidebar .dashboard-logout {
-  align-self: stretch;
-  width: 100%;
-  min-height: 34px;
-  margin: 8px 0 0;
-  padding: 6px 7px;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  color: #555555;
-  font-family: inherit;
-  font-size: 12px;
-  text-align: left;
-  cursor: pointer;
+  background-color: #e53935;
+color: #ffffff;
+padding: 12px 20px;
+font-size: 15px;
+font-weight: 600;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: background-color 0.2s ease;
 }
 
 .dashboard-sidebar .dashboard-logout:hover {
