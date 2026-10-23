@@ -410,25 +410,58 @@
 }
 
 /* ========================================
-   REGISTER - ERROR
+   REGISTER - FIELD & ERROR
 ======================================== */
 
+/* Pembungkus satu kolom: input + pesan error di bawahnya */
+.register-field {
+  margin-bottom: 17px;
+}
+
+/* Jarak bawah dipindah ke .register-field */
+.register-field .register-input {
+  margin-bottom: 0;
+}
+
+/* Kolom input yang error: garis merah */
+.register-input.is-invalid {
+  border: 2px solid #e02020;
+}
+
+/* Pesan error di bawah kolom (kiri, latar merah muda) */
+.field-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 4px 10px;
+  background: #fde2e2;
+  color: #e02020;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.field-error svg {
+  flex-shrink: 0;
+}
+
+/* Error umum (server mati, timeout, dll.) di atas tombol Daftar */
 .register-error {
-  min-height: 27px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 8px 0 20px;
-  color: #ef1515;
-  font-size: 20px;
-  font-weight: 700;
+  margin: 8px 0 0;
+  color: #e02020;
+  font-size: 18px;
+  font-weight: 600;
   text-align: center;
 }
 
-.register-error-icon {
-  font-size: 22px;
-  line-height: 1;
+.register-error svg {
+  flex-shrink: 0;
 }
 
 /* ========================================
@@ -664,8 +697,9 @@
     font-size: 17px;
   }
 
-  .register-error {
-    font-size: 15px;
+  .register-error,
+  .field-error {
+    font-size: 14px;
   }
 
   .login-text {
@@ -701,8 +735,9 @@
     font-size: 16px;
   }
 
-  .register-error {
-    font-size: 15px;
+  .register-error,
+  .field-error {
+    font-size: 14px;
   }
 
   .register-button {

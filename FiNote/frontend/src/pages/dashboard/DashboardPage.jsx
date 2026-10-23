@@ -1,12 +1,58 @@
-
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Logo from '../../assets/Logo.png'
 import Bell from '../../assets/dashboard-assets/Bell.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
+import { getDashboardSummary } from '../../api/dashboard.api'
+import { formatRupiah } from '../../utils/format'
 import './DashboardPage.css'
 
 function DashboardPage({ user, onLogout }) {
   const [activeMenu, setActiveMenu] = useState('dashboard')
+
+  // Data ringkasan dari backend
+  const [summary, setSummary] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+
+    getDashboardSummary()
+      .then((data) => {
+        if (!cancelled) setSummary(data)
+      })
+      .catch((err) => {
+        if (cancelled) return
+
+        // Token kedaluwarsa / tidak valid -> kembali ke halaman login
+        if (err.status === 401) {
+          onLogout()
+          return
+        }
+
+        setError(err.message)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [onLogout])
+
+  const totalHari = summary?.total_pengeluaran_hari_ini ?? 0
+  const totalBulan = summary?.total_pengeluaran_bulan_ini ?? 0
+
+  // Skenario 2: belum ada catatan pengeluaran
+  const belumAdaCatatan =
+    !loading && !error && totalHari === 0 && totalBulan === 0
+
+  const tampil = (nilai) => {
+    if (loading) return '...'
+    if (error) return '-'
+    return formatRupiah(nilai)
+  }
 
   const username =
     user?.username ||
@@ -163,22 +209,37 @@ function DashboardPage({ user, onLogout }) {
             </button>
           </header>
 
-          <div className="dashboard-empty-message" role="status">
-            silahkan klik “Transaksi” untuk mencatat pengeluaran mu
-          </div>
+          {/* Gagal memuat data dari backend */}
+          {error && (
+            <div className="dashboard-empty-message" role="alert">
+              {error}
+            </div>
+          )}
 
+          {/* Skenario 2: belum ada catatan pengeluaran */}
+          {belumAdaCatatan && (
+            <div className="dashboard-empty-message" role="status">
+              silahkan klik “Transaksi” untuk mencatat pengeluaran mu
+            </div>
+          )}
+
+          {/* Skenario 1 & 2: dua widget harian dan bulanan */}
           <section
             className="dashboard-summary"
             aria-label="Ringkasan pengeluaran"
           >
             <article className="dashboard-summary-card">
               <h2>Pengeluaran hari ini</h2>
-              <p className="dashboard-summary-value">-</p>
+              <p className="dashboard-summary-value">
+                {tampil(totalHari)}
+              </p>
             </article>
 
             <article className="dashboard-summary-card">
               <h2>Pengeluaran bulan ini</h2>
-              <p className="dashboard-summary-value">-</p>
+              <p className="dashboard-summary-value">
+                {tampil(totalBulan)}
+              </p>
             </article>
           </section>
         </main>

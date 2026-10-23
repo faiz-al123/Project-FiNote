@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import registerImage from '../../assets/register.png'
 import { register, saveSession } from '../../api/auth.api'
@@ -101,13 +100,69 @@ function EyeIcon({ hidden }) {
   )
 }
 
+// Ikon (i) merah di sebelah kiri pesan error
+function ErrorIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9.5" />
+      <path d="M12 11v6" />
+      <circle cx="12" cy="7.5" r="0.6" fill="currentColor" />
+    </svg>
+  )
+}
+
+// Pesan error di bawah masing-masing kolom input
+function FieldError({ message }) {
+  if (!message) return null
+
+  return (
+    <p className="field-error" role="alert">
+      <ErrorIcon />
+      <span>{message}</span>
+    </p>
+  )
+}
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+// Pesan error sesuai kondisi pada desain UI/UX
+const MESSAGES = {
+  username: 'username min. 3 karakter',
+  emailInvalid: 'email tidak valid',
+  emailRequired: 'email wajib diisi',
+  emailRegistered: 'akun anda sudah pernah terdaftar',
+  usernameTaken: 'username sudah dipakai',
+  password: 'password min. 8 karakter tanpa spasi',
+  passwordMismatch: 'password tidak sesuai',
+}
+
+const EMPTY_ERRORS = {
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+}
 
 function RegisterPage({ onRegisterSuccess, onLoginClick }) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+
+  // Error per kolom (username, email, password, confirmPassword)
+  const [errors, setErrors] = useState(EMPTY_ERRORS)
+
+  // Error umum (mis. server mati / timeout), tampil di atas tombol Daftar
+  const [generalError, setGeneralError] = useState('')
 
   const [formData, setFormData] = useState({
     username: '',
@@ -124,69 +179,51 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
       [name]: value,
     }))
 
-    if (errorMessage) {
-      setErrorMessage('')
+    // Hapus error kolom yang sedang diketik.
+    // Kolom konfirmasi ikut dibersihkan saat password diubah.
+    setErrors((previous) => ({
+      ...previous,
+      [name]: '',
+      ...(name === 'password' ? { confirmPassword: '' } : {}),
+    }))
+
+    if (generalError) {
+      setGeneralError('')
     }
   }
 
   // VALIDASI FORM REGISTER
+  // Mengembalikan object error per kolom. Object kosong = form valid.
   const validateForm = () => {
     const username = formData.username.trim()
     const email = formData.email.trim()
-    const password = formData.password
-    const confirmPassword = formData.confirmPassword
+    const { password, confirmPassword } = formData
 
-    // 1. Username wajib diisi
-    if (!username) {
-      return 'Username wajib diisi.'
-    }
+    const newErrors = { ...EMPTY_ERRORS }
 
-    // 2. Username minimal 3 karakter
+    // Username minimal 3 karakter
     if (username.length < 3) {
-      return 'Username minimal 3 karakter.'
+      newErrors.username = MESSAGES.username
     }
 
-    // 3. Email wajib diisi
+    // Email wajib diisi & formatnya harus valid
     if (!email) {
-      return 'Email wajib diisi.'
+      newErrors.email = MESSAGES.emailRequired
+    } else if (!EMAIL_REGEX.test(email)) {
+      newErrors.email = MESSAGES.emailInvalid
     }
 
-    // 4. Format email harus valid
-    if (!EMAIL_REGEX.test(email)) {
-      return 'Format email tidak valid.'
+    // Password minimal 8 karakter dan tidak boleh ada spasi
+    if (password.length < 8 || /\s/.test(password)) {
+      newErrors.password = MESSAGES.password
     }
 
-    // 5. Password wajib diisi
-    if (!password) {
-      return 'Password kosong.'
-    }
-
-    // 6. Password tidak boleh mengandung spasi
-    if (/\s/.test(password)) {
-      return 'Password tidak boleh mengandung spasi.'
-    }
-
-    // 7. Password minimal 8 karakter
-    if (password.length < 8) {
-      return 'Password minimal 8 karakter tanpa spasi.'
-    }
-
-    // 8. Konfirmasi password wajib diisi
-    if (!confirmPassword) {
-      return 'Konfirmasi password kosong.'
-    }
-
-    // 9. Konfirmasi password juga tidak boleh mengandung spasi
-    if (/\s/.test(confirmPassword)) {
-      return 'Konfirmasi password tidak boleh mengandung spasi.'
-    }
-
-    // 10. Password dan konfirmasi harus sama
+    // Konfirmasi password harus sama dengan password
     if (password !== confirmPassword) {
-      return 'Password tidak sesuai.'
+      newErrors.confirmPassword = MESSAGES.passwordMismatch
     }
 
-    return ''
+    return newErrors
   }
 
   const handleSubmit = async (event) => {
@@ -194,15 +231,15 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
 
     if (isLoading) return
 
-    const validationError = validateForm()
+    const validationErrors = validateForm()
+    const hasError = Object.values(validationErrors).some(Boolean)
 
-    if (validationError) {
-      setErrorMessage(validationError)
-      return
-    }
+    setErrors(validationErrors)
+    setGeneralError('')
+
+    if (hasError) return
 
     setIsLoading(true)
-    setErrorMessage('')
 
     try {
       const { user, token } = await register({
@@ -216,9 +253,16 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
       onRegisterSuccess(user)
     } catch (error) {
       if (error.status === 409) {
-        setErrorMessage('akun anda sudah pernah terdaftar')
+        // Backend: "Email sudah terdaftar." atau "Nama sudah dipakai."
+        const message = String(error.message || '').toLowerCase()
+
+        if (message.includes('nama')) {
+          setErrors({ ...EMPTY_ERRORS, username: MESSAGES.usernameTaken })
+        } else {
+          setErrors({ ...EMPTY_ERRORS, email: MESSAGES.emailRegistered })
+        }
       } else {
-        setErrorMessage(
+        setGeneralError(
           error.message || 'Registrasi gagal. Silakan coba kembali.'
         )
       }
@@ -236,104 +280,140 @@ function RegisterPage({ onRegisterSuccess, onLoginClick }) {
 
           <form onSubmit={handleSubmit} noValidate>
             {/* USERNAME */}
-            <div className="register-input">
-              <span className="input-icon">
-                <UserIcon />
-              </span>
+            <div className="register-field">
+              <div
+                className={`register-input${
+                  errors.username ? ' is-invalid' : ''
+                }`}
+              >
+                <span className="input-icon">
+                  <UserIcon />
+                </span>
 
-              <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-                autoComplete="username"
-              />
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  autoComplete="username"
+                  aria-invalid={Boolean(errors.username)}
+                />
+              </div>
+
+              <FieldError message={errors.username} />
             </div>
 
             {/* EMAIL */}
-            <div className="register-input">
-              <span className="input-icon">
-                <MailIcon />
-              </span>
+            <div className="register-field">
+              <div
+                className={`register-input${
+                  errors.email ? ' is-invalid' : ''
+                }`}
+              >
+                <span className="input-icon">
+                  <MailIcon />
+                </span>
 
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                autoComplete="email"
-              />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  autoComplete="email"
+                  aria-invalid={Boolean(errors.email)}
+                />
+              </div>
+
+              <FieldError message={errors.email} />
             </div>
 
             {/* PASSWORD */}
-            <div className="register-input">
-              <span className="input-icon">
-                <LockIcon />
-              </span>
-
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                autoComplete="new-password"
-              />
-
-              <button
-                type="button"
-                className="password-button"
-                onClick={() =>
-                  setShowPassword((previous) => !previous)
-                }
-                aria-label={
-                  showPassword
-                    ? 'Sembunyikan password'
-                    : 'Tampilkan password'
-                }
+            <div className="register-field">
+              <div
+                className={`register-input${
+                  errors.password ? ' is-invalid' : ''
+                }`}
               >
-                <EyeIcon hidden={!showPassword} />
-              </button>
+                <span className="input-icon">
+                  <LockIcon />
+                </span>
+
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  aria-invalid={Boolean(errors.password)}
+                />
+
+                <button
+                  type="button"
+                  className="password-button"
+                  onClick={() =>
+                    setShowPassword((previous) => !previous)
+                  }
+                  aria-label={
+                    showPassword
+                      ? 'Sembunyikan password'
+                      : 'Tampilkan password'
+                  }
+                >
+                  <EyeIcon hidden={!showPassword} />
+                </button>
+              </div>
+
+              <FieldError message={errors.password} />
             </div>
 
             {/* KONFIRMASI PASSWORD */}
-            <div className="register-input">
-              <span className="input-icon">
-                <LockIcon />
-              </span>
-
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                name="confirmPassword"
-                placeholder="konfirmasi Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                autoComplete="new-password"
-              />
-
-              <button
-                type="button"
-                className="password-button"
-                onClick={() =>
-                  setShowConfirmPassword((previous) => !previous)
-                }
-                aria-label={
-                  showConfirmPassword
-                    ? 'Sembunyikan konfirmasi password'
-                    : 'Tampilkan konfirmasi password'
-                }
+            <div className="register-field">
+              <div
+                className={`register-input${
+                  errors.confirmPassword ? ' is-invalid' : ''
+                }`}
               >
-                <EyeIcon hidden={!showConfirmPassword} />
-              </button>
+                <span className="input-icon">
+                  <LockIcon />
+                </span>
+
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  placeholder="Konfirmasi Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  aria-invalid={Boolean(errors.confirmPassword)}
+                />
+
+                <button
+                  type="button"
+                  className="password-button"
+                  onClick={() =>
+                    setShowConfirmPassword((previous) => !previous)
+                  }
+                  aria-label={
+                    showConfirmPassword
+                      ? 'Sembunyikan konfirmasi password'
+                      : 'Tampilkan konfirmasi password'
+                  }
+                >
+                  <EyeIcon hidden={!showConfirmPassword} />
+                </button>
+              </div>
+
+              <FieldError message={errors.confirmPassword} />
             </div>
 
-            {/* PESAN ERROR */}
-            {errorMessage && (
+            {/* ERROR UMUM (server mati, timeout, dll.) */}
+            {generalError && (
               <p className="register-error" role="alert">
-                <span className="register-error-icon">ⓘ</span>
-                {errorMessage}
+                <ErrorIcon />
+                <span>{generalError}</span>
               </p>
             )}
 
