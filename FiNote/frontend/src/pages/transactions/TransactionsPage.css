@@ -1,0 +1,517 @@
+
+/* ========================================
+   LOW FIDELITY HALAMAN TRANSAKSI FINOTE
+======================================== */
+
+.transaction-layout {
+  min-height: 100vh;
+  background: #f0f3ff;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #102039;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
+.transaction-workspace {
+  min-width: 0;
+}
+
+.transaction-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 100px;
+  padding: 20px 55px;
+  border: 1px solid #333;
+  box-sizing: border-box;
+  background: #f0f3ff;
+}
+
+.transaction-header-icon {
+  display: flex;
+  flex: 0 0 38px;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: #dce3ff;
+  color: #102039;
+}
+
+.transaction-header-icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.transaction-header h1 {
+  margin: 0;
+  color: #102039;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.transaction-header p {
+  margin: 2px 0 0;
+  color: #50576a;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* ========================================
+   AREA FORM
+======================================== */
+
+.transaction-main {
+  width: 100%;
+  padding: 16px 30px 40px;
+  box-sizing: border-box;
+}
+
+.transaction-card {
+  width: 100%;
+  max-width: 754px;
+  min-height: 760px;
+  margin: 0 auto;
+  padding: 44px 29px 47px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(30, 55, 100, 0.035);
+}
+
+/* ========================================
+   FIELD
+======================================== */
+
+.transaction-field {
+  margin-bottom: 35px;
+}
+
+.transaction-field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.transaction-field-heading label {
+  color: #102039;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.transaction-required {
+  color: #e51c23;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.transaction-hint {
+  color: #555b6d;
+  font-size: 14px;
+  text-align: right;
+}
+
+/* ========================================
+   INPUT NOMINAL
+======================================== */
+
+.transaction-amount-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 69px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: #eef3ff;
+  box-sizing: border-box;
+}
+
+.transaction-amount-input:focus-within {
+  border-color: #4285ed;
+}
+
+.transaction-amount-input.has-error {
+  border-color: #ff2929;
+}
+
+.transaction-currency {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex: 0 0 56px;
+  background: #e4edff;
+  color: #102039;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.transaction-amount-input input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #102039;
+  font-family: inherit;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.transaction-amount-input input::placeholder {
+  color: #c0c8db;
+  opacity: 1;
+}
+
+/* ========================================
+   PILIHAN KATEGORI
+======================================== */
+
+.transaction-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 19px;
+}
+
+.transaction-category {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: 143px;
+  min-height: 48px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: #eef3ff;
+  color: #102039;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.transaction-category svg {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  color: #111111;
+}
+
+.transaction-category:hover {
+  border-color: #a7c6ff;
+}
+
+.transaction-category.selected {
+  border-color: #4285ed;
+  background: #dce8ff;
+  color: #164bb5;
+}
+
+.transaction-category.selected svg {
+  color: #164bb5;
+}
+
+/* ========================================
+   INPUT TANGGAL
+======================================== */
+
+.transaction-standard-input {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  height: 44px;
+  padding: 0 15px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: #eef3ff;
+  color: #555b6d;
+}
+
+.transaction-standard-input:focus-within {
+  border-color: #4285ed;
+}
+
+.transaction-standard-input svg {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.transaction-standard-input input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #555b6d;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* ========================================
+   KETERANGAN TAMBAHAN
+======================================== */
+
+.transaction-description-input {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  min-height: 68px;
+  padding: 13px 15px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: #eef3ff;
+}
+
+.transaction-description-input:focus-within {
+  border-color: #4285ed;
+}
+
+.transaction-description-icon {
+  display: flex;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 20px;
+  margin-top: 1px;
+  color: #555b6d;
+}
+
+.transaction-description-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.transaction-description-input textarea {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0;
+  resize: vertical;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #102039;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.transaction-description-input textarea::placeholder {
+  color: #747b88;
+  opacity: 1;
+}
+
+/* ========================================
+   PESAN VALIDASI
+======================================== */
+
+.transaction-feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 43px;
+  margin-top: -9px;
+  margin-bottom: 16px;
+}
+
+.transaction-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  color: #ff1717;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.transaction-error svg {
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+}
+
+/* ========================================
+   TOMBOL SIMPAN DAN RESET
+======================================== */
+
+.transaction-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+}
+
+.transaction-save-button,
+.transaction-reset-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 54px;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.transaction-save-button {
+  flex: 1;
+  background: #3d7ff3;
+  color: #ffffff;
+}
+
+.transaction-save-button:hover {
+  background: #286ce1;
+}
+
+.transaction-reset-button {
+  flex: 0 0 auto;
+  background: #e4edff;
+  color: #444c5e;
+}
+
+.transaction-reset-button:hover {
+  background: #d4e2ff;
+}
+
+.transaction-save-button svg,
+.transaction-reset-button svg {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 1024px) {
+  .transaction-header {
+    padding-right: 30px;
+    padding-left: 30px;
+  }
+
+  .transaction-main {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .transaction-card {
+    padding: 35px 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .transaction-header {
+    min-height: 85px;
+    padding: 18px;
+  }
+
+  .transaction-header h1 {
+    font-size: 20px;
+  }
+
+  .transaction-header p {
+    font-size: 13px;
+  }
+
+  .transaction-main {
+    padding: 16px 12px 25px;
+  }
+
+  .transaction-card {
+    min-height: auto;
+    padding: 25px 18px;
+    border-radius: 12px;
+  }
+
+  .transaction-field {
+    margin-bottom: 28px;
+  }
+
+  .transaction-field-heading label {
+    font-size: 16px;
+  }
+
+  .transaction-hint,
+  .transaction-required {
+    font-size: 12px;
+  }
+
+  .transaction-categories {
+    gap: 10px;
+  }
+
+  .transaction-category {
+    flex: 1 1 125px;
+    min-width: 0;
+    font-size: 13px;
+  }
+
+  .transaction-actions {
+    gap: 8px;
+  }
+
+  .transaction-save-button,
+  .transaction-reset-button {
+    min-height: 48px;
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .transaction-header-icon {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .transaction-header h1 {
+    font-size: 17px;
+  }
+
+  .transaction-header p {
+    font-size: 12px;
+  }
+
+  .transaction-field-heading {
+    align-items: flex-start;
+  }
+
+  .transaction-category {
+    flex-basis: calc(50% - 5px);
+  }
+
+  .transaction-save-button,
+  .transaction-reset-button {
+    gap: 5px;
+    font-size: 12px;
+  }
+}

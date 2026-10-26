@@ -1,7 +1,9 @@
+
 import { useCallback, useEffect, useState } from 'react'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPageWithSkeleton'
 import DashboardPage from './pages/dashboard/DashboardPage'
+import TransactionsPage from './pages/transactions/TransactionsPage'
 import DashboardSkeleton from './components/DashboardSkeleton'
 
 import {
@@ -53,16 +55,14 @@ function App() {
 
   const handleLoginSuccess = (loggedInUser) => {
     setUser(loggedInUser)
-    setPage('login')
+    setPage('dashboard')
   }
 
   const handleRegisterSuccess = (registeredUser) => {
     setUser(registeredUser)
-    setPage('login')
+    setPage('dashboard')
   }
 
-  // useCallback: dipakai DashboardPage sebagai dependency useEffect,
-  // jadi referensinya harus stabil agar data tidak di-fetch berulang.
   const handleLogout = useCallback(() => {
     clearSession()
     setUser(null)
@@ -73,31 +73,44 @@ function App() {
     return <p className="session-loading">Memuat...</p>
   }
 
-  if (user) {
-    return (
-      <DashboardSkeleton>
-        <DashboardPage
-          user={user}
-          onLogout={handleLogout}
+  if (!user) {
+    if (page === 'register') {
+      return (
+        <RegisterPage
+          onRegisterSuccess={handleRegisterSuccess}
+          onLoginClick={() => setPage('login')}
         />
-      </DashboardSkeleton>
-    )
-  }
+      )
+    }
 
-  if (page === 'register') {
     return (
-      <RegisterPage
-        onRegisterSuccess={handleRegisterSuccess}
-        onLoginClick={() => setPage('login')}
+      <LoginPage
+        onLoginSuccess={handleLoginSuccess}
+        onRegisterClick={() => setPage('register')}
       />
     )
   }
 
+  const handleNavigate = (destination) => {
+    setPage(destination)
+  }
+
   return (
-    <LoginPage
-      onLoginSuccess={handleLoginSuccess}
-      onRegisterClick={() => setPage('register')}
-    />
+    <DashboardSkeleton key={page}>
+      {page === 'transaksi' ? (
+        <TransactionsPage
+          user={user}
+          onLogout={handleLogout}
+          onNavigate={handleNavigate}
+        />
+      ) : (
+        <DashboardPage
+          user={user}
+          onLogout={handleLogout}
+          onNavigate={handleNavigate}
+        />
+      )}
+    </DashboardSkeleton>
   )
 }
 

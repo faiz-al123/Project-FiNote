@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import Logo from '../../assets/Logo.png'
 import Bell from '../../assets/dashboard-assets/Bell.png'
@@ -6,7 +7,7 @@ import { getDashboardSummary } from '../../api/dashboard.api'
 import { formatRupiah } from '../../utils/format'
 import './DashboardPage.css'
 
-function DashboardPage({ user, onLogout }) {
+function DashboardPage({ user, onLogout, onNavigate }) {
   const [activeMenu, setActiveMenu] = useState('dashboard')
 
   // Data ringkasan dari backend
@@ -24,7 +25,7 @@ function DashboardPage({ user, onLogout }) {
       .catch((err) => {
         if (cancelled) return
 
-        // Token kedaluwarsa / tidak valid -> kembali ke halaman login
+        // Token kedaluwarsa atau tidak valid
         if (err.status === 401) {
           onLogout()
           return
@@ -44,7 +45,7 @@ function DashboardPage({ user, onLogout }) {
   const totalHari = summary?.total_pengeluaran_hari_ini ?? 0
   const totalBulan = summary?.total_pengeluaran_bulan_ini ?? 0
 
-  // Skenario 2: belum ada catatan pengeluaran
+  // Belum ada catatan pengeluaran
   const belumAdaCatatan =
     !loading && !error && totalHari === 0 && totalBulan === 0
 
@@ -64,9 +65,10 @@ function DashboardPage({ user, onLogout }) {
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
     { id: 'transaksi', label: 'Transaksi', icon: 'transaksi' },
     { id: 'riwayat', label: 'Riwayat', icon: 'riwayat' },
-    { id: 'pengingat', label: 'Pengingat', icon: 'pengingat' },
+    { id: 'pengingat', label: 'pengingat', icon: 'pengingat' },
   ]
 
+  // Ikon sidebar
   const renderIcon = (icon) => {
     const props = {
       viewBox: '0 0 24 24',
@@ -92,7 +94,13 @@ function DashboardPage({ user, onLogout }) {
       case 'transaksi':
         return (
           <svg {...props}>
-            <rect x="3.5" y="3.5" width="17" height="17" rx="1" />
+            <rect
+              x="3.5"
+              y="3.5"
+              width="17"
+              height="17"
+              rx="1"
+            />
             <path d="M12 7v10M7 12h10" />
           </svg>
         )
@@ -119,6 +127,23 @@ function DashboardPage({ user, onLogout }) {
     }
   }
 
+  // Navigasi sidebar
+  const handleMenuClick = (menuId) => {
+    if (menuId === 'dashboard') {
+      setActiveMenu('dashboard')
+      return
+    }
+
+    if (menuId === 'transaksi') {
+      onNavigate?.('transaksi')
+      return
+    }
+
+    // Halaman Riwayat dan Pengingat belum dibuat.
+    // Untuk sementara, tandai menu yang dipilih.
+    setActiveMenu(menuId)
+  }
+
   return (
     <div className="dashboard-layout">
       {/* SIDEBAR */}
@@ -141,7 +166,7 @@ function DashboardPage({ user, onLogout }) {
               aria-current={
                 activeMenu === item.id ? 'page' : undefined
               }
-              onClick={() => setActiveMenu(item.id)}
+              onClick={() => handleMenuClick(item.id)}
             >
               <span className="dashboard-menu-icon">
                 {renderIcon(item.icon)}
@@ -203,33 +228,40 @@ function DashboardPage({ user, onLogout }) {
               className="dashboard-notification"
               aria-label="Buka pengingat"
               title="Pengingat"
-              onClick={() => setActiveMenu('pengingat')}
+              onClick={() => handleMenuClick('pengingat')}
             >
               <img src={Bell} alt="" />
             </button>
           </header>
 
-          {/* Gagal memuat data dari backend */}
+          {/* Gagal memuat data backend */}
           {error && (
-            <div className="dashboard-empty-message" role="alert">
+            <div
+              className="dashboard-empty-message"
+              role="alert"
+            >
               {error}
             </div>
           )}
 
-          {/* Skenario 2: belum ada catatan pengeluaran */}
+          {/* Belum ada catatan pengeluaran */}
           {belumAdaCatatan && (
-            <div className="dashboard-empty-message" role="status">
+            <div
+              className="dashboard-empty-message"
+              role="status"
+            >
               silahkan klik “Transaksi” untuk mencatat pengeluaran mu
             </div>
           )}
 
-          {/* Skenario 1 & 2: dua widget harian dan bulanan */}
+          {/* Ringkasan pengeluaran harian dan bulanan */}
           <section
             className="dashboard-summary"
             aria-label="Ringkasan pengeluaran"
           >
             <article className="dashboard-summary-card">
               <h2>Pengeluaran hari ini</h2>
+
               <p className="dashboard-summary-value">
                 {tampil(totalHari)}
               </p>
@@ -237,6 +269,7 @@ function DashboardPage({ user, onLogout }) {
 
             <article className="dashboard-summary-card">
               <h2>Pengeluaran bulan ini</h2>
+
               <p className="dashboard-summary-value">
                 {tampil(totalBulan)}
               </p>
