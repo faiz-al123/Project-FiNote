@@ -3,8 +3,7 @@ import { useState } from 'react'
 import loginImage from '../../assets/login1.png'
 import { login, saveSession } from '../../api/auth.api'
 
-// --- IKON ---
-
+// --- IKON EMAIL ---
 function EmailIcon() {
   return (
     <svg
@@ -24,6 +23,7 @@ function EmailIcon() {
   )
 }
 
+// --- IKON PASSWORD ---
 function LockIcon() {
   return (
     <svg
@@ -44,6 +44,7 @@ function LockIcon() {
   )
 }
 
+// --- IKON TAMPILKAN PASSWORD ---
 function EyeIcon({ hidden }) {
   if (hidden) {
     return (
@@ -84,8 +85,7 @@ function EyeIcon({ hidden }) {
   )
 }
 
-// --- KOMPONEN UTAMA ---
-
+// --- HALAMAN LOGIN ---
 function LoginPage({
   onLoginSuccess,
   onRegisterClick,
@@ -99,8 +99,7 @@ function LoginPage({
     password: '',
   })
 
-  // --- PERUBAHAN INPUT ---
-
+  // --- INPUT FORM ---
   const handleChange = (event) => {
     const { name, value } = event.target
 
@@ -109,43 +108,46 @@ function LoginPage({
       [name]: value,
     }))
 
-    // Hapus pesan lama ketika pengguna mulai memperbaiki input.
     if (errorMessage) {
       setErrorMessage('')
     }
   }
 
-  // --- VALIDASI FORM ---
-
+  // --- VALIDASI FRONTEND ---
+  // Username/email kosong tetap ditolak di frontend.
+  // Password kosong diteruskan ke backend agar backend
+  // yang mengembalikan pesan validasi melalui API.
   const validateForm = () => {
     const identifier = formData.identifier.trim()
-    const password = formData.password
-
-    if (!identifier && !password) {
-      return 'Username/email dan password wajib diisi.'
-    }
 
     if (!identifier) {
-      return 'Username/email dan passwordS wajib diisi.'
-    }
-
-    if (!password) {
-      return 'Password wajib diisi.'
+      return 'Username/email wajib diisi.'
     }
 
     return ''
   }
 
-  // --- PENANGANAN ERROR LOGIN ---
-
+  // --- PESAN ERROR LOGIN ---
   const getLoginErrorMessage = (error) => {
-    // Status 401: akun tidak ditemukan atau password salah.
-    // Keduanya menggunakan pesan yang sama.
+    // 400: validasi input dari backend.
+    if (error?.status === 400) {
+      return (
+        error?.message ||
+        'Username/email dan password wajib diisi.'
+      )
+    }
+
+    // 401: akun tidak ditemukan atau password salah.
     if (error?.status === 401) {
       return 'Username/email atau password salah. Silakan coba kembali.'
     }
 
-    // Cadangan jika pesan backend tidak tersedia.
+    // 409: konflik data, jika dikembalikan backend.
+    if (error?.status === 409) {
+      return error.message
+    }
+
+    // Kegagalan koneksi atau error lainnya.
     if (!error?.message) {
       return 'Login gagal. Silakan coba kembali.'
     }
@@ -154,11 +156,12 @@ function LoginPage({
   }
 
   // --- PROSES LOGIN ---
-
   const handleSubmit = async (event) => {
     event.preventDefault()
 
-    if (isLoading) return
+    if (isLoading) {
+      return
+    }
 
     const validationError = validateForm()
 
@@ -171,11 +174,14 @@ function LoginPage({
     setErrorMessage('')
 
     try {
+      // Request tetap dikirim ketika password kosong.
+      // Backend akan memvalidasi input tersebut.
       const { user, token } = await login({
         identifier: formData.identifier.trim(),
         password: formData.password,
       })
 
+      // Sesi disimpan hanya jika login berhasil.
       saveSession({
         token,
         user,
@@ -250,9 +256,9 @@ function LoginPage({
               <button
                 type="button"
                 className="password-button"
-                onClick={() =>
+                onClick={() => {
                   setShowPassword((previous) => !previous)
-                }
+                }}
                 aria-label={
                   showPassword
                     ? 'Sembunyikan password'
@@ -285,7 +291,7 @@ function LoginPage({
 
           </form>
 
-          {/* REGISTER */}
+          {/* NAVIGASI REGISTRASI */}
           <p className="register-text">
             belum punya akun?{' '}
             <button
