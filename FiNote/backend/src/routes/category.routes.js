@@ -13,6 +13,5 @@ router.get('/', categoryController.listCategories);
 
 // POST /api/categories
 // Body JSON: { "nama_kategori": "Transportasi" }
-router.post('/', categoryController.createCategory);
 
 module.exports = router;
