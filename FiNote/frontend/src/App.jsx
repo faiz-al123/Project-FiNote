@@ -1,10 +1,13 @@
 
 import { useCallback, useEffect, useState } from 'react'
+
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPageWithSkeleton'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import TransactionsPage from './pages/transactions/TransactionsPage'
+
 import DashboardSkeleton from './components/DashboardSkeleton'
+import TransactionsSkeleton from './components/TransactionsSkeleton'
 
 import {
   clearSession,
@@ -18,8 +21,8 @@ function App() {
   const [user, setUser] = useState(null)
   const [page, setPage] = useState('login')
 
-  const [checkingSession, setCheckingSession] = useState(() =>
-    Boolean(getToken()),
+  const [checkingSession, setCheckingSession] = useState(
+    () => Boolean(getToken()),
   )
 
   useEffect(() => {
@@ -38,7 +41,10 @@ function App() {
         }
       })
       .catch((error) => {
-        if (error.status === 401 || error.status === 404) {
+        if (
+          error.status === 401 ||
+          error.status === 404
+        ) {
           clearSession()
         }
       })
@@ -69,6 +75,15 @@ function App() {
     setPage('login')
   }, [])
 
+  const handleNavigate = (destination) => {
+    if (
+      destination === 'dashboard' ||
+      destination === 'transaksi'
+    ) {
+      setPage(destination)
+    }
+  }
+
   if (checkingSession) {
     return <p className="session-loading">Memuat...</p>
   }
@@ -91,25 +106,25 @@ function App() {
     )
   }
 
-  const handleNavigate = (destination) => {
-    setPage(destination)
-  }
-
-  return (
-    <DashboardSkeleton key={page}>
-      {page === 'transaksi' ? (
+  if (page === 'transaksi') {
+    return (
+      <TransactionsSkeleton key="transactions">
         <TransactionsPage
           user={user}
           onLogout={handleLogout}
           onNavigate={handleNavigate}
         />
-      ) : (
-        <DashboardPage
-          user={user}
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-        />
-      )}
+      </TransactionsSkeleton>
+    )
+  }
+
+  return (
+    <DashboardSkeleton key="dashboard">
+      <DashboardPage
+        user={user}
+        onLogout={handleLogout}
+        onNavigate={handleNavigate}
+      />
     </DashboardSkeleton>
   )
 }
