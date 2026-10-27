@@ -515,3 +515,71 @@
     font-size: 12px;
   }
 }
+
+
+/* ========================================
+   PESAN VALIDASI PER INPUT
+======================================== */
+
+.transaction-inline-error {
+  margin: 8px 0 0;
+  color: #e51c23;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Keterangan tanggal opsional */
+.transaction-date-hint {
+  margin: 7px 0 0;
+  text-align: left;
+  font-size: 12px;
+}
+
+/* ========================================
+   NOTIFIKASI HASIL TRANSAKSI
+======================================== */
+
+.transaction-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.transaction-notice svg {
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+}
+
+.transaction-notice.is-success {
+  color: #16803d;
+}
+
+.transaction-notice.is-error {
+  color: #e51c23;
+}
+
+/* Tombol ketika proses penyimpanan berlangsung */
+.transaction-save-button:disabled,
+.transaction-reset-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.transaction-save-button:focus-visible,
+.transaction-reset-button:focus-visible,
+.transaction-category:focus-visible {
+  outline: 2px solid #164bb5;
+  outline-offset: 3px;
+}
+
+/* Pesan umpan balik tetap memiliki ruang */
+.transaction-feedback {
+  min-height: 43px;
+}
