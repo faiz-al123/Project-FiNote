@@ -583,7 +583,9 @@ Response `201 Created`:
 }
 ```
 
-## 3. Daftar transaksi pengeluaran
+## 3. Riwayat transaksi pengeluaran (BE-05)
+
+Dipakai halaman **Riwayat**: tabel transaksi, pencarian, filter tanggal, filter kategori, dan nomor halaman.
 
 ```http
 GET /api/transaksi
@@ -595,35 +597,52 @@ Header:
 Authorization: Bearer <token>
 ```
 
-Query params opsional:
+Query params (semua opsional, boleh digabung):
 
-- `kategori_id`: id kategori
-- `tanggal`: format `YYYY-MM-DD`
-- `periode`: `harian`, `bulanan`, `tahunan`
-- `search`: pencarian berdasarkan catatan atau nama kategori
+| Param | Contoh | Keterangan |
+|---|---|---|
+| `search` | `padang` | Mencari di deskripsi **atau** nama kategori, tidak peka huruf besar/kecil |
+| `kategori_id` | `1` | Hanya transaksi pada kategori tersebut |
+| `tanggal` | `2026-10-23` | Hanya transaksi pada tanggal tersebut (`YYYY-MM-DD`) |
+| `dari`, `sampai` | `2026-10-01`, `2026-10-31` | Rentang tanggal, batas ikut dihitung. Boleh salah satu saja. Tidak boleh digabung dengan `tanggal` |
+| `page` | `1` | Nomor halaman, default `1` |
+| `limit` | `15` | Jumlah baris per halaman, default `15`, maksimal `100` |
+
+Urutan hasil: tanggal terbaru di atas. Hanya transaksi milik pengguna yang login.
 
 Response `200 OK`:
 
 ```json
 {
   "success": true,
-  "message": "Daftar transaksi berhasil diambil.",
+  "message": "Riwayat transaksi berhasil diambil.",
   "data": {
     "transactions": [
       {
         "transaksi_id": 10,
-        "user_id": 1,
+        "tanggal": "2026-10-23",
+        "catatan": "nasi padang",
         "kategori_id": 1,
         "nama_kategori": "Makanan",
-        "jumlah": 25000,
-        "tanggal": "2026-10-12",
-        "catatan": "Makan siang",
-        "created_at": "2026-10-12 12:45:00"
+        "jumlah": 10000
       }
-    ]
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 15,
+      "total_items": 82,
+      "total_pages": 6
+    }
   }
 }
 ```
+
+Jika tidak ada transaksi yang cocok, tetap `200` dengan `transactions: []`, `total_items: 0`, dan `message` bernilai `Transaksi tidak ditemukan.` (`catatan` bernilai `null` jika transaksi dicatat tanpa deskripsi).
+
+| Status | Kondisi |
+|---|---|
+| `400` | Parameter tidak valid (format tanggal, `dari` > `sampai`, `page`/`limit`/`kategori_id` bukan angka positif, dsb.) |
+| `401` | Tidak ada token |
 
 ## 4. Tambah transaksi pengeluaran
 
