@@ -3,51 +3,75 @@ import { useEffect, useState } from 'react'
 import Logo from '../../assets/Logo.png'
 import Bell from '../../assets/dashboard-assets/Bell.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
-import { getDashboardSummary } from '../../api/dashboard.api'
+import {
+  getDashboardSummary,
+  getDashboardCategorySummary,
+} from '../../api/dashboard.api'
 import { formatRupiah } from '../../utils/format'
 import './DashboardPage.css'
 
 function DashboardPage({ user, onLogout, onNavigate }) {
   const [activeMenu, setActiveMenu] = useState('dashboard')
-
-  // Data ringkasan dari backend
   const [summary, setSummary] = useState(null)
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
     let cancelled = false
 
-    getDashboardSummary()
-      .then((data) => {
-        if (!cancelled) setSummary(data)
-      })
-      .catch((err) => {
+    async function loadDashboard() {
+      try {
+        setLoading(true)
+        setError('')
+
+        const [summaryData, categoryData] = await Promise.all([
+          getDashboardSummary(),
+          getDashboardCategorySummary(),
+        ])
+
         if (cancelled) return
 
-        // Token kedaluwarsa atau tidak valid
+        setSummary(summaryData)
+        setCategories(
+          Array.isArray(categoryData?.categories)
+            ? categoryData.categories
+            : [],
+        )
+      } catch (err) {
+        if (cancelled) return
+
         if (err.status === 401) {
           onLogout()
           return
         }
 
-        setError(err.message)
-      })
-      .finally(() => {
+        setError(
+          err.message || 'Data dashboard gagal dimuat.',
+        )
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    }
+
+    loadDashboard()
 
     return () => {
       cancelled = true
     }
   }, [onLogout])
 
-  const totalHari = summary?.total_pengeluaran_hari_ini ?? 0
-  const totalBulan = summary?.total_pengeluaran_bulan_ini ?? 0
+  const totalHari =
+    summary?.total_pengeluaran_hari_ini ?? 0
 
-  // Belum ada catatan pengeluaran
+  const totalBulan =
+    summary?.total_pengeluaran_bulan_ini ?? 0
+
   const belumAdaCatatan =
-    !loading && !error && totalHari === 0 && totalBulan === 0
+    !loading &&
+    !error &&
+    totalHari === 0 &&
+    totalBulan === 0
 
   const tampil = (nilai) => {
     if (loading) return '...'
@@ -61,6 +85,11 @@ function DashboardPage({ user, onLogout, onNavigate }) {
     user?.name ||
     'Pengguna'
 
+  const nilaiTerbesar = Math.max(
+    1,
+    ...categories.map((item) => Number(item.total) || 0),
+  )
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
     { id: 'transaksi', label: 'Transaksi', icon: 'transaksi' },
@@ -68,7 +97,6 @@ function DashboardPage({ user, onLogout, onNavigate }) {
     { id: 'pengingat', label: 'pengingat', icon: 'pengingat' },
   ]
 
-  // Ikon sidebar
   const renderIcon = (icon) => {
     const props = {
       viewBox: '0 0 24 24',
@@ -94,13 +122,7 @@ function DashboardPage({ user, onLogout, onNavigate }) {
       case 'transaksi':
         return (
           <svg {...props}>
-            <rect
-              x="3.5"
-              y="3.5"
-              width="17"
-              height="17"
-              rx="1"
-            />
+            <rect x="3.5" y="3.5" width="17" height="17" rx="1" />
             <path d="M12 7v10M7 12h10" />
           </svg>
         )
@@ -127,7 +149,6 @@ function DashboardPage({ user, onLogout, onNavigate }) {
     }
   }
 
-  // Navigasi sidebar
   const handleMenuClick = (menuId) => {
     if (menuId === 'dashboard') {
       setActiveMenu('dashboard')
@@ -139,14 +160,11 @@ function DashboardPage({ user, onLogout, onNavigate }) {
       return
     }
 
-    // Halaman Riwayat dan Pengingat belum dibuat.
-    // Untuk sementara, tandai menu yang dipilih.
     setActiveMenu(menuId)
   }
 
   return (
     <div className="dashboard-layout">
-      {/* SIDEBAR */}
       <aside className="dashboard-sidebar">
         <div className="dashboard-brand">
           <img src={Logo} alt="FINote" />
@@ -179,7 +197,6 @@ function DashboardPage({ user, onLogout, onNavigate }) {
           ))}
         </nav>
 
-        {/* PROFIL DAN TOMBOL KELUAR */}
         <div className="dashboard-sidebar-bottom">
           <div className="dashboard-user-profile">
             <img
@@ -212,7 +229,6 @@ function DashboardPage({ user, onLogout, onNavigate }) {
         </div>
       </aside>
 
-      {/* KONTEN DASHBOARD */}
       <div className="dashboard-workspace">
         <main className="dashboard-main">
           <header className="dashboard-header">
@@ -234,34 +250,21 @@ function DashboardPage({ user, onLogout, onNavigate }) {
             </button>
           </header>
 
-          {/* Gagal memuat data backend */}
           {error && (
             <div
-              className="dashboard-empty-message"
+              className="dashboard-error-message"
               role="alert"
             >
               {error}
             </div>
           )}
 
-          {/* Belum ada catatan pengeluaran */}
-          {belumAdaCatatan && (
-            <div
-              className="dashboard-empty-message"
-              role="status"
-            >
-              silahkan klik “Transaksi” untuk mencatat pengeluaran mu
-            </div>
-          )}
-
-          {/* Ringkasan pengeluaran harian dan bulanan */}
           <section
             className="dashboard-summary"
             aria-label="Ringkasan pengeluaran"
           >
             <article className="dashboard-summary-card">
               <h2>Pengeluaran hari ini</h2>
-
               <p className="dashboard-summary-value">
                 {tampil(totalHari)}
               </p>
@@ -269,11 +272,106 @@ function DashboardPage({ user, onLogout, onNavigate }) {
 
             <article className="dashboard-summary-card">
               <h2>Pengeluaran bulan ini</h2>
-
               <p className="dashboard-summary-value">
                 {tampil(totalBulan)}
               </p>
             </article>
+          </section>
+
+          {belumAdaCatatan && (
+            <div
+              className="dashboard-empty-message"
+              role="status"
+            >
+              Silakan klik “Transaksi” untuk mencatat pengeluaranmu.
+            </div>
+          )}
+
+          <section
+            className="dashboard-chart-card"
+            aria-label="Grafik pengeluaran berdasarkan kategori"
+          >
+            <div className="dashboard-chart-heading">
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 21h18" />
+                <rect x="5" y="12" width="4" height="9" />
+                <rect x="10" y="7" width="4" height="14" />
+                <rect x="15" y="3" width="4" height="18" />
+              </svg>
+
+              <h2>Grafik Pengeluaran berdasarkan kategori</h2>
+            </div>
+
+            <div className="dashboard-chart-divider" />
+
+            {loading ? (
+              <div className="dashboard-chart-state">
+                Memuat grafik...
+              </div>
+            ) : error ? (
+              <div className="dashboard-chart-state">
+                Grafik belum dapat ditampilkan.
+              </div>
+            ) : categories.length === 0 ? (
+              <div className="dashboard-chart-state">
+                Belum ada data kategori.
+              </div>
+            ) : (
+              <div className="dashboard-chart">
+                {categories.map((category) => {
+                  const total = Number(category.total) || 0
+                  const tinggi =
+                    total > 0
+                      ? Math.max((total / nilaiTerbesar) * 100, 4)
+                      : 0
+
+                  const tertinggi =
+                    total > 0 && total === nilaiTerbesar
+
+                  return (
+                    <div
+                      className={`dashboard-chart-column ${
+                        tertinggi ? 'highest' : ''
+                      }`}
+                      key={category.kategori_id}
+                    >
+                      <span className="dashboard-chart-value">
+                        {total > 0
+                          ? new Intl.NumberFormat('id-ID').format(total)
+                          : ''}
+                      </span>
+
+                      <div className="dashboard-chart-bar-area">
+                        <div
+                          className="dashboard-chart-bar"
+                          style={{ height: `${tinggi}%` }}
+                          title={`${category.nama_kategori}: ${formatRupiah(total)}`}
+                        />
+                      </div>
+
+                      <span className="dashboard-chart-label">
+                        {category.nama_kategori}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            <div className="dashboard-chart-baseline" />
+
+            <div className="dashboard-chart-legend">
+              <span className="dashboard-legend-dot" />
+              <span>Tertinggi</span>
+            </div>
           </section>
         </main>
       </div>
