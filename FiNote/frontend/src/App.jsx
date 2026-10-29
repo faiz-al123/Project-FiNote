@@ -6,9 +6,6 @@ import RegisterPage from './pages/auth/RegisterPageWithSkeleton'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import TransactionsPage from './pages/transactions/TransactionsPage'
 
-import DashboardSkeleton from './components/DashboardSkeleton'
-import TransactionsSkeleton from './components/TransactionsSkeleton'
-
 import {
   clearSession,
   getCurrentUser,
@@ -108,24 +105,20 @@ function App() {
 
   if (page === 'transaksi') {
     return (
-      <TransactionsSkeleton key="transactions">
-        <TransactionsPage
-          user={user}
-          onLogout={handleLogout}
-          onNavigate={handleNavigate}
-        />
-      </TransactionsSkeleton>
-    )
-  }
-
-  return (
-    <DashboardSkeleton key="dashboard">
-      <DashboardPage
+      <TransactionsPage
         user={user}
         onLogout={handleLogout}
         onNavigate={handleNavigate}
       />
-    </DashboardSkeleton>
+    )
+  }
+
+  return (
+    <DashboardPage
+      user={user}
+      onLogout={handleLogout}
+      onNavigate={handleNavigate}
+    />
   )
 }
 

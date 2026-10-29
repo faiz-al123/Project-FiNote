@@ -139,7 +139,7 @@ function LoginPage({
 
     // 401: akun tidak ditemukan atau password salah.
     if (error?.status === 401) {
-      return 'Username/email atau password salah. Silakan coba kembali.'
+      return 'Username/email atau password salah.'
     }
 
     // 409: konflik data, jika dikembalikan backend.
