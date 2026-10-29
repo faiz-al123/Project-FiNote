@@ -815,6 +815,58 @@ Response `200 OK`:
 
 ---
 
+## 10. Total pengeluaran per kategori untuk grafik dashboard (BE-03.2)
+
+```http
+GET /api/dashboard/kategori
+```
+
+Header:
+
+```http
+Authorization: Bearer <token>
+```
+
+Query params opsional:
+
+| Param | Contoh | Keterangan |
+|---|---|---|
+| `periode` | `bulanan` | `bulanan` (default) = seluruh bulan dari `tanggal`; `harian` = hanya hari `tanggal` |
+| `tanggal` | `2026-10-29` | Tanggal acuan `YYYY-MM-DD`. Jika kosong, memakai tanggal hari ini di server. Frontend sebaiknya mengirim tanggal lokal browser |
+
+Response `200 OK`:
+
+```json
+{
+  "success": true,
+  "message": "Total pengeluaran per kategori berhasil diambil.",
+  "data": {
+    "periode": "bulanan",
+    "tanggal": "2026-10-29",
+    "bulan": "2026-10",
+    "categories": [
+      { "kategori_id": 1, "nama_kategori": "Makanan", "total": 10000, "tertinggi": false },
+      { "kategori_id": 2, "nama_kategori": "Transportasi", "total": 20000, "tertinggi": false },
+      { "kategori_id": 3, "nama_kategori": "Belanja", "total": 0, "tertinggi": false },
+      { "kategori_id": 4, "nama_kategori": "Tagihan", "total": 70000, "tertinggi": true },
+      { "kategori_id": 5, "nama_kategori": "Hiburan", "total": 0, "tertinggi": false },
+      { "kategori_id": 6, "nama_kategori": "Lainnya", "total": 0, "tertinggi": false }
+    ]
+  }
+}
+```
+
+- Semua kategori selalu dikembalikan, yang belum ada pengeluaran bernilai `total: 0` (batang kosong di grafik).
+- `tertinggi: true` menandai kategori dengan total terbesar (batang merah "Tertinggi"). Jika ada yang sama besar, semuanya ditandai. Jika belum ada pengeluaran sama sekali, tidak ada yang ditandai.
+- Hanya pengeluaran milik pengguna yang login.
+
+| Status | Kondisi |
+|---|---|
+| `400` | `periode` bukan `bulanan`/`harian`, atau `tanggal` tidak valid |
+| `401` | Tidak ada token |
+
+---
+
 # Ringkasan Endpoint yang Sudah Tersedia
 
 | Method | Endpoint | Auth | Keterangan |

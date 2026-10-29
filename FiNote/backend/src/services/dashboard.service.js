@@ -29,4 +29,40 @@ function getSummary(userId, tanggal) {
   };
 }
 
-module.exports = { getSummary };
+
+// Total pengeluaran per kategori untuk grafik dashboard (BE-03.2).
+// Semua kategori ikut tampil (total 0 jika belum ada pengeluaran), sesuai desain grafik.
+// periode: 'bulanan' (default, bulan dari "tanggal") atau 'harian' (hanya "tanggal").
+function getTotalPerKategori(userId, { periode = 'bulanan', tanggal } = {}) {
+  const acuan = tanggal || tanggalHariIni();
+  const bulan = bulanDariTanggal(acuan);
+
+  const dari = periode === 'harian' ? acuan : `${bulan}-01`;
+  const sampai = periode === 'harian' ? acuan : `${bulan}-31`;
+
+  const baris = db
+    .prepare(`
+      SELECT k.kategori_id, k.nama_kategori, COALESCE(SUM(t.jumlah), 0) AS total
+      FROM Kategori k
+      LEFT JOIN Transaksi t
+        ON t.kategori_id = k.kategori_id
+       AND t.user_id = ?
+       AND t.tanggal >= ?
+       AND t.tanggal <= ?
+      GROUP BY k.kategori_id, k.nama_kategori
+      ORDER BY k.kategori_id
+    `)
+    .all(userId, dari, sampai);
+
+  // Kategori dengan total tertinggi diberi tanda (grafik: batang merah "Tertinggi").
+  // Jika belum ada pengeluaran sama sekali, tidak ada yang ditandai.
+  const tertinggi = Math.max(0, ...baris.map((b) => b.total));
+  const categories = baris.map((b) => ({
+    ...b,
+    tertinggi: tertinggi > 0 && b.total === tertinggi,
+  }));
+
+  return { periode, tanggal: acuan, bulan, categories };
+}
+
+module.exports = { getSummary, getTotalPerKategori };
