@@ -24,7 +24,7 @@ export async function getDashboardSummary() {
 // Mengambil pengeluaran per kategori untuk grafik bulan berjalan.
 export async function getDashboardCategorySummary() {
   const res = await request(
-    `/dashboard/category-summary?tanggal=${tanggalLokal()}`,
+    `/dashboard/kategori?tanggal=${tanggalLokal()}`,
     { token: getToken() },
   )
 
