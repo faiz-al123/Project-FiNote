@@ -57,12 +57,12 @@ async function register({ nama, email, password }) {
       token: buatToken(userBaru),
     };
   } catch (err) {
-    // node:sqlite tidak memberi kode khusus, jadi dibedakan lewat isi pesan error
     const pesan = String(err.message || '');
 
     if (pesan.includes('UNIQUE constraint failed: User.nama')) {
       throw new AppError('Nama sudah dipakai.', 409);
     }
+
     if (pesan.includes('UNIQUE constraint failed: User.email')) {
       throw new AppError('Email sudah terdaftar.', 409);
     }
@@ -72,29 +72,22 @@ async function register({ nama, email, password }) {
 }
 
 async function login({ identifier, email, password }) {
-  // identifier adalah input login yang bisa berupa:
-  // 1. email
-  // 2. nama / username
-  //
-  // "email" tetap diterima agar kompatibel dengan
-  // pemanggilan login versi lama.
-
   const loginIdentifier = String(
     identifier ?? email ?? '',
-  )
-    .trim();
+  ).trim();
 
-  const user = userModel.findByIdentifier(
-    loginIdentifier,
-  );
+  const user = userModel.findByIdentifier(loginIdentifier);
 
-  // Pesan dibuat sama untuk:
-  // - akun tidak ditemukan
-  // - password salah
-  if (
-    !user ||
-    !(await bcrypt.compare(password, user.password))
-  ) {
+  // Akun tidak ditemukan: pesan khusus untuk TC-LOGIN-008.
+  if (!user) {
+    throw new AppError(
+      'Username/email tidak terdaftar.',
+      401,
+    );
+  }
+
+  // Akun ditemukan, tetapi password tidak sesuai.
+  if (!(await bcrypt.compare(password, user.password))) {
     throw new AppError(
       'Username/email atau password salah.',
       401,
