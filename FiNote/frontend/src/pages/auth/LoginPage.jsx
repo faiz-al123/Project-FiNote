@@ -3,7 +3,7 @@ import { useState } from 'react'
 import loginImage from '../../assets/login1.png'
 import { login, saveSession } from '../../api/auth.api'
 
-// --- IKON EMAIL ---
+// IKON EMAIL
 function EmailIcon() {
   return (
     <svg
@@ -23,7 +23,7 @@ function EmailIcon() {
   )
 }
 
-// --- IKON PASSWORD ---
+// IKON PASSWORD
 function LockIcon() {
   return (
     <svg
@@ -44,7 +44,7 @@ function LockIcon() {
   )
 }
 
-// --- IKON TAMPILKAN PASSWORD ---
+// IKON TAMPILKAN PASSWORD
 function EyeIcon({ hidden }) {
   if (hidden) {
     return (
@@ -85,7 +85,7 @@ function EyeIcon({ hidden }) {
   )
 }
 
-// --- HALAMAN LOGIN ---
+// HALAMAN LOGIN
 function LoginPage({
   onLoginSuccess,
   onRegisterClick,
@@ -99,7 +99,7 @@ function LoginPage({
     password: '',
   })
 
-  // --- INPUT FORM ---
+  // INPUT FORM
   const handleChange = (event) => {
     const { name, value } = event.target
 
@@ -113,10 +113,7 @@ function LoginPage({
     }
   }
 
-  // --- VALIDASI FRONTEND ---
-  // Username/email kosong tetap ditolak di frontend.
-  // Password kosong diteruskan ke backend agar backend
-  // yang mengembalikan pesan validasi melalui API.
+  // VALIDASI FRONTEND
   const validateForm = () => {
     const identifier = formData.identifier.trim()
 
@@ -127,9 +124,10 @@ function LoginPage({
     return ''
   }
 
-  // --- PESAN ERROR LOGIN ---
+  // PESAN ERROR LOGIN
   const getLoginErrorMessage = (error) => {
-    // 400: validasi input dari backend.
+
+    // 400: Validasi input dari backend
     if (error?.status === 400) {
       return (
         error?.message ||
@@ -137,17 +135,25 @@ function LoginPage({
       )
     }
 
-    // 401: akun tidak ditemukan atau password salah.
+    // 401: Gunakan pesan asli dari backend.
+    // Username/email tidak terdaftar akan menampilkan:
+    // "Username/email tidak terdaftar."
+    //
+    // Password salah akan menampilkan:
+    // "Username/email atau password salah."
     if (error?.status === 401) {
-      return 'Username/email atau password salah.'
+      return (
+        error?.message ||
+        'Username/email atau password salah.'
+      )
     }
 
-    // 409: konflik data, jika dikembalikan backend.
+    // 409: Konflik data
     if (error?.status === 409) {
       return error.message
     }
 
-    // Kegagalan koneksi atau error lainnya.
+    // Kegagalan koneksi atau error lainnya
     if (!error?.message) {
       return 'Login gagal. Silakan coba kembali.'
     }
@@ -155,7 +161,7 @@ function LoginPage({
     return error.message
   }
 
-  // --- PROSES LOGIN ---
+  // PROSES LOGIN
   const handleSubmit = async (event) => {
     event.preventDefault()
 
@@ -174,22 +180,22 @@ function LoginPage({
     setErrorMessage('')
 
     try {
-      // Request tetap dikirim ketika password kosong.
-      // Backend akan memvalidasi input tersebut.
       const { user, token } = await login({
         identifier: formData.identifier.trim(),
         password: formData.password,
       })
 
-      // Sesi disimpan hanya jika login berhasil.
+      // Simpan sesi jika login berhasil
       saveSession({
         token,
         user,
       })
 
       onLoginSuccess(user)
+
     } catch (error) {
       setErrorMessage(getLoginErrorMessage(error))
+
     } finally {
       setIsLoading(false)
     }
