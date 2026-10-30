@@ -603,6 +603,7 @@ Query params (semua opsional, boleh digabung):
 |---|---|---|
 | `search` | `padang` | Mencari di deskripsi **atau** nama kategori, tidak peka huruf besar/kecil |
 | `kategori_id` | `1` | Hanya transaksi pada kategori tersebut |
+| `nominal` | `15000` | Hanya transaksi dengan nominal sama persis. Harus bilangan bulat lebih dari 0 |
 | `tanggal` | `2026-10-23` | Hanya transaksi pada tanggal tersebut (`YYYY-MM-DD`) |
 | `dari`, `sampai` | `2026-10-01`, `2026-10-31` | Rentang tanggal, batas ikut dihitung. Boleh salah satu saja. Tidak boleh digabung dengan `tanggal` |
 | `page` | `1` | Nomor halaman, default `1` |
@@ -637,11 +638,11 @@ Response `200 OK`:
 }
 ```
 
-Jika tidak ada transaksi yang cocok, tetap `200` dengan `transactions: []`, `total_items: 0`, dan `message` bernilai `Transaksi tidak ditemukan.` (`catatan` bernilai `null` jika transaksi dicatat tanpa deskripsi).
+Jika tidak ada transaksi yang cocok, tetap `200` dengan `transactions: []`, `total_items: 0`, dan `message` bernilai `Data tidak ditemukan.` (`catatan` bernilai `null` jika transaksi dicatat tanpa deskripsi).
 
 | Status | Kondisi |
 |---|---|
-| `400` | Parameter tidak valid (format tanggal, `dari` > `sampai`, `page`/`limit`/`kategori_id` bukan angka positif, dsb.) |
+| `400` | Parameter tidak valid (format tanggal, `dari` > `sampai`, `nominal`/`page`/`limit`/`kategori_id` bukan angka positif, dsb.). `message` selalu `Input tidak valid.`, rincian ada di `data.detail`. Parameter yang dikirim kosong dianggap tidak diisi |
 | `401` | Tidak ada token |
 
 ## 4. Tambah transaksi pengeluaran
@@ -820,6 +821,8 @@ Response `200 OK`:
 ```http
 GET /api/dashboard/kategori
 ```
+
+Alias yang dipakai frontend: `GET /api/dashboard/category-summary` (sama persis).
 
 Header:
 

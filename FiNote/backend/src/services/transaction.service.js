@@ -47,7 +47,7 @@ function createTransaksi(userId, { kategori_id, jumlah, tanggal, catatan }) {
 // Semua nilai dari pengguna masuk lewat parameter (?), tidak pernah disambung
 // ke teks SQL, sehingga aman dari SQL injection.
 function listTransaksi(userId, filters) {
-  const { q, kategori_id, tanggal, dari, sampai, page, limit } = filters;
+  const { q, kategori_id, nominal, tanggal, dari, sampai, page, limit } = filters;
 
   const kondisi = ['t.user_id = ?'];
   const params = [userId];
@@ -62,6 +62,10 @@ function listTransaksi(userId, filters) {
   if (kategori_id) {
     kondisi.push('t.kategori_id = ?');
     params.push(kategori_id);
+  }
+  if (nominal) {
+    kondisi.push('t.jumlah = ?');
+    params.push(nominal);
   }
   if (tanggal) {
     kondisi.push('t.tanggal = ?');

@@ -126,7 +126,7 @@ test('tidak ada yang cocok -> 200, daftar kosong, pesan tidak ditemukan', async 
   assert.strictEqual(json.success, true);
   assert.deepStrictEqual(json.data.transactions, []);
   assert.strictEqual(json.data.pagination.total_items, 0);
-  assert.strictEqual(json.message, 'Transaksi tidak ditemukan.');
+  assert.strictEqual(json.message, 'Data tidak ditemukan.');
 });
 
 test('halaman: limit=2 dibagi 3 halaman', async () => {
@@ -158,6 +158,32 @@ test('SQL injection di search tidak membocorkan data', async () => {
   assert.strictEqual((await riwayat()).json.data.transactions.length, 5); // tabel masih utuh
 });
 
+test('filter nominal: harus sama persis', async () => {
+  const { json } = await riwayat('?nominal=15000');
+  assert.strictEqual(json.data.transactions.length, 1);
+  assert.strictEqual(json.data.transactions[0].catatan, 'ojek online');
+  const { json: j2 } = await riwayat('?nominal=12345');
+  assert.strictEqual(j2.data.transactions.length, 0);
+  assert.strictEqual(j2.message, 'Data tidak ditemukan.');
+  const { json: j3 } = await riwayat(`?nominal=10000&kategori_id=${kategori.Makanan}`);
+  assert.strictEqual(j3.data.transactions.length, 1);
+});
+
+test('nominal bukan bilangan bulat positif -> 400 "Input tidak valid."', async () => {
+  for (const q of ['?nominal=abc', '?nominal=12.5', '?nominal=-5', '?nominal=0', '?nominal=1e3', '?nominal=10.000']) {
+    const { status, json } = await riwayat(q);
+    assert.strictEqual(status, 400, q);
+    assert.strictEqual(json.message, 'Input tidak valid.');
+    assert.ok(json.data.detail);
+  }
+});
+
+test('parameter kosong dianggap tidak diisi (tampilkan semua)', async () => {
+  const { status, json } = await riwayat('?search=&nominal=&kategori_id=&tanggal=');
+  assert.strictEqual(status, 200);
+  assert.strictEqual(json.data.transactions.length, 5);
+});
+
 test('parameter tidak valid -> 400', async () => {
   for (const q of [
     '?tanggal=kemarin',
@@ -175,6 +201,7 @@ test('parameter tidak valid -> 400', async () => {
     const { status, json } = await riwayat(q);
     assert.strictEqual(status, 400, q);
     assert.strictEqual(json.success, false);
+    assert.strictEqual(json.message, 'Input tidak valid.');
   }
 });
 
