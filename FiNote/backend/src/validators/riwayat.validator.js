@@ -15,11 +15,11 @@ function bilanganBulatPositif(nilai) {
 }
 
 function validateRiwayatQuery(query) {
-  const { search, kategori_id, tanggal, dari, sampai, page, limit } = query;
+  const { search, kategori_id, nominal, tanggal, dari, sampai, page, limit } = query;
   const filters = {};
 
   // Parameter yang dikirim dobel (?q=a&q=b) menjadi array -> tolak
-  for (const [nama, nilai] of Object.entries({ search, kategori_id, tanggal, dari, sampai, page, limit })) {
+  for (const [nama, nilai] of Object.entries({ search, kategori_id, nominal, tanggal, dari, sampai, page, limit })) {
     if (Array.isArray(nilai) || (nilai !== undefined && typeof nilai !== 'string')) {
       return { error: `Parameter ${nama} tidak valid.` };
     }
@@ -30,6 +30,12 @@ function validateRiwayatQuery(query) {
   if (!kosong(kategori_id)) {
     if (!bilanganBulatPositif(kategori_id)) return { error: 'Kategori tidak valid.' };
     filters.kategori_id = Number(kategori_id);
+  }
+
+  // Nominal: hanya bilangan bulat positif (BE-05: error selain input INTEGER)
+  if (!kosong(nominal)) {
+    if (!bilanganBulatPositif(nominal)) return { error: 'Nominal harus berupa bilangan bulat lebih dari 0.' };
+    filters.nominal = Number(nominal);
   }
 
   for (const [nama, nilai] of [['tanggal', tanggal], ['dari', dari], ['sampai', sampai]]) {

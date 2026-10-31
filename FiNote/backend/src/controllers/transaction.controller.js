@@ -16,7 +16,8 @@ function list(req, res, next) {
   try {
     const { error, filters } = validateRiwayatQuery(req.query);
     if (error) {
-      return gagal(res, 400, error);
+      // Pesan sesuai kartu BE-05 (Skenario 3); rincian kesalahan ada di data.detail
+      return gagal(res, 400, 'Input tidak valid.', { detail: error });
     }
 
     const hasil = transactionService.listTransaksi(req.user.user_id, filters);
@@ -24,7 +25,7 @@ function list(req, res, next) {
     // Tidak ada yang cocok: tetap 200 dengan daftar kosong
     const pesan =
       hasil.pagination.total_items === 0
-        ? 'Transaksi tidak ditemukan.'
+        ? 'Data tidak ditemukan.'
         : 'Riwayat transaksi berhasil diambil.';
 
     return sukses(res, 200, pesan, hasil);
