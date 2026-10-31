@@ -150,17 +150,13 @@ function DashboardPage({ user, onLogout, onNavigate }) {
   }
 
   const handleMenuClick = (menuId) => {
-    if (menuId === 'dashboard') {
-      setActiveMenu('dashboard')
-      return
-    }
-
-    if (menuId === 'transaksi') {
-      onNavigate?.('transaksi')
-      return
-    }
-
-    setActiveMenu(menuId)
+    if (
+      menuId === 'dashboard' ||
+    menuId === 'transaksi' ||
+    menuId === 'riwayat'
+    ) {
+      onNavigate?.(menuId)
+     }
   }
 
   return (

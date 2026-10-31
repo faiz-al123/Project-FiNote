@@ -11,26 +11,25 @@ import {
 import './TransactionsPage.css'
 import '../dashboard/DashboardPage.css'
 
+
 const CATEGORY_DEFAULTS = [
-  { id: 'makanan', label: 'Makanan', icon: 'food' },
-  { id: 'transportasi', label: 'Transportasi', icon: 'transport' },
   { id: 'belanja', label: 'Belanja', icon: 'shopping' },
-  { id: 'tagihan', label: 'Tagihan', icon: 'bill' },
   { id: 'hiburan', label: 'Hiburan', icon: 'game' },
+  { id: 'lainnya', label: 'Lainnya', icon: 'category' },
+  { id: 'makanan', label: 'Makanan', icon: 'food' },
+  { id: 'tagihan', label: 'Tagihan', icon: 'bill' },
+  { id: 'transportasi', label: 'Transportasi', icon: 'transport' },
 ]
 
-function getCategoriesFromResponse(result) {
-  const candidates = [
-    result?.data?.categories,
-    result?.data?.kategori,
-    result?.data?.kategoris,
-    result?.categories,
-    result?.kategori,
-    result?.data,
-  ]
+const CATEGORY_ORDER = [
+  'belanja',
+  'hiburan',
+  'lainnya',
+  'makanan',
+  'tagihan',
+  'transportasi',
+]
 
-  return candidates.find(Array.isArray) || []
-}
 
 function getCategoryId(category) {
   return (
@@ -241,8 +240,22 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
         const rows = getCategoriesFromResponse(result)
 
         const formatted = rows
-          .map(formatCategory)
-          .filter((item) => item.id != null && item.label)
+        .map(formatCategory)
+        .filter((item) => item.id != null && item.label)
+        .sort((a, b) => {
+          const indexA = CATEGORY_ORDER.indexOf(
+            a.label.toLowerCase()
+          )
+
+          const indexB = CATEGORY_ORDER.indexOf(
+            b.label.toLowerCase()
+          )
+
+          return (
+            (indexA === -1 ? 999 : indexA) -
+            (indexB === -1 ? 999 : indexB)
+          )
+        })
 
         if (!cancelled) {
           setCategories(formatted)
@@ -493,8 +506,9 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
               }
               onClick={() => {
                 if (
-                  item.id === 'dashboard' ||
-                  item.id === 'transaksi'
+                   item.id === 'dashboard' ||
+                   item.id === 'transaksi' ||
+                   item.id === 'riwayat'
                 ) {
                   onNavigate?.(item.id)
                 }

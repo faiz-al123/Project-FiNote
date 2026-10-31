@@ -5,6 +5,7 @@ import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPageWithSkeleton'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import TransactionsPage from './pages/transactions/TransactionsPage'
+import HistoryPage from './pages/history/HistoryPage'
 
 import {
   clearSession,
@@ -75,7 +76,8 @@ function App() {
   const handleNavigate = (destination) => {
     if (
       destination === 'dashboard' ||
-      destination === 'transaksi'
+      destination === 'transaksi' ||
+      destination === 'riwayat'
     ) {
       setPage(destination)
     }
@@ -106,6 +108,16 @@ function App() {
   if (page === 'transaksi') {
     return (
       <TransactionsPage
+        user={user}
+        onLogout={handleLogout}
+        onNavigate={handleNavigate}
+      />
+    )
+  }
+
+  if (page === 'riwayat') {
+    return (
+      <HistoryPage
         user={user}
         onLogout={handleLogout}
         onNavigate={handleNavigate}
