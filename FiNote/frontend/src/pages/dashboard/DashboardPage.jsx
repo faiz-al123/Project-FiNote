@@ -1,7 +1,8 @@
 
 import { useEffect, useState } from 'react'
 import Logo from '../../assets/Logo.png'
-import Bell from '../../assets/dashboard-assets/Bell.png'
+import BellRinging from '../../assets/dashboard-assets/BellRinging.png'
+import CalendarDots from '../../assets/dashboard-assets/CalendarDots.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
 import {
   getDashboardSummary,
@@ -9,6 +10,15 @@ import {
 } from '../../api/dashboard.api'
 import { formatRupiah } from '../../utils/format'
 import './DashboardPage.css'
+
+// 5 kategori yang ditampilkan pada grafik sesuai desain UI/UX.
+const KATEGORI_GRAFIK = [
+  'Makanan',
+  'Transportasi',
+  'Belanja',
+  'Tagihan',
+  'Hiburan',
+]
 
 function DashboardPage({ user, onLogout, onNavigate }) {
   const [activeMenu, setActiveMenu] = useState('dashboard')
@@ -85,9 +95,26 @@ function DashboardPage({ user, onLogout, onNavigate }) {
     user?.name ||
     'Pengguna'
 
+  // Grafik selalu menampilkan 5 kategori sesuai desain UI/UX.
+  // Nilainya diambil dari API; jika data belum ada, nilainya 0.
+  // Kategori "Lainnya" tidak ditampilkan di grafik.
+  const kategoriGrafik = KATEGORI_GRAFIK.map((nama) => {
+    const data = categories.find(
+      (item) =>
+        String(item.nama_kategori).trim().toLowerCase() ===
+        nama.toLowerCase(),
+    )
+
+    return {
+      kategori_id: data?.kategori_id ?? nama,
+      nama_kategori: data?.nama_kategori ?? nama,
+      total: Number(data?.total) || 0,
+    }
+  })
+
   const nilaiTerbesar = Math.max(
     1,
-    ...categories.map((item) => Number(item.total) || 0),
+    ...kategoriGrafik.map((item) => Number(item.total) || 0),
   )
 
   const menuItems = [
@@ -226,26 +253,32 @@ function DashboardPage({ user, onLogout, onNavigate }) {
       </aside>
 
       <div className="dashboard-workspace">
-        <main className="dashboard-main">
-          <header className="dashboard-header">
+        <header className="dashboard-header">
+          <div className="dashboard-header-left">
+            <span className="dashboard-header-calendar">
+              <img src={CalendarDots} alt="" />
+            </span>
+
             <div className="dashboard-heading">
-              <h1>Halo, sahabat Finote !</h1>
+              <h1>Halo, sahabat FInote !</h1>
               <p>
                 Pantau uang keluar kamu dengan mudah hari ini.
               </p>
             </div>
+          </div>
 
-            <button
-              type="button"
-              className="dashboard-notification"
-              aria-label="Buka pengingat"
-              title="Pengingat"
-              onClick={() => handleMenuClick('pengingat')}
-            >
-              <img src={Bell} alt="" />
-            </button>
-          </header>
+          <button
+            type="button"
+            className="dashboard-notification"
+            aria-label="Buka pengingat"
+            title="Pengingat"
+            onClick={() => handleMenuClick('pengingat')}
+          >
+            <img src={BellRinging} alt="" />
+          </button>
+        </header>
 
+        <main className="dashboard-main">
           {error && (
             <div
               className="dashboard-error-message"
@@ -308,59 +341,45 @@ function DashboardPage({ user, onLogout, onNavigate }) {
 
             <div className="dashboard-chart-divider" />
 
-            {loading ? (
-              <div className="dashboard-chart-state">
-                Memuat grafik...
-              </div>
-            ) : error ? (
-              <div className="dashboard-chart-state">
-                Grafik belum dapat ditampilkan.
-              </div>
-            ) : categories.length === 0 ? (
-              <div className="dashboard-chart-state">
-                Belum ada data kategori.
-              </div>
-            ) : (
-              <div className="dashboard-chart">
-                {categories.map((category) => {
-                  const total = Number(category.total) || 0
-                  const tinggi =
-                    total > 0
-                      ? Math.max((total / nilaiTerbesar) * 100, 4)
-                      : 0
+            <div className="dashboard-chart">
+              {kategoriGrafik.map((category) => {
+                const total = category.total
+                const tinggi =
+                  total > 0
+                    ? Math.max((total / nilaiTerbesar) * 100, 15)
+                    : 0
 
-                  const tertinggi =
-                    total > 0 && total === nilaiTerbesar
+                const tertinggi =
+                  total > 0 && total === nilaiTerbesar
 
-                  return (
-                    <div
-                      className={`dashboard-chart-column ${
-                        tertinggi ? 'highest' : ''
-                      }`}
-                      key={category.kategori_id}
-                    >
-                      <span className="dashboard-chart-value">
-                        {total > 0
-                          ? new Intl.NumberFormat('id-ID').format(total)
-                          : ''}
-                      </span>
+                return (
+                  <div
+                    className={`dashboard-chart-column ${
+                      tertinggi ? 'highest' : ''
+                    }`}
+                    key={category.kategori_id}
+                  >
+                    <span className="dashboard-chart-value">
+                      {total > 0
+                        ? new Intl.NumberFormat('id-ID').format(total)
+                        : ''}
+                    </span>
 
-                      <div className="dashboard-chart-bar-area">
-                        <div
-                          className="dashboard-chart-bar"
-                          style={{ height: `${tinggi}%` }}
-                          title={`${category.nama_kategori}: ${formatRupiah(total)}`}
-                        />
-                      </div>
-
-                      <span className="dashboard-chart-label">
-                        {category.nama_kategori}
-                      </span>
+                    <div className="dashboard-chart-bar-area">
+                      <div
+                        className="dashboard-chart-bar"
+                        style={{ height: `${tinggi}%` }}
+                        title={`${category.nama_kategori}: ${formatRupiah(total)}`}
+                      />
                     </div>
-                  )
-                })}
-              </div>
-            )}
+
+                    <span className="dashboard-chart-label">
+                      {category.nama_kategori}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
 
             <div className="dashboard-chart-baseline" />
 

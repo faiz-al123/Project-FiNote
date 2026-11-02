@@ -188,7 +188,7 @@
 .dashboard-main {
   flex: 1;
   min-width: 0;
-  padding: 24px 32px 36px;
+  padding: 36px 32px 36px;
 }
 
 /* Header */
@@ -199,7 +199,35 @@
   justify-content: space-between;
   gap: 24px;
   width: 100%;
-  margin-bottom: 36px;
+  min-height: 100px;
+  padding: 16px 48px 16px 60px;
+  border-bottom: 1px solid #333;
+  background: #f0f3ff;
+}
+
+.dashboard-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.dashboard-header-calendar {
+  display: flex;
+  flex: 0 0 50px;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: #dfe6fb;
+}
+
+.dashboard-header-calendar img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 .dashboard-heading h1 {
@@ -211,7 +239,7 @@
 }
 
 .dashboard-heading p {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: #626d85;
   font-size: 15px;
 }
@@ -396,7 +424,7 @@
 
 .dashboard-chart-bar {
   width: min(46px, 65%);
-  min-height: 0;
+  min-height: 1px;
   border-radius: 9px 9px 0 0;
   background: #4385f5;
   transition: height 0.3s ease;
@@ -551,7 +579,17 @@
   .dashboard-header {
     align-items: flex-start;
     gap: 12px;
-    margin-bottom: 24px;
+    padding: 16px 14px;
+  }
+
+  .dashboard-header-left {
+    gap: 10px;
+  }
+
+  .dashboard-header-calendar {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
   }
 
   .dashboard-heading h1 {
