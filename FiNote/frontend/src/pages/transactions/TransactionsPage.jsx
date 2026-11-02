@@ -495,7 +495,8 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
               onClick={() => {
                 if (
                   item.id === 'dashboard' ||
-                  item.id === 'transaksi'
+                  item.id === 'transaksi' ||
+                  item.id === 'riwayat'
                 ) {
                   onNavigate?.(item.id)
                 }

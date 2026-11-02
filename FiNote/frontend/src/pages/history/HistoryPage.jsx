@@ -1,10 +1,8 @@
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import Logo from '../../assets/Logo.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
-
-import HistoryHeader from '../../assets/riwayat-assets/Frame 65.png'
 
 import {
   getAllTransactionHistory,
@@ -177,6 +175,8 @@ function HistoryPage({ user, onLogout, onNavigate }) {
   const [categories, setCategories] = useState([])
   const [transactions, setTransactions] = useState([])
 
+  const dateInputRef = useRef(null)
+
   const [dateFilter, setDateFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [minimumAmount, setMinimumAmount] = useState('')
@@ -304,6 +304,23 @@ function HistoryPage({ user, onLogout, onNavigate }) {
       )
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Membuka kalender saat ikon kalender (kiri) diklik.
+  function openDatePicker() {
+    const input = dateInputRef.current
+
+    if (!input) return
+
+    try {
+      if (typeof input.showPicker === 'function') {
+        input.showPicker()
+      } else {
+        input.focus()
+      }
+    } catch {
+      input.focus()
     }
   }
 
@@ -471,10 +488,8 @@ function HistoryPage({ user, onLogout, onNavigate }) {
 
           {/* HEADER */}
           <header className="history-header">
-            <img
-              src={HistoryHeader}
-              alt="Riwayat transaksi sobat Finote - kelola keuangan, raih masa depan"
-            />
+            <h1>Riwayat transaksi sobat FInote</h1>
+            <p>kelola keuangan, raih masa depan</p>
           </header>
 
           {/* FILTER */}
@@ -483,9 +498,20 @@ function HistoryPage({ user, onLogout, onNavigate }) {
             onSubmit={handleFilter}
           >
             <div className="history-date-field">
-              <CalendarIcon />
+              <button
+                type="button"
+                className="history-date-icon-button"
+                onClick={openDatePicker}
+                aria-label="Buka kalender"
+              >
+                <CalendarIcon />
+              </button>
 
-              <div className="history-date-input-wrapper">
+              <div
+                className={`history-date-input-wrapper ${
+                  dateFilter ? 'has-value' : ''
+                }`}
+              >
                 {!dateFilter && (
                   <span className="history-date-placeholder">
                     pilih tanggal
@@ -493,11 +519,31 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                 )}
 
                 <input
+                  ref={dateInputRef}
                   type="date"
                   value={dateFilter}
                   onChange={(event) => {
                     setDateFilter(event.target.value)
                     setFilterError('')
+                  }}
+                  onClick={(event) => {
+                    try {
+                      event.currentTarget.showPicker?.()
+                    } catch {
+                      // showPicker bisa ditolak browser, abaikan saja.
+                    }
+                  }}
+                  onKeyDown={(event) => {
+                    // Saat kosong, teks dd/mm/yyyy disembunyikan,
+                    // jadi pengetikan manual dialihkan ke kalender.
+                    if (
+                      !dateFilter &&
+                      event.key !== 'Tab' &&
+                      event.key !== 'Escape'
+                    ) {
+                      event.preventDefault()
+                      openDatePicker()
+                    }
                   }}
                   aria-label="Pilih tanggal transaksi"
                 />
