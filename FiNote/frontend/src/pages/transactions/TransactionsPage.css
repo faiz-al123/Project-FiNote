@@ -583,3 +583,62 @@
 .transaction-feedback {
   min-height: 43px;
 }
+
+
+/* ========================================
+   PEMILIH TANGGAL - IKON DI SEBELAH KIRI
+======================================== */
+
+.transaction-date-input {
+  position: relative;
+  gap: 12px;
+  cursor: default;
+}
+
+.transaction-date-icon-button {
+  display: flex;
+  flex: 0 0 20px;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #555b6d;
+  cursor: pointer;
+}
+
+.transaction-date-icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.transaction-date-icon-button:focus-visible {
+  outline: 2px solid #4285ed;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.transaction-date-display {
+  flex: 1;
+  color: #747b88;
+  font-family: inherit;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.transaction-date-display.has-date {
+  color: #102039;
+}
+
+.transaction-date-native-input {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}

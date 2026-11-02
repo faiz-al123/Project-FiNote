@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Logo from '../../assets/Logo.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
 
@@ -11,25 +11,26 @@ import {
 import './TransactionsPage.css'
 import '../dashboard/DashboardPage.css'
 
-
 const CATEGORY_DEFAULTS = [
-  { id: 'belanja', label: 'Belanja', icon: 'shopping' },
-  { id: 'hiburan', label: 'Hiburan', icon: 'game' },
-  { id: 'lainnya', label: 'Lainnya', icon: 'category' },
   { id: 'makanan', label: 'Makanan', icon: 'food' },
-  { id: 'tagihan', label: 'Tagihan', icon: 'bill' },
   { id: 'transportasi', label: 'Transportasi', icon: 'transport' },
+  { id: 'belanja', label: 'Belanja', icon: 'shopping' },
+  { id: 'tagihan', label: 'Tagihan', icon: 'bill' },
+  { id: 'hiburan', label: 'Hiburan', icon: 'game' },
 ]
 
-const CATEGORY_ORDER = [
-  'belanja',
-  'hiburan',
-  'lainnya',
-  'makanan',
-  'tagihan',
-  'transportasi',
-]
+function getCategoriesFromResponse(result) {
+  const candidates = [
+    result?.data?.categories,
+    result?.data?.kategori,
+    result?.data?.kategoris,
+    result?.categories,
+    result?.kategori,
+    result?.data,
+  ]
 
+  return candidates.find(Array.isArray) || []
+}
 
 function getCategoryId(category) {
   return (
@@ -212,6 +213,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
   const [nominal, setNominal] = useState('')
   const [kategori, setKategori] = useState('')
   const [tanggal, setTanggal] = useState('')
+  const tanggalInputRef = useRef(null)
   const [catatan, setCatatan] = useState('')
 
   const [categories, setCategories] = useState([])
@@ -240,22 +242,8 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
         const rows = getCategoriesFromResponse(result)
 
         const formatted = rows
-        .map(formatCategory)
-        .filter((item) => item.id != null && item.label)
-        .sort((a, b) => {
-          const indexA = CATEGORY_ORDER.indexOf(
-            a.label.toLowerCase()
-          )
-
-          const indexB = CATEGORY_ORDER.indexOf(
-            b.label.toLowerCase()
-          )
-
-          return (
-            (indexA === -1 ? 999 : indexA) -
-            (indexB === -1 ? 999 : indexB)
-          )
-        })
+          .map(formatCategory)
+          .filter((item) => item.id != null && item.label)
 
         if (!cancelled) {
           setCategories(formatted)
@@ -506,9 +494,8 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
               }
               onClick={() => {
                 if (
-                   item.id === 'dashboard' ||
-                   item.id === 'transaksi' ||
-                   item.id === 'riwayat'
+                  item.id === 'dashboard' ||
+                  item.id === 'transaksi'
                 ) {
                   onNavigate?.(item.id)
                 }
@@ -679,17 +666,47 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                 </label>
               </div>
 
-              <div className="transaction-standard-input">
-                <CalendarIcon />
+              <div className="transaction-standard-input transaction-date-input">
+                <button
+                  type="button"
+                  className="transaction-date-icon-button"
+                  aria-label="Pilih tanggal transaksi"
+                  onClick={() => {
+                    const dateInput = tanggalInputRef.current
+
+                    if (!dateInput) return
+
+                    if (typeof dateInput.showPicker === 'function') {
+                      dateInput.showPicker()
+                    } else {
+                      dateInput.click()
+                    }
+                  }}
+                >
+                  <CalendarIcon />
+                </button>
+
+                <span className={`transaction-date-display ${tanggal ? 'has-date' : ''}`}>
+                  {tanggal
+                    ? new Date(`${tanggal}T00:00:00`).toLocaleDateString('id-ID', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })
+                    : 'tanggal'}
+                </span>
 
                 <input
+                  ref={tanggalInputRef}
                   id="transaction-date"
+                  className="transaction-date-native-input"
                   type="date"
                   value={tanggal}
                   onChange={(event) => {
                     setTanggal(event.target.value)
                     setNotice(null)
                   }}
+                  aria-label="Tanggal transaksi"
                 />
               </div>
 
