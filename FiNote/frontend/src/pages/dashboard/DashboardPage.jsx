@@ -11,13 +11,14 @@ import {
 import { formatRupiah } from '../../utils/format'
 import './DashboardPage.css'
 
-// 5 kategori yang ditampilkan pada grafik sesuai desain UI/UX.
+// 6 kategori yang ditampilkan pada grafik.
 const KATEGORI_GRAFIK = [
   'Makanan',
   'Transportasi',
   'Belanja',
   'Tagihan',
   'Hiburan',
+  'Lainnya',
 ]
 
 function DashboardPage({ user, onLogout, onNavigate }) {
@@ -95,9 +96,8 @@ function DashboardPage({ user, onLogout, onNavigate }) {
     user?.name ||
     'Pengguna'
 
-  // Grafik selalu menampilkan 5 kategori sesuai desain UI/UX.
+  // Grafik selalu menampilkan 6 kategori (termasuk "Lainnya").
   // Nilainya diambil dari API; jika data belum ada, nilainya 0.
-  // Kategori "Lainnya" tidak ditampilkan di grafik.
   const kategoriGrafik = KATEGORI_GRAFIK.map((nama) => {
     const data = categories.find(
       (item) =>

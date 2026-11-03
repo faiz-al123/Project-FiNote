@@ -2,6 +2,12 @@
 import { useEffect, useRef, useState } from 'react'
 import Logo from '../../assets/Logo.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
+import ForkKnifeIcon from '../../assets/transaksi-assets/ForkKnife.png'
+import TransportIcon from '../../assets/transaksi-assets/mdi_transportation.png'
+import ShoppingCartIcon from '../../assets/transaksi-assets/ShoppingCartSimple.png'
+import BillIcon from '../../assets/transaksi-assets/majesticons_paper-fold-text-line.png'
+import GameControllerIcon from '../../assets/transaksi-assets/GameController.png'
+import CalendarDotsIcon from '../../assets/transaksi-assets/CalendarDots.png'
 
 import {
   createTransaction,
@@ -64,80 +70,32 @@ function formatCategory(category) {
   }
 }
 
-function CategoryIcon({ type }) {
-  const common = {
-    width: 21,
-    height: 21,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.8,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    'aria-hidden': true,
-  }
-
-  switch (type) {
-    case 'food':
-      return (
-        <svg {...common}>
-          <path d="M4 3v7a3 3 0 0 0 6 0V3" />
-          <path d="M7 3v18M4 7h6" />
-          <path d="M16 3v18M16 3c4 2 4 7 0 9" />
-        </svg>
-      )
-
-    case 'transport':
-      return (
-        <svg {...common}>
-          <path d="M3 13V8l2-4h12l3 4v5" />
-          <path d="M3 13h17v5H3z" />
-          <circle cx="6.5" cy="18" r="1.5" />
-          <circle cx="16.5" cy="18" r="1.5" />
-          <path d="M7 8h9" />
-        </svg>
-      )
-
-    case 'shopping':
-      return (
-        <svg {...common}>
-          <path d="M3 4h2l2.5 12h11L21 8H6" />
-          <circle cx="9" cy="20" r="1" />
-          <circle cx="17" cy="20" r="1" />
-        </svg>
-      )
-
-    case 'bill':
-      return (
-        <svg {...common}>
-          <rect x="4" y="3" width="16" height="18" rx="2" />
-          <path d="M8 8h8M8 12h8M8 16h5" />
-        </svg>
-      )
-
-    case 'game':
-      return (
-        <svg {...common}>
-          <path d="M6 7h12a4 4 0 0 1 4 4l-1 6a2 2 0 0 1-3 1l-3-3H9l-3 3a2 2 0 0 1-3-1l-1-6a4 4 0 0 1 4-4Z" />
-          <path d="M7 10v4M5 12h4M16 11h.01M19 13h.01" />
-        </svg>
-      )
-
-    default:
-      return (
-        <svg {...common}>
-          <rect x="3" y="4" width="18" height="16" rx="2" />
-          <path d="M3 9h18M8 14h3" />
-        </svg>
-      )
-  }
+const CATEGORY_ICON_IMAGES = {
+  food: ForkKnifeIcon,
+  transport: TransportIcon,
+  shopping: ShoppingCartIcon,
+  bill: BillIcon,
+  game: GameControllerIcon,
 }
 
-function CalendarIcon() {
+function CategoryIcon({ type }) {
+  const imageSource = CATEGORY_ICON_IMAGES[type]
+
+  if (imageSource) {
+    return (
+      <img
+        src={imageSource}
+        alt=""
+        className="transaction-category-icon"
+        aria-hidden="true"
+      />
+    )
+  }
+
+  // Ikon cadangan untuk kategori tambahan yang tidak ada di desain.
   return (
     <svg
-      width="18"
-      height="18"
+      className="transaction-category-icon"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -146,8 +104,8 @@ function CalendarIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <path d="M16 3v4M8 3v4M3 10h18" />
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M3 9h18M8 14h3" />
     </svg>
   )
 }
@@ -279,6 +237,23 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
     }
   }, [onLogout])
 
+  // Membuka kalender saat ikon atau kolom tanggal diklik.
+  function openDatePicker() {
+    const dateInput = tanggalInputRef.current
+
+    if (!dateInput) return
+
+    try {
+      if (typeof dateInput.showPicker === 'function') {
+        dateInput.showPicker()
+      } else {
+        dateInput.focus()
+      }
+    } catch {
+      dateInput.focus()
+    }
+  }
+
   function handleNominalChange(event) {
     setNominal(event.target.value)
     setFieldErrors((previous) => ({
@@ -317,13 +292,13 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
     const amount = Number(nominal)
 
     if (!nominal.trim()) {
-      errors.nominal = 'Nominal wajib diisi.'
+      errors.nominal = 'Nominal wajib diisi'
     } else if (!Number.isFinite(amount) || amount <= 0) {
-      errors.nominal = 'Nominal harus lebih besar dari 0.'
+      errors.nominal = 'Nominal harus lebih besar dari 0'
     }
 
     if (!kategori) {
-      errors.kategori = 'Kategori wajib dipilih.'
+      errors.kategori = 'Kategori wajib dipilih'
     }
 
     if (Object.keys(errors).length > 0) {
@@ -338,7 +313,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
         type: 'error',
         message:
           missing.length === 2
-            ? 'Nominal dan kategori wajib diisi.'
+            ? 'Nominal dan kategori wajib diisi'
             : missing[0] === 'nominal'
               ? errors.nominal
               : errors.kategori,
@@ -548,7 +523,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
       <div className="dashboard-workspace transaction-workspace">
         <header className="transaction-header">
           <div className="transaction-header-icon">
-            <CalendarIcon />
+            <img src={CalendarDotsIcon} alt="" />
           </div>
 
           <div>
@@ -593,22 +568,8 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                   value={nominal}
                   onChange={handleNominalChange}
                   aria-invalid={Boolean(fieldErrors.nominal)}
-                  aria-describedby={
-                    fieldErrors.nominal
-                      ? 'transaction-amount-error'
-                      : undefined
-                  }
                 />
               </div>
-
-              {fieldErrors.nominal && (
-                <p
-                  id="transaction-amount-error"
-                  className="transaction-inline-error"
-                >
-                  {fieldErrors.nominal}
-                </p>
-              )}
             </section>
 
             <section className="transaction-field">
@@ -653,11 +614,6 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                 </div>
               )}
 
-              {fieldErrors.kategori && (
-                <p className="transaction-inline-error">
-                  {fieldErrors.kategori}
-                </p>
-              )}
             </section>
 
             <section className="transaction-field">
@@ -667,33 +623,36 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                 </label>
               </div>
 
-              <div className="transaction-standard-input transaction-date-input">
+              <div
+                className="transaction-date-input"
+                onClick={openDatePicker}
+              >
                 <button
                   type="button"
                   className="transaction-date-icon-button"
                   aria-label="Pilih tanggal transaksi"
-                  onClick={() => {
-                    const dateInput = tanggalInputRef.current
-
-                    if (!dateInput) return
-
-                    if (typeof dateInput.showPicker === 'function') {
-                      dateInput.showPicker()
-                    } else {
-                      dateInput.click()
-                    }
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    openDatePicker()
                   }}
                 >
-                  <CalendarIcon />
+                  <img src={CalendarDotsIcon} alt="" />
                 </button>
 
-                <span className={`transaction-date-display ${tanggal ? 'has-date' : ''}`}>
+                <span
+                  className={`transaction-date-display ${
+                    tanggal ? 'has-date' : ''
+                  }`}
+                >
                   {tanggal
-                    ? new Date(`${tanggal}T00:00:00`).toLocaleDateString('id-ID', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                      })
+                    ? new Date(`${tanggal}T00:00:00`).toLocaleDateString(
+                        'id-ID',
+                        {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        },
+                      )
                     : 'tanggal'}
                 </span>
 
@@ -703,6 +662,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                   className="transaction-date-native-input"
                   type="date"
                   value={tanggal}
+                  tabIndex={-1}
                   onChange={(event) => {
                     setTanggal(event.target.value)
                     setNotice(null)
@@ -710,10 +670,6 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                   aria-label="Tanggal transaksi"
                 />
               </div>
-
-              <p className="transaction-hint transaction-date-hint">
-                Kosongkan jika menggunakan tanggal hari ini.
-              </p>
             </section>
 
             <section className="transaction-field">
