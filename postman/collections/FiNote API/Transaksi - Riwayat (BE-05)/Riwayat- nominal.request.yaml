@@ -1,0 +1,8 @@
+$kind: http-request
+name: "Riwayat: nominal"
+url: http://localhost:3000/api/transaksi?nominal=10000
+method: GET
+queryParams:
+  nominal: "10000"
+examples: .resources/Riwayat- nominal.resources/examples
+order: 6000

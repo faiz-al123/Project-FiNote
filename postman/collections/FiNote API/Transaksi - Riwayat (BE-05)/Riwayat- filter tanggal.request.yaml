@@ -1,0 +1,8 @@
+$kind: http-request
+name: "Riwayat: filter tanggal"
+url: http://localhost:3000/api/transaksi?tanggal=2026-10-23
+method: GET
+queryParams:
+  tanggal: 2026-10-23
+examples: .resources/Riwayat- filter tanggal.resources/examples
+order: 4000

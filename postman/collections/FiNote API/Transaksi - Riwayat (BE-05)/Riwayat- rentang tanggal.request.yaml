@@ -1,0 +1,9 @@
+$kind: http-request
+name: "Riwayat: rentang tanggal"
+url: http://localhost:3000/api/transaksi?dari=2026-10-01&sampai=2026-10-31
+method: GET
+queryParams:
+  dari: 2026-10-01
+  sampai: 2026-10-31
+examples: .resources/Riwayat- rentang tanggal.resources/examples
+order: 5000

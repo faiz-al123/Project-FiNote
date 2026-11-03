@@ -1,0 +1,57 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/kategori
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "397"
+    ETag: W/"18d-pXkNlX+Sw7Klex8jwwl+1AOBG2M"
+    Date: Tue, 03 Nov 2026 09:00:19 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Daftar kategori berhasil diambil.",
+        "data": {
+          "categories": [
+            {
+              "kategori_id": 4,
+              "nama_kategori": "Belanja"
+            },
+            {
+              "kategori_id": 6,
+              "nama_kategori": "Hiburan"
+            },
+            {
+              "kategori_id": 7,
+              "nama_kategori": "Lainnya"
+            },
+            {
+              "kategori_id": 1,
+              "nama_kategori": "Makan"
+            },
+            {
+              "kategori_id": 2,
+              "nama_kategori": "Makanan"
+            },
+            {
+              "kategori_id": 5,
+              "nama_kategori": "Tagihan"
+            },
+            {
+              "kategori_id": 3,
+              "nama_kategori": "Transportasi"
+            }
+          ]
+        }
+      }
+order: 1000

@@ -1,0 +1,14 @@
+$kind: http-request
+url: http://localhost:3000/api/transaksi
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "kategori_id": 1,
+      "jumlah": "abc"
+    }
+examples: .resources/[Error 400] Nominal bukan angka.resources/examples
+order: 4000

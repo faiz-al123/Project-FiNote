@@ -1,0 +1,5 @@
+$kind: http-request
+url: http://localhost:3000/api/dashboard/summary
+method: GET
+examples: .resources/Summary hari ini & bulan ini.resources/examples
+order: 1000

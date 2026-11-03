@@ -1,0 +1,74 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/dashboard/kategori
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "672"
+    ETag: W/"2a0-tUZJ1QTSvOOCO3yIpkfHSpPINAg"
+    Date: Tue, 03 Nov 2026 09:14:52 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Total pengeluaran per kategori berhasil diambil.",
+        "data": {
+          "periode": "bulanan",
+          "tanggal": "2026-11-03",
+          "bulan": "2026-11",
+          "categories": [
+            {
+              "kategori_id": 1,
+              "nama_kategori": "Makan",
+              "total": 0,
+              "tertinggi": false
+            },
+            {
+              "kategori_id": 2,
+              "nama_kategori": "Makanan",
+              "total": 15000,
+              "tertinggi": true
+            },
+            {
+              "kategori_id": 3,
+              "nama_kategori": "Transportasi",
+              "total": 0,
+              "tertinggi": false
+            },
+            {
+              "kategori_id": 4,
+              "nama_kategori": "Belanja",
+              "total": 0,
+              "tertinggi": false
+            },
+            {
+              "kategori_id": 5,
+              "nama_kategori": "Tagihan",
+              "total": 0,
+              "tertinggi": false
+            },
+            {
+              "kategori_id": 6,
+              "nama_kategori": "Hiburan",
+              "total": 0,
+              "tertinggi": false
+            },
+            {
+              "kategori_id": 7,
+              "nama_kategori": "Lainnya",
+              "total": 0,
+              "tertinggi": false
+            }
+          ]
+        }
+      }
+order: 1000

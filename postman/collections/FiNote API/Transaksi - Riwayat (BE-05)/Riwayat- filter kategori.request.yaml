@@ -1,0 +1,8 @@
+$kind: http-request
+name: "Riwayat: filter kategori"
+url: http://localhost:3000/api/transaksi?kategori_id=1
+method: GET
+queryParams:
+  kategori_id: "1"
+examples: .resources/Riwayat- filter kategori.resources/examples
+order: 3000

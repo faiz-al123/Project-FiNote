@@ -1,0 +1,9 @@
+$kind: http-request
+name: "Riwayat: halaman (limit 2)"
+url: http://localhost:3000/api/transaksi?limit=2&page=1
+method: GET
+queryParams:
+  limit: "2"
+  page: "1"
+examples: .resources/Riwayat- halaman (limit 2).resources/examples
+order: 7000

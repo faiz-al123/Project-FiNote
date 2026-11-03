@@ -1,0 +1,7 @@
+$kind: http-request
+url: http://localhost:3000/api/dashboard/kategori?periode=tahunan
+method: GET
+queryParams:
+  periode: tahunan
+examples: .resources/[Error 400] Periode salah.resources/examples
+order: 5000

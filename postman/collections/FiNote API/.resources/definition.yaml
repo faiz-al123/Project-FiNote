@@ -1,0 +1,11 @@
+$kind: collection
+description: Koleksi tes backend FiNote. Jalankan Login dulu, token otomatis tersimpan di variabel {{token}}. Jangan commit token asli ke GitHub.
+variables:
+  base_url: http://localhost:3000/api
+  token: ""
+auth:
+  - id: 4b4c14c3-137a-4d5d-8228-3379caa15cf3
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{token}}"

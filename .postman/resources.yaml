@@ -1,0 +1,13 @@
+# Use this workspace to collaborate
+workspace:
+  id: 78966e31-fd8d-4d41-802c-ca5068ae2d87
+
+cloudResources:
+  collections:
+    ../postman/collections/FiNote API: b601a70b-a02e-47c9-adb6-5a25f2c025b1
+
+# All resources in the `postman/` folder are automatically registered in Local View.
+# Point to additional files outside the `postman/` folder to register them individually. Example:
+#localResources:
+#  collections:
+#    - ../tests/E2E Test Collection/

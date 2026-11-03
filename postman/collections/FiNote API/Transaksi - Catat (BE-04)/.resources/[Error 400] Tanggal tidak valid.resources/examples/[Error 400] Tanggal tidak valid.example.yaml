@@ -1,0 +1,36 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/transaksi
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "kategori_id": 1,
+        "jumlah": 1000,
+        "tanggal": "kemarin"
+      }
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "101"
+    ETag: W/"65-B+ViggkbyQ6UU1IJ8T/DBsP64X4"
+    Date: Tue, 03 Nov 2026 09:05:28 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Format tanggal harus YYYY-MM-DD dan tanggalnya harus valid.",
+        "data": null
+      }
+order: 1000

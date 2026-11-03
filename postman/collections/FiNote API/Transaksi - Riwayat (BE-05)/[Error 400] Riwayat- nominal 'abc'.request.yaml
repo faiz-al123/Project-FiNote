@@ -1,0 +1,8 @@
+$kind: http-request
+name: "[Error 400] Riwayat: nominal 'abc'"
+url: http://localhost:3000/api/transaksi?nominal=abc
+method: GET
+queryParams:
+  nominal: abc
+examples: .resources/[Error 400] Riwayat- nominal 'abc'.resources/examples
+order: 9000

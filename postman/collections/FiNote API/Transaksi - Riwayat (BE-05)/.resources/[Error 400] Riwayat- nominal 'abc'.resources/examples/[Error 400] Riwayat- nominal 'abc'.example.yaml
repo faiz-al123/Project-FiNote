@@ -1,0 +1,31 @@
+$kind: http-example
+name: "[Error 400] Riwayat: nominal 'abc'"
+request:
+  url: http://localhost:3000/api/transaksi?nominal=abc
+  method: GET
+  queryParams:
+    nominal: abc
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "118"
+    ETag: W/"76-Q7CKB0NUQ1Oz49ObmLpRO04NasA"
+    Date: Tue, 03 Nov 2026 09:12:01 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Input tidak valid.",
+        "data": {
+          "detail": "Nominal harus berupa bilangan bulat lebih dari 0."
+        }
+      }
+order: 1000

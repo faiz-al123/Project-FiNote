@@ -1,0 +1,5 @@
+$kind: http-request
+url: http://localhost:3000/api/kategori
+method: GET
+examples: .resources/Daftar kategori.resources/examples
+order: 1000

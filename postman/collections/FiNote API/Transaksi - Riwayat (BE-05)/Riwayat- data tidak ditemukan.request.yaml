@@ -1,0 +1,8 @@
+$kind: http-request
+name: "Riwayat: data tidak ditemukan"
+url: http://localhost:3000/api/transaksi?search=tidakada
+method: GET
+queryParams:
+  search: tidakada
+examples: .resources/Riwayat- data tidak ditemukan.resources/examples
+order: 8000

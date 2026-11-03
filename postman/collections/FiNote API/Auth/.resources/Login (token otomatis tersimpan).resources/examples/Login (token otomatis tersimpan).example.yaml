@@ -1,0 +1,43 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/auth/login
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "email": "contoh@example.com",
+        "password": "passwordAman123"
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "348"
+    ETag: W/"15c-Tg/EFt2zmIvJVr/uBGjx9oz1AKU"
+    Date: Tue, 03 Nov 2026 09:01:43 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Login berhasil.",
+        "data": {
+          "user": {
+            "user_id": 6,
+            "nama": "Contoh",
+            "email": "contoh@example.com",
+            "created_at": "2026-11-03 08:54:08"
+          },
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJlbWFpbCI6ImNvbnRvaEBleGFtcGxlLmNvbSIsImlhdCI6MTc5MzY5NjUwMywiZXhwIjoxNzk0MzAxMzAzfQ.HHDQD3apwMttFz7ikMNy6URS8McPAtALzINV_7oDXvM"
+        }
+      }
+order: 1000

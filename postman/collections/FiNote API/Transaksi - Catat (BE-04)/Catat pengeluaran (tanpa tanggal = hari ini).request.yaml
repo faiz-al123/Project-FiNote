@@ -1,0 +1,14 @@
+$kind: http-request
+url: http://localhost:3000/api/transaksi
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "kategori_id": 2,
+      "jumlah": 15000
+    }
+examples: .resources/Catat pengeluaran (tanpa tanggal = hari ini).resources/examples
+order: 2000

@@ -1,0 +1,8 @@
+$kind: http-request
+name: "Riwayat: cari 'padang'"
+url: http://localhost:3000/api/transaksi?search=padang
+method: GET
+queryParams:
+  search: padang
+examples: .resources/Riwayat- cari 'padang'.resources/examples
+order: 2000

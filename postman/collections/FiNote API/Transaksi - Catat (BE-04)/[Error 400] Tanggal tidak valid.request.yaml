@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:3000/api/transaksi
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "kategori_id": 1,
+      "jumlah": 1000,
+      "tanggal": "kemarin"
+    }
+examples: .resources/[Error 400] Tanggal tidak valid.resources/examples
+order: 6000

@@ -1,0 +1,8 @@
+$kind: http-request
+url: http://localhost:3000/api/dashboard/kategori?periode=harian&tanggal=2026-10-23
+method: GET
+queryParams:
+  periode: harian
+  tanggal: 2026-10-23
+examples: .resources/Grafik per kategori (harian).resources/examples
+order: 4000

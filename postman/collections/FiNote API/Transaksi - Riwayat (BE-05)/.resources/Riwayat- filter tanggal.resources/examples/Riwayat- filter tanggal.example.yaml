@@ -1,0 +1,46 @@
+$kind: http-example
+name: "Riwayat: filter tanggal"
+request:
+  url: http://localhost:3000/api/transaksi?tanggal=2026-10-23
+  method: GET
+  queryParams:
+    tanggal: 2026-10-23
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "278"
+    ETag: W/"116-nZYl+ihL2osTquIvrzR3KyeDg2k"
+    Date: Tue, 03 Nov 2026 09:08:52 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Riwayat transaksi berhasil diambil.",
+        "data": {
+          "transactions": [
+            {
+              "transaksi_id": 7,
+              "tanggal": "2026-10-23",
+              "catatan": "nasi padang",
+              "kategori_id": 1,
+              "nama_kategori": "Makan",
+              "jumlah": 10000
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 15,
+            "total_items": 1,
+            "total_pages": 1
+          }
+        }
+      }
+order: 1000

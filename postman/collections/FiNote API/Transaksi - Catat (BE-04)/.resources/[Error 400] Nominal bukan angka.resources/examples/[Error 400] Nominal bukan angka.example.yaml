@@ -1,0 +1,35 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/transaksi
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "kategori_id": 1,
+        "jumlah": "abc"
+      }
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "82"
+    ETag: W/"52-fRV7dWAGAR1jLl3cDzEd3iWd2XM"
+    Date: Tue, 03 Nov 2026 09:04:18 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Nominal harus berupa angka lebih dari 0.",
+        "data": null
+      }
+order: 1000

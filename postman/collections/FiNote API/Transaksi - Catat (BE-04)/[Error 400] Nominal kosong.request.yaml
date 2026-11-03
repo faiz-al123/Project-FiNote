@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:3000/api/transaksi
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "kategori_id": 1
+    }
+examples: .resources/[Error 400] Nominal kosong.resources/examples
+order: 3000

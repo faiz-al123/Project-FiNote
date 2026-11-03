@@ -1,0 +1,55 @@
+$kind: http-example
+name: "Riwayat: halaman (limit 2)"
+request:
+  url: http://localhost:3000/api/transaksi?limit=2&page=1
+  method: GET
+  queryParams:
+    limit: "2"
+    page: "1"
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "391"
+    ETag: W/"187-i9vOqJkZHh8piEplJmPsoCw+FsY"
+    Date: Tue, 03 Nov 2026 09:10:30 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Riwayat transaksi berhasil diambil.",
+        "data": {
+          "transactions": [
+            {
+              "transaksi_id": 8,
+              "tanggal": "2026-11-03",
+              "catatan": null,
+              "kategori_id": 2,
+              "nama_kategori": "Makanan",
+              "jumlah": 15000
+            },
+            {
+              "transaksi_id": 7,
+              "tanggal": "2026-10-23",
+              "catatan": "nasi padang",
+              "kategori_id": 1,
+              "nama_kategori": "Makan",
+              "jumlah": 10000
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 2,
+            "total_items": 2,
+            "total_pages": 1
+          }
+        }
+      }
+order: 1000

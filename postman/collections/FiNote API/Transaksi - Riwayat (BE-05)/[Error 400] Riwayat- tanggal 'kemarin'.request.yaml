@@ -1,0 +1,8 @@
+$kind: http-request
+name: "[Error 400] Riwayat: tanggal 'kemarin'"
+url: http://localhost:3000/api/transaksi?tanggal=kemarin
+method: GET
+queryParams:
+  tanggal: kemarin
+examples: .resources/[Error 400] Riwayat- tanggal 'kemarin'.resources/examples
+order: 10000
