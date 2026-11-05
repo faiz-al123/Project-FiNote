@@ -99,3 +99,29 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_user_nama_unik ON User(nama COLLATE NOCASE
 -- Kategori bawaan sistem (BE-04)
 INSERT OR IGNORE INTO Kategori (nama_kategori) VALUES
   ('Makanan'), ('Transportasi'), ('Belanja'), ('Tagihan'), ('Hiburan'), ('Lainnya');
+
+-- ------------------------------------------------------------
+-- PENGINGAT (BE-06, BE-07)
+-- Daftar pengingat pengeluaran atau tagihan milik pengguna.
+-- 4 kolom input: nama_pengingat, jenis, jumlah, tanggal_jatuh_tempo.
+-- Pengingat yang ditandai selesai tidak dihapus, hanya berubah status
+-- (dan tercatat di selesai_pada) sehingga masuk hitungan "selesai".
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Pengingat (
+  pengingat_id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id              INTEGER NOT NULL,
+  nama_pengingat       TEXT NOT NULL,
+  jenis                TEXT NOT NULL CHECK (jenis IN ('pengeluaran', 'tagihan')),
+  jumlah               REAL NOT NULL CHECK (jumlah > 0),
+  tanggal_jatuh_tempo  TEXT NOT NULL,
+  status               TEXT NOT NULL DEFAULT 'belum_selesai'
+                       CHECK (status IN ('belum_selesai', 'selesai')),
+  selesai_pada         TEXT,
+  created_at           TEXT NOT NULL DEFAULT (datetime('now')),
+
+  FOREIGN KEY (user_id)
+    REFERENCES User(user_id)
+    ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_pengingat_user_tanggal ON Pengingat(user_id, tanggal_jatuh_tempo);

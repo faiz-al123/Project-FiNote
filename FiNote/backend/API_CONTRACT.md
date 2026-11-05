@@ -870,6 +870,85 @@ Response `200 OK`:
 
 ---
 
+## 11. Daftar pengingat (BE-06)
+
+Dipakai halaman **Pengingat**: tabel daftar pengingat pengeluaran/tagihan dalam satu bulan, ditambah ringkasan (total, terdekat, selesai, terlewat).
+
+```http
+GET /api/pengingat
+```
+
+Header:
+
+```http
+Authorization: Bearer <token>
+```
+
+Query params opsional:
+
+| Param | Contoh | Keterangan |
+|---|---|---|
+| `bulan` | `2026-11` | Bulan yang ditampilkan (`YYYY-MM`). Jika kosong, memakai bulan dari tanggal acuan |
+| `tanggal` | `2026-11-10` | Tanggal acuan "hari ini" (`YYYY-MM-DD`) untuk menentukan terdekat dan terlewat. Jika kosong, memakai hari ini di server. Frontend sebaiknya mengirim tanggal lokal browser |
+
+Response `200 OK`:
+
+```json
+{
+  "success": true,
+  "message": "Daftar pengingat berhasil diambil.",
+  "data": {
+    "bulan": "2026-11",
+    "tanggal_acuan": "2026-11-10",
+    "ringkasan": {
+      "total": 4,
+      "selesai": 1,
+      "belum_selesai": 3,
+      "terlewat": 1,
+      "terdekat": {
+        "pengingat_id": 3,
+        "nama_pengingat": "Internet",
+        "jenis": "tagihan",
+        "jumlah": 300000,
+        "tanggal_jatuh_tempo": "2026-11-12",
+        "status": "belum_selesai",
+        "selesai_pada": null,
+        "terlewat": false
+      }
+    },
+    "reminders": [
+      {
+        "pengingat_id": 1,
+        "nama_pengingat": "Listrik",
+        "jenis": "tagihan",
+        "jumlah": 350000,
+        "tanggal_jatuh_tempo": "2026-11-03",
+        "status": "belum_selesai",
+        "selesai_pada": null,
+        "terlewat": true
+      }
+    ]
+  }
+}
+```
+
+Definisi:
+
+- `jenis`: `pengeluaran` atau `tagihan`.
+- `status`: `belum_selesai` atau `selesai`.
+- `terlewat`: pengingat belum selesai yang jatuh temponya sebelum `tanggal_acuan`.
+- `terdekat`: pengingat belum selesai pertama yang jatuh tempo pada atau setelah `tanggal_acuan` dalam bulan itu, atau `null` jika tidak ada.
+- Daftar `reminders` diurutkan dari tanggal jatuh tempo paling awal dan hanya berisi pengingat milik pengguna yang login.
+
+Jika bulan itu tidak punya pengingat: tetap `200`, `reminders: []`, `total: 0`, `terdekat: null`, dan `message` bernilai `Data tidak ditemukan.`
+
+| Status | Kondisi |
+|---|---|
+| `400` | `bulan` atau `tanggal` tidak valid. `message` selalu `Input tidak valid.`, rincian ada di `data.detail` |
+| `401` | Tidak ada token |
+
+---
+
 # Ringkasan Endpoint yang Sudah Tersedia
 
 | Method | Endpoint | Auth | Keterangan |
