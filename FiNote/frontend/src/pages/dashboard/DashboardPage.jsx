@@ -260,7 +260,7 @@ function DashboardPage({ user, onLogout, onNavigate }) {
             </span>
 
             <div className="dashboard-heading">
-              <h1>Halo, sahabat FInote !</h1>
+              <h1>Halo, sahabat Finote !</h1>
               <p>
                 Pantau uang keluar kamu dengan mudah hari ini.
               </p>
