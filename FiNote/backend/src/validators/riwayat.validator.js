@@ -15,11 +15,11 @@ function bilanganBulatPositif(nilai) {
 }
 
 function validateRiwayatQuery(query) {
-  const { search, kategori_id, nominal, nominal_min, nominal_max, tanggal, dari, sampai, page, limit } = query;
+  const { search, kategori_id, nominal, tanggal, dari, sampai, page, limit } = query;
   const filters = {};
 
   // Parameter yang dikirim dobel (?q=a&q=b) menjadi array -> tolak
-  for (const [nama, nilai] of Object.entries({ search, kategori_id, nominal, nominal_min, nominal_max, tanggal, dari, sampai, page, limit })) {
+  for (const [nama, nilai] of Object.entries({ search, kategori_id, nominal, tanggal, dari, sampai, page, limit })) {
     if (Array.isArray(nilai) || (nilai !== undefined && typeof nilai !== 'string')) {
       return { error: `Parameter ${nama} tidak valid.` };
     }
@@ -36,21 +36,6 @@ function validateRiwayatQuery(query) {
   if (!kosong(nominal)) {
     if (!bilanganBulatPositif(nominal)) return { error: 'Nominal harus berupa bilangan bulat lebih dari 0.' };
     filters.nominal = Number(nominal);
-  }
-
-  // Rentang nominal: nominal_min dan/atau nominal_max (bilangan bulat > 0)
-  for (const [nama, nilai] of [['nominal_min', nominal_min], ['nominal_max', nominal_max]]) {
-    if (kosong(nilai)) continue;
-    if (!bilanganBulatPositif(nilai)) {
-      return { error: `${nama} harus berupa bilangan bulat lebih dari 0.` };
-    }
-    filters[nama] = Number(nilai);
-  }
-  if (filters.nominal && (filters.nominal_min || filters.nominal_max)) {
-    return { error: 'Gunakan nominal saja, atau nominal_min/nominal_max, jangan keduanya.' };
-  }
-  if (filters.nominal_min && filters.nominal_max && filters.nominal_min > filters.nominal_max) {
-    return { error: 'nominal_min tidak boleh lebih besar dari nominal_max.' };
   }
 
   for (const [nama, nilai] of [['tanggal', tanggal], ['dari', dari], ['sampai', sampai]]) {

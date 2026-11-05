@@ -11,7 +11,7 @@ router.use(authenticate);
 // GET /api/categories
 router.get('/', categoryController.listCategories);
 
-// Catatan: kategori bersifat tetap (diisi lewat seed di database/schema.sql),
-// jadi tidak ada endpoint untuk menambah kategori.
+// POST /api/categories
+// Body JSON: { "nama_kategori": "Transportasi" }
 
 module.exports = router;

@@ -1,5 +1,5 @@
 $kind: collection
-description: Koleksi tes backend FiNote.
+description: Koleksi tes backend FiNote. Jalankan Login dulu, token otomatis tersimpan di variabel {{token}}. Jangan commit token asli ke GitHub.
 variables:
   base_url: http://localhost:3000/api
   token: ""
