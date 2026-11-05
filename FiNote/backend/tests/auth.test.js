@@ -112,17 +112,17 @@ test('login ditolak kalau password salah', async () => {
   });
   assert.ok(error);
   assert.strictEqual(error.statusCode, 401);
-  assert.strictEqual(error.message, 'Email atau password salah.');
+  assert.strictEqual(error.message, 'Username/email atau password salah.');
 });
 
-test('login ditolak kalau email tidak terdaftar (pesan harus sama dengan password salah)', async () => {
+test('login ditolak kalau email tidak terdaftar (pesan khusus TC-LOGIN-008)', async () => {
   const { error } = await panggilController(authController.login, {
     email: 'tidakada@example.com',
     password: 'apapun123',
   });
   assert.ok(error);
   assert.strictEqual(error.statusCode, 401);
-  assert.strictEqual(error.message, 'Email atau password salah.');
+  assert.strictEqual(error.message, 'Username/email tidak terdaftar.');
 });
 
 test('login berhasil memakai nama (username) sebagai identifier', async () => {

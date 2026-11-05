@@ -1,3 +1,6 @@
 node_modules/
 .env
-database/finote.db
+# Database SQLite (berisi data akun, jangan di-commit)
+*.db
+*.db-wal
+*.db-shm
