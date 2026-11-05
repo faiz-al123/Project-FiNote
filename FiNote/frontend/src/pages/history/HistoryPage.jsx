@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import Logo from '../../assets/Logo.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
@@ -50,19 +50,15 @@ function getCategoryName(category) {
 function formatDate(dateString) {
   if (!dateString) return '-'
 
-  const parts = String(dateString).split('-')
+  const parts = String(dateString).slice(0, 10).split('-')
 
-  if (parts.length !== 3) {
-    return dateString
-  }
+  if (parts.length !== 3) return dateString
 
   return `${parts[2]}-${parts[1]}-${parts[0]}`
 }
 
 function parseNominal(value) {
-  if (value === '' || value == null) {
-    return null
-  }
+  if (value === '' || value == null) return null
 
   const cleaned = String(value).replace(/[^\d]/g, '')
 
@@ -131,8 +127,13 @@ function ChevronDownIcon() {
 
 function DashboardIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
       <circle cx="7" cy="7" r="3" />
       <circle cx="17" cy="7" r="3" />
       <circle cx="7" cy="17" r="3" />
@@ -143,8 +144,13 @@ function DashboardIcon() {
 
 function TransactionIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
       <rect x="3.5" y="3.5" width="17" height="17" rx="1" />
       <path d="M12 7v10M7 12h10" />
     </svg>
@@ -153,8 +159,13 @@ function TransactionIcon() {
 
 function HistoryIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
       <path d="M6 3h9l5 5v13H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
       <path d="M15 3v5h5" />
     </svg>
@@ -163,8 +174,13 @@ function HistoryIcon() {
 
 function ReminderIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
       <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
       <path d="M10 21h4M5 5 7 3M19 3l2 2" />
     </svg>
@@ -175,12 +191,14 @@ function HistoryPage({ user, onLogout, onNavigate }) {
   const [categories, setCategories] = useState([])
   const [transactions, setTransactions] = useState([])
 
-  const dateInputRef = useRef(null)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
 
-  const [dateFilter, setDateFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [minimumAmount, setMinimumAmount] = useState('')
   const [maximumAmount, setMaximumAmount] = useState('')
+
+  const [appliedFilters, setAppliedFilters] = useState(null)
 
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -194,7 +212,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
     user?.name ||
     'Pengguna'
 
-  // Memuat kategori dan riwayat awal.
+  // Memuat kategori dan seluruh riwayat transaksi.
   useEffect(() => {
     let cancelled = false
 
@@ -248,8 +266,8 @@ function HistoryPage({ user, onLogout, onNavigate }) {
     }
   }, [onLogout])
 
-  // Menerapkan filter tanggal, kategori, dan rentang nominal.
-  async function handleFilter(event) {
+  // Memeriksa dan menerapkan filter.
+  function handleFilter(event) {
     event.preventDefault()
 
     const minimum = parseNominal(minimumAmount)
@@ -266,98 +284,90 @@ function HistoryPage({ user, onLogout, onNavigate }) {
       return
     }
 
-    setFilterError('')
-    setError('')
-    setLoading(true)
-    setCurrentPage(1)
-
-    try {
-      const rows = await getAllTransactionHistory({
-        tanggal: dateFilter || undefined,
-        kategori_id: categoryFilter || undefined,
-      })
-
-      const filteredRows = rows.filter((item) => {
-        const amount = Number(item.jumlah) || 0
-
-        if (minimum !== null && amount < minimum) {
-          return false
-        }
-
-        if (maximum !== null && amount > maximum) {
-          return false
-        }
-
-        return true
-      })
-
-      setTransactions(filteredRows)
-    } catch (err) {
-      if (err.status === 401) {
-        onLogout?.()
-        return
-      }
-
-      setError(
-        err.message ||
-        'Filter riwayat gagal diterapkan.',
+    if (startDate && endDate && startDate > endDate) {
+      setFilterError(
+        'Tanggal awal tidak boleh lebih besar dari tanggal akhir.',
       )
-    } finally {
-      setLoading(false)
+      return
     }
+
+    setFilterError('')
+
+    setAppliedFilters({
+      startDate,
+      endDate,
+      category: categoryFilter,
+      minimum,
+      maximum,
+    })
+
+    setCurrentPage(1)
   }
 
-  // Membuka kalender saat ikon kalender (kiri) diklik.
-  function openDatePicker() {
-    const input = dateInputRef.current
-
-    if (!input) return
-
-    try {
-      if (typeof input.showPicker === 'function') {
-        input.showPicker()
-      } else {
-        input.focus()
-      }
-    } catch {
-      input.focus()
-    }
-  }
-
+  // Mengembalikan filter ke kondisi awal.
   function handleResetFilter() {
-    setDateFilter('')
+    setStartDate('')
+    setEndDate('')
     setCategoryFilter('')
     setMinimumAmount('')
     setMaximumAmount('')
+    setAppliedFilters(null)
     setFilterError('')
-    setError('')
     setCurrentPage(1)
-
-    async function reloadHistory() {
-      setLoading(true)
-
-      try {
-        const rows = await getAllTransactionHistory()
-        setTransactions(rows)
-      } catch (err) {
-        if (err.status === 401) {
-          onLogout?.()
-          return
-        }
-
-        setError(
-          err.message ||
-          'Riwayat transaksi gagal dimuat.',
-        )
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    reloadHistory()
   }
 
-  // Pagination lokal, 15 baris setiap halaman.
+  // Memeriksa apakah transaksi sesuai dengan filter.
+  function isTransactionMatched(item) {
+    if (!appliedFilters) return true
+
+    const date = String(item.tanggal || '').slice(0, 10)
+    const amount = Number(item.jumlah) || 0
+
+    const categoryId = String(
+      item.kategori_id ??
+      item.category_id ??
+      '',
+    )
+
+    if (
+      appliedFilters.startDate &&
+      date < appliedFilters.startDate
+    ) {
+      return false
+    }
+
+    if (
+      appliedFilters.endDate &&
+      date > appliedFilters.endDate
+    ) {
+      return false
+    }
+
+    if (
+      appliedFilters.category &&
+      categoryId !== String(appliedFilters.category)
+    ) {
+      return false
+    }
+
+    if (
+      appliedFilters.minimum !== null &&
+      amount < appliedFilters.minimum
+    ) {
+      return false
+    }
+
+    if (
+      appliedFilters.maximum !== null &&
+      amount > appliedFilters.maximum
+    ) {
+      return false
+    }
+
+    return true
+  }
+
+  // Pagination.
   const totalPages = Math.max(
     1,
     Math.ceil(transactions.length / ROWS_PER_PAGE),
@@ -488,8 +498,14 @@ function HistoryPage({ user, onLogout, onNavigate }) {
 
           {/* HEADER */}
           <header className="history-header">
-            <h1>Riwayat transaksi sobat FInote</h1>
-            <p>kelola keuangan, raih masa depan</p>
+            <span className="history-header-icon">
+              <CalendarIcon />
+            </span>
+
+            <div>
+              <h1>Riwayat transaksi</h1>
+              <p>lihat semua catatan pengeluaranmu disini</p>
+            </div>
           </header>
 
           {/* FILTER */}
@@ -497,86 +513,81 @@ function HistoryPage({ user, onLogout, onNavigate }) {
             className="history-filter-panel"
             onSubmit={handleFilter}
           >
-            <div className="history-date-field">
-              <button
-                type="button"
-                className="history-date-icon-button"
-                onClick={openDatePicker}
-                aria-label="Buka kalender"
-              >
-                <CalendarIcon />
-              </button>
 
-              <div
-                className={`history-date-input-wrapper ${
-                  dateFilter ? 'has-value' : ''
-                }`}
-              >
-                {!dateFilter && (
-                  <span className="history-date-placeholder">
-                    pilih tanggal
-                  </span>
-                )}
+            {/* RENTANG TANGGAL */}
+            <div className="history-filter-field history-date-range-field">
+              <label className="history-field-label">
+                Rentang tanggal
+              </label>
 
-                <input
-                  ref={dateInputRef}
-                  type="date"
-                  value={dateFilter}
-                  onChange={(event) => {
-                    setDateFilter(event.target.value)
-                    setFilterError('')
-                  }}
-                  onClick={(event) => {
-                    try {
-                      event.currentTarget.showPicker?.()
-                    } catch {
-                      // showPicker bisa ditolak browser, abaikan saja.
-                    }
-                  }}
-                  onKeyDown={(event) => {
-                    // Saat kosong, teks dd/mm/yyyy disembunyikan,
-                    // jadi pengetikan manual dialihkan ke kalender.
-                    if (
-                      !dateFilter &&
-                      event.key !== 'Tab' &&
-                      event.key !== 'Escape'
-                    ) {
-                      event.preventDefault()
-                      openDatePicker()
-                    }
-                  }}
-                  aria-label="Pilih tanggal transaksi"
-                />
+              <div className="history-date-range-controls">
+                <div className="history-date-control">
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(event) => {
+                      setStartDate(event.target.value)
+                      setFilterError('')
+                    }}
+                    aria-label="Tanggal awal"
+                  />
+                </div>
+
+                <span className="history-date-arrow">
+                  →
+                </span>
+
+                <div className="history-date-control">
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(event) => {
+                      setEndDate(event.target.value)
+                      setFilterError('')
+                    }}
+                    aria-label="Tanggal akhir"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="history-category-field">
-              <select
-                value={categoryFilter}
-                onChange={(event) => {
-                  setCategoryFilter(event.target.value)
-                  setFilterError('')
-                }}
-                aria-label="Pilih kategori"
-              >
-                <option value="">pilih kategori</option>
+            {/* FILTER KATEGORI */}
+            <div className="history-filter-field">
+              <label className="history-field-label">
+                pilih kategori
+              </label>
 
-                {categories.map((category) => (
-                  <option
-                    key={category.id}
-                    value={category.id}
-                  >
-                    {category.name}
+              <div className="history-category-field">
+                <select
+                  value={categoryFilter}
+                  onChange={(event) => {
+                    setCategoryFilter(event.target.value)
+                    setFilterError('')
+                  }}
+                  aria-label="Pilih kategori"
+                >
+                  <option value="">
+                    pilih kategori
                   </option>
-                ))}
-              </select>
 
-              <ChevronDownIcon />
+                  {categories.map((category) => (
+                    <option
+                      key={category.id}
+                      value={category.id}
+                    >
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+
+                <ChevronDownIcon />
+              </div>
             </div>
 
+            {/* RENTANG NOMINAL */}
             <div className="history-range-fields">
               <label className="history-range-label">
-                pilih rentang
+                rentang nominal <span>*</span>
               </label>
 
               <div className="history-range-inputs">
@@ -594,7 +605,9 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                   }}
                 />
 
-                <span className="history-range-separator">-</span>
+                <span className="history-range-separator">
+                  -
+                </span>
 
                 <input
                   type="text"
@@ -612,16 +625,19 @@ function HistoryPage({ user, onLogout, onNavigate }) {
               </div>
             </div>
 
+            {/* TOMBOL FILTER */}
             <button
               type="submit"
               className="history-filter-button"
               disabled={loading}
             >
               <SearchIcon />
-              <span>filter</span>
+              <span>Filter</span>
             </button>
 
-            {(dateFilter ||
+            {/* TOMBOL RESET */}
+            {(startDate ||
+              endDate ||
               categoryFilter ||
               minimumAmount ||
               maximumAmount) && (
@@ -636,6 +652,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
             )}
           </form>
 
+          {/* PESAN ERROR */}
           {filterError && (
             <div className="history-error" role="alert">
               {filterError}
@@ -648,7 +665,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
             </div>
           )}
 
-          {/* TABEL */}
+          {/* TABEL RIWAYAT */}
           <section className="history-table-section">
             <div className="history-table-scroll">
               <table className="history-table">
@@ -674,7 +691,14 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                     </tr>
                   ) : visibleTransactions.length > 0 ? (
                     visibleTransactions.map((item, index) => (
-                      <tr key={item.transaksi_id}>
+                      <tr
+                        key={item.transaksi_id}
+                        className={
+                          isTransactionMatched(item)
+                            ? ''
+                            : 'history-row-dimmed'
+                        }
+                      >
                         <td className="history-number-column">
                           {(currentPage - 1) * ROWS_PER_PAGE +
                             index +
@@ -764,6 +788,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
               {transactions.length} transaksi
             </p>
           )}
+
         </main>
       </div>
     </div>
