@@ -66,33 +66,12 @@ CREATE TABLE IF NOT EXISTS Budget (
 );
 
 -- ------------------------------------------------------------
--- TAGIHAN
--- Catatan tagihan yang harus dibayar (status masih tentatif
--- lingkupnya - lihat catatan klarifikasi di charter)
--- ------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Tagihan (
-    tagihan_id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id             INTEGER NOT NULL,
-    nama_tagihan        TEXT NOT NULL,
-    jumlah              REAL NOT NULL CHECK (jumlah > 0),
-    tanggal_jatuh_tempo TEXT NOT NULL,
-    status              TEXT NOT NULL
-                        DEFAULT 'belum_dibayar'
-                        CHECK (status IN ('belum_dibayar', 'sudah_dibayar')),
-
-    FOREIGN KEY (user_id)
-        REFERENCES User(user_id)
-        ON DELETE CASCADE
-);
-
--- ------------------------------------------------------------
 -- INDEX - untuk query dashboard/laporan yang sering difilter
 -- per user, per tanggal, per kategori
 -- ------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_transaksi_user_tanggal ON Transaksi(user_id, tanggal);
 CREATE INDEX IF NOT EXISTS idx_transaksi_kategori ON Transaksi(kategori_id);
 CREATE INDEX IF NOT EXISTS idx_budget_user_periode ON Budget(user_id, periode);
-CREATE INDEX IF NOT EXISTS idx_tagihan_user_status ON Tagihan(user_id, status);
 -- Nama (dipakai sebagai username) tidak boleh kembar, huruf besar/kecil dianggap sama
 CREATE UNIQUE INDEX IF NOT EXISTS idx_user_nama_unik ON User(nama COLLATE NOCASE);
 
@@ -107,6 +86,9 @@ INSERT OR IGNORE INTO Kategori (nama_kategori) VALUES
 -- Pengingat yang ditandai selesai tidak dihapus, hanya berubah status
 -- (dan tercatat di selesai_pada) sehingga masuk hitungan "selesai".
 -- ------------------------------------------------------------
+-- Tabel lama bernama Tagihan diganti oleh tabel ini (tidak pernah dipakai kode).
+DROP TABLE IF EXISTS Tagihan;
+
 CREATE TABLE IF NOT EXISTS Pengingat (
   pengingat_id         INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id              INTEGER NOT NULL,

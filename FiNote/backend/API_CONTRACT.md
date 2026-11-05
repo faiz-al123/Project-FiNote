@@ -514,11 +514,11 @@ Schema database juga sudah memiliki:
 - `Kategori`
 - `Transaksi`
 - `Budget`
-- `Tagihan`
+- `Pengingat` (sebelumnya bernama `Tagihan`)
 
-Namun tabel-tabel tersebut **belum memiliki endpoint API pada implementasi saat ini**.
+Tabel `Budget` **belum memiliki endpoint API pada implementasi saat ini**. `Pengingat` baru memiliki endpoint daftar (BE-06).
 
-Route untuk transaksi, kategori, budget, dan tagihan baru akan ditambahkan setelah controller/service masing-masing selesai dikerjakan.
+Route untuk budget dan pengelolaan pengingat (tambah, ubah, hapus) akan ditambahkan setelah controller/service masing-masing selesai dikerjakan.
 
 ---
 
