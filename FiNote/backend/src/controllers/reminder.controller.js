@@ -2,7 +2,8 @@ const reminderService = require('../services/reminder.service');
 const { sukses, gagal } = require('../utils/response');
 const { validateDaftarPengingatQuery } = require('../validators/reminder.validator');
 
-// GET /api/pengingat?bulan=YYYY-MM&tanggal=YYYY-MM-DD (keduanya opsional)
+// GET /api/pengingat?bulan=YYYY-MM&tanggal=YYYY-MM-DD&filter=semua|terdekat|terlewat|selesai&search=kata
+// (semua parameter opsional)
 function list(req, res, next) {
   try {
     const { error, filters } = validateDaftarPengingatQuery(req.query);
@@ -12,9 +13,9 @@ function list(req, res, next) {
 
     const hasil = reminderService.getDaftarPengingat(req.user.user_id, filters);
 
-    // Tidak ada pengingat pada bulan itu: tetap 200 dengan daftar kosong
+    // Tidak ada pengingat yang cocok: tetap 200 dengan daftar kosong
     const pesan =
-      hasil.ringkasan.total === 0
+      hasil.reminders.length === 0
         ? 'Data tidak ditemukan.'
         : 'Daftar pengingat berhasil diambil.';
 

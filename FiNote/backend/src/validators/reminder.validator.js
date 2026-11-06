@@ -3,6 +3,9 @@
 
 const { tanggalValid } = require('../utils/dateHelper');
 
+const FILTER_VALID = ['semua', 'terdekat', 'terlewat', 'selesai'];
+const SEARCH_MAKS = 100;
+
 function kosong(nilai) {
   return nilai === undefined || String(nilai).trim() === '';
 }
@@ -15,10 +18,10 @@ function bulanValid(teks) {
 }
 
 function validateDaftarPengingatQuery(query) {
-  const { bulan, tanggal } = query;
-  const filters = {};
+  const { bulan, tanggal, filter, search } = query;
+  const filters = { filter: 'semua' };
 
-  for (const [nama, nilai] of Object.entries({ bulan, tanggal })) {
+  for (const [nama, nilai] of Object.entries({ bulan, tanggal, filter, search })) {
     if (Array.isArray(nilai) || (nilai !== undefined && typeof nilai !== 'string')) {
       return { error: `Parameter ${nama} tidak valid.` };
     }
@@ -38,7 +41,21 @@ function validateDaftarPengingatQuery(query) {
     filters.tanggal = tanggal.trim();
   }
 
+  if (!kosong(filter)) {
+    if (!FILTER_VALID.includes(filter.trim())) {
+      return { error: `Filter harus salah satu dari: ${FILTER_VALID.join(', ')}.` };
+    }
+    filters.filter = filter.trim();
+  }
+
+  if (!kosong(search)) {
+    if (search.trim().length > SEARCH_MAKS) {
+      return { error: `Kata pencarian maksimal ${SEARCH_MAKS} karakter.` };
+    }
+    filters.search = search.trim();
+  }
+
   return { filters };
 }
 
-module.exports = { validateDaftarPengingatQuery, bulanValid };
+module.exports = { validateDaftarPengingatQuery, bulanValid, FILTER_VALID };

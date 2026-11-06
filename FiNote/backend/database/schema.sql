@@ -82,28 +82,32 @@ INSERT OR IGNORE INTO Kategori (nama_kategori) VALUES
 -- ------------------------------------------------------------
 -- PENGINGAT (BE-06, BE-07)
 -- Daftar pengingat pengeluaran atau tagihan milik pengguna.
--- 4 kolom input: nama_pengingat, jenis, jumlah, tanggal_jatuh_tempo.
--- Pengingat yang ditandai selesai tidak dihapus, hanya berubah status
--- (dan tercatat di selesai_pada) sehingga masuk hitungan "selesai".
+-- 4 kolom input (sesuai tabel di halaman Pengingat): deskripsi, kategori, nominal, tanggal.
+-- Deskripsi wajib diisi. Pengingat yang ditandai selesai tidak dihapus, hanya
+-- berubah status (dan tercatat di selesai_pada) sehingga masuk hitungan "selesai".
 -- ------------------------------------------------------------
 -- Tabel lama bernama Tagihan diganti oleh tabel ini (tidak pernah dipakai kode).
 DROP TABLE IF EXISTS Tagihan;
 
 CREATE TABLE IF NOT EXISTS Pengingat (
-  pengingat_id         INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id              INTEGER NOT NULL,
-  nama_pengingat       TEXT NOT NULL,
-  jenis                TEXT NOT NULL CHECK (jenis IN ('pengeluaran', 'tagihan')),
-  jumlah               REAL NOT NULL CHECK (jumlah > 0),
-  tanggal_jatuh_tempo  TEXT NOT NULL,
-  status               TEXT NOT NULL DEFAULT 'belum_selesai'
-                       CHECK (status IN ('belum_selesai', 'selesai')),
-  selesai_pada         TEXT,
-  created_at           TEXT NOT NULL DEFAULT (datetime('now')),
+  pengingat_id  INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id       INTEGER NOT NULL,
+  deskripsi     TEXT NOT NULL CHECK (length(trim(deskripsi)) > 0),
+  kategori_id   INTEGER NOT NULL,
+  jumlah        REAL NOT NULL CHECK (jumlah > 0),
+  tanggal       TEXT NOT NULL,
+  status        TEXT NOT NULL DEFAULT 'belum_selesai'
+                CHECK (status IN ('belum_selesai', 'selesai')),
+  selesai_pada  TEXT,
+  created_at    TEXT NOT NULL DEFAULT (datetime('now')),
 
   FOREIGN KEY (user_id)
     REFERENCES User(user_id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+
+  FOREIGN KEY (kategori_id)
+    REFERENCES Kategori(kategori_id)
+    ON DELETE RESTRICT
 );
 
-CREATE INDEX IF NOT EXISTS idx_pengingat_user_tanggal ON Pengingat(user_id, tanggal_jatuh_tempo);
+CREATE INDEX IF NOT EXISTS idx_pengingat_user_tanggal ON Pengingat(user_id, tanggal);
