@@ -5,6 +5,9 @@ request:
   method: GET
   queryParams:
     kategori_id: "1"
+  body:
+    type: json
+    content: ""
 response:
   statusCode: 200
   statusText: OK

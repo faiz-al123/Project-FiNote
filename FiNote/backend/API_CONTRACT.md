@@ -514,11 +514,11 @@ Schema database juga sudah memiliki:
 - `Kategori`
 - `Transaksi`
 - `Budget`
-- `Tagihan`
+- `Pengingat` (sebelumnya bernama `Tagihan`)
 
-Namun tabel-tabel tersebut **belum memiliki endpoint API pada implementasi saat ini**.
+Tabel `Budget` **belum memiliki endpoint API pada implementasi saat ini**. `Pengingat` baru memiliki endpoint daftar (BE-06).
 
-Route untuk transaksi, kategori, budget, dan tagihan baru akan ditambahkan setelah controller/service masing-masing selesai dikerjakan.
+Route untuk budget dan pengelolaan pengingat (tambah, ubah, hapus) akan ditambahkan setelah controller/service masing-masing selesai dikerjakan.
 
 ---
 
@@ -867,6 +867,79 @@ Response `200 OK`:
 |---|---|
 | `400` | `periode` bukan `bulanan`/`harian`, atau `tanggal` tidak valid |
 | `401` | Tidak ada token |
+
+---
+
+## 11. Daftar pengingat (BE-06)
+
+Dipakai halaman **Pengingat**: empat kotak ringkasan (Terdekat, Total satu bulan, Selesai, Terlewat) dan tabel dengan kolom Deskripsi, Kategori, Nominal, Tanggal. Di atas tabel ada kotak pencarian dan tombol filter (semua, terdekat, terlewat, selesai).
+
+```http
+GET /api/pengingat
+```
+
+Header:
+
+```http
+Authorization: Bearer <token>
+```
+
+Query params (semua opsional):
+
+| Param | Contoh | Keterangan |
+|---|---|---|
+| `bulan` | `2026-11` | Bulan yang ditampilkan (`YYYY-MM`). Jika kosong, memakai bulan dari tanggal acuan |
+| `tanggal` | `2026-11-10` | Tanggal acuan "hari ini" (`YYYY-MM-DD`) untuk menentukan terdekat dan terlewat. Jika kosong, memakai hari ini di server. Frontend sebaiknya mengirim tanggal lokal browser |
+| `filter` | `terlewat` | `semua` (default), `terdekat`, `terlewat`, atau `selesai`. Hanya menyaring tabel |
+| `search` | `listrik` | Kata kunci pada deskripsi atau nama kategori, tidak peka huruf besar/kecil. Maksimal 100 karakter. Hanya menyaring tabel |
+
+Response `200 OK`:
+
+```json
+{
+  "success": true,
+  "message": "Daftar pengingat berhasil diambil.",
+  "data": {
+    "bulan": "2026-11",
+    "tanggal_acuan": "2026-11-10",
+    "filter": "semua",
+    "search": null,
+    "ringkasan": { "terdekat": 2, "total": 6, "selesai": 1, "terlewat": 1 },
+    "reminders": [
+      {
+        "pengingat_id": 1,
+        "deskripsi": "Bayar listrik",
+        "kategori_id": 4,
+        "nama_kategori": "Tagihan",
+        "jumlah": 350000,
+        "tanggal": "2026-11-03",
+        "status": "belum_selesai",
+        "selesai_pada": null,
+        "terlewat": true,
+        "terdekat": false
+      }
+    ]
+  }
+}
+```
+
+Definisi:
+
+- `status`: `belum_selesai` atau `selesai`.
+- `terlewat`: belum selesai dan `tanggal` sebelum `tanggal_acuan`.
+- `terdekat`: belum selesai dan jatuh tempo kurang dari 3 hari dari `tanggal_acuan` (hari ini, +1, +2 hari). Tepat 3 hari lagi belum dihitung.
+- Empat angka di `ringkasan` selalu dihitung dari **seluruh** pengingat pada bulan itu. `filter` dan `search` hanya menyaring isi `reminders`, tidak mengubah angka ringkasan.
+- `reminders` diurutkan dari tanggal paling awal dan hanya berisi pengingat milik pengguna yang login.
+- Kategori memakai tabel `Kategori` yang sama dengan transaksi.
+
+Jika tidak ada pengingat yang cocok (bulan kosong atau hasil pencarian kosong): tetap `200`, `reminders: []`, dan `message` bernilai `Data tidak ditemukan.`
+
+| Status | Kondisi |
+|---|---|
+| `400` | `bulan`, `tanggal`, `filter`, atau `search` tidak valid. `message` selalu `Input tidak valid.`, rincian ada di `data.detail` |
+| `401` | Tidak ada token |
+
+Tabel `Pengingat` (menggantikan tabel `Tagihan` yang lama): `pengingat_id`, `user_id`, `deskripsi` (wajib diisi), `kategori_id`, `jumlah`, `tanggal`, `status`, `selesai_pada`, `created_at`.
 
 ---
 
