@@ -468,14 +468,15 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                 item.id === 'transaksi' ? 'page' : undefined
               }
               onClick={() => {
-                if (
-                  item.id === 'dashboard' ||
-                  item.id === 'transaksi' ||
-                  item.id === 'riwayat'
-                ) {
-                  onNavigate?.(item.id)
-                }
-              }}
+              if (
+                item.id === 'dashboard' ||
+                item.id === 'transaksi' ||
+                item.id === 'riwayat' ||
+                item.id === 'pengingat'
+              ) {
+                onNavigate?.(item.id)
+              }
+            }}
             >
               <span className="dashboard-menu-icon">
                 {renderMenuIcon(item.icon)}

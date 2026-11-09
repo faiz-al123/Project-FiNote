@@ -176,15 +176,18 @@ function DashboardPage({ user, onLogout, onNavigate }) {
     }
   }
 
+ 
   const handleMenuClick = (menuId) => {
-    if (
-      menuId === 'dashboard' ||
+  if (
+    menuId === 'dashboard' ||
     menuId === 'transaksi' ||
-    menuId === 'riwayat'
-    ) {
-      onNavigate?.(menuId)
-     }
+    menuId === 'riwayat' ||
+    menuId === 'pengingat'
+  ) {
+    onNavigate?.(menuId)
   }
+}
+
 
   return (
     <div className="dashboard-layout">

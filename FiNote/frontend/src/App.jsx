@@ -6,6 +6,7 @@ import RegisterPage from './pages/auth/RegisterPageWithSkeleton'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import TransactionsPage from './pages/transactions/TransactionsPage'
 import HistoryPage from './pages/history/HistoryPage'
+import RemindersPage from './pages/reminders/RemindersPage'
 
 import {
   clearSession,
@@ -36,6 +37,7 @@ function App() {
       .then((currentUser) => {
         if (!cancelled) {
           setUser(currentUser)
+          setPage('dashboard')
         }
       })
       .catch((error) => {
@@ -74,11 +76,14 @@ function App() {
   }, [])
 
   const handleNavigate = (destination) => {
-    if (
-      destination === 'dashboard' ||
-      destination === 'transaksi' ||
-      destination === 'riwayat'
-    ) {
+    const allowedPages = [
+      'dashboard',
+      'transaksi',
+      'riwayat',
+      'pengingat',
+    ]
+
+    if (allowedPages.includes(destination)) {
       setPage(destination)
     }
   }
@@ -118,6 +123,16 @@ function App() {
   if (page === 'riwayat') {
     return (
       <HistoryPage
+        user={user}
+        onLogout={handleLogout}
+        onNavigate={handleNavigate}
+      />
+    )
+  }
+
+  if (page === 'pengingat') {
+    return (
+      <RemindersPage
         user={user}
         onLogout={handleLogout}
         onNavigate={handleNavigate}

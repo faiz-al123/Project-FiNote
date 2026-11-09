@@ -438,12 +438,13 @@ function HistoryPage({ user, onLogout, onNavigate }) {
               }`}
               aria-current={
                 item.id === 'riwayat' ? 'page' : undefined
-              }
+              }  
               onClick={() => {
                 if (
                   item.id === 'dashboard' ||
                   item.id === 'transaksi' ||
-                  item.id === 'riwayat'
+                  item.id === 'riwayat' ||
+                  item.id === 'pengingat'
                 ) {
                   onNavigate?.(item.id)
                 }
