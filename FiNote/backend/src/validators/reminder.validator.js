@@ -58,4 +58,65 @@ function validateDaftarPengingatQuery(query) {
   return { filters };
 }
 
-module.exports = { validateDaftarPengingatQuery, bulanValid, FILTER_VALID };
+
+// ---------------------------------------------------------------
+// Validasi body untuk tambah dan ubah pengingat (BE-07).
+// Keempat kolom wajib diisi: deskripsi, kategori_id, jumlah, tanggal.
+// Mengembalikan teks pesan error, atau null jika valid.
+// ---------------------------------------------------------------
+
+const DESKRIPSI_MAKS = 200;
+
+function validateTulisPengingat(body) {
+  const { deskripsi, kategori_id, jumlah, tanggal } = body;
+
+  // Urutan sesuai kolom di tabel: deskripsi, kategori, nominal, tanggal
+  if (typeof deskripsi !== 'string' || deskripsi.trim() === '') {
+    return 'Deskripsi wajib diisi.';
+  }
+  if (deskripsi.trim().length > DESKRIPSI_MAKS) {
+    return `Deskripsi maksimal ${DESKRIPSI_MAKS} karakter.`;
+  }
+
+  if (kosong(kategori_id)) return 'Kategori wajib dipilih.';
+  if (
+    !['number', 'string'].includes(typeof kategori_id) ||
+    !/^\d+$/.test(String(kategori_id).trim()) ||
+    Number(kategori_id) <= 0
+  ) {
+    return 'Kategori tidak valid.';
+  }
+
+  // Skenario 3 di kartu BE-07: selain angka -> "Nominal harus berupa angka"
+  if (kosong(jumlah)) return 'Nominal wajib diisi.';
+  // Hanya angka atau teks angka biasa (mis. 15000 atau "15000.50").
+  // Array, objek, boolean, serta teks seperti "0x10" atau "1e3" ditolak.
+  const bentukAngka =
+    typeof jumlah === 'number' ||
+    (typeof jumlah === 'string' && /^\d+(\.\d+)?$/.test(jumlah.trim()));
+  const angka = Number(jumlah);
+  if (!bentukAngka || !Number.isFinite(angka)) {
+    return 'Nominal harus berupa angka';
+  }
+  if (angka <= 0) return 'Nominal harus lebih dari 0.';
+
+  if (kosong(tanggal)) return 'Tanggal wajib diisi.';
+  if (typeof tanggal !== 'string' || !tanggalValid(tanggal.trim())) {
+    return 'Format tanggal harus YYYY-MM-DD dan tanggalnya harus valid.';
+  }
+
+  return null;
+}
+
+// id pengingat dari alamat (/pengingat/:id) harus bilangan bulat positif
+function idPengingatValid(id) {
+  return /^\d+$/.test(String(id)) && Number(id) > 0;
+}
+
+module.exports = {
+  validateDaftarPengingatQuery,
+  validateTulisPengingat,
+  idPengingatValid,
+  bulanValid,
+  FILTER_VALID,
+};

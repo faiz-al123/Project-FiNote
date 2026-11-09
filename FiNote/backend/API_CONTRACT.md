@@ -943,6 +943,94 @@ Tabel `Pengingat` (menggantikan tabel `Tagihan` yang lama): `pengingat_id`, `use
 
 ---
 
+## 12. Kelola pengingat: tambah, ubah, hapus, tandai selesai (BE-07)
+
+Semua endpoint memerlukan header `Authorization: Bearer <token>` dan hanya bekerja pada pengingat milik pengguna yang login. Pengingat milik pengguna lain diperlakukan seperti tidak ada (`404`).
+
+### Tambah pengingat
+
+```http
+POST /api/pengingat
+```
+
+Body (semua kolom wajib diisi):
+
+```json
+{
+  "deskripsi": "Bayar listrik",
+  "kategori_id": 4,
+  "jumlah": 350000,
+  "tanggal": "2026-11-20"
+}
+```
+
+Response `201 Created`:
+
+```json
+{
+  "success": true,
+  "message": "Berhasil disimpan",
+  "data": {
+    "reminder": {
+      "pengingat_id": 7,
+      "deskripsi": "Bayar listrik",
+      "kategori_id": 4,
+      "nama_kategori": "Tagihan",
+      "jumlah": 350000,
+      "tanggal": "2026-11-20",
+      "status": "belum_selesai",
+      "selesai_pada": null
+    }
+  }
+}
+```
+
+### Ubah pengingat
+
+```http
+PUT /api/pengingat/:id
+```
+
+Body sama dengan tambah (keempat kolom wajib dikirim). Status selesai/belum tidak ikut berubah. Response `200 OK` dengan `message` `Berhasil diubah` dan `data.reminder` yang sudah diperbarui.
+
+### Hapus pengingat
+
+```http
+DELETE /api/pengingat/:id
+```
+
+Response `200 OK`: `message` `Berhasil dihapus`, `data` berisi `{ "pengingat_id": 7 }`.
+
+### Tandai selesai
+
+```http
+PATCH /api/pengingat/:id/selesai
+```
+
+Response `200 OK`: `message` `Pengingat ditandai selesai.` dan `data.reminder` dengan `status` `selesai` serta `selesai_pada` terisi. Pengingat tidak dihapus: ia tetap muncul di daftar dengan status selesai, masuk hitungan "selesai", dan tidak lagi dihitung "terdekat" atau "terlewat".
+
+### Pesan error
+
+| Status | `message` | Kondisi |
+|---|---|---|
+| `400` | `Deskripsi wajib diisi.` | Deskripsi kosong atau hanya spasi |
+| `400` | `Deskripsi maksimal 200 karakter.` | Deskripsi lebih dari 200 karakter |
+| `400` | `Kategori wajib dipilih.` | `kategori_id` kosong |
+| `400` | `Kategori tidak valid.` | `kategori_id` bukan angka bulat positif atau tidak ada di tabel kategori |
+| `400` | `Nominal wajib diisi.` | `jumlah` kosong |
+| `400` | `Nominal harus berupa angka` | `jumlah` bukan angka (misalnya `abc`) |
+| `400` | `Nominal harus lebih dari 0.` | `jumlah` nol atau negatif |
+| `400` | `Tanggal wajib diisi.` | `tanggal` kosong |
+| `400` | `Format tanggal harus YYYY-MM-DD dan tanggalnya harus valid.` | Format atau tanggal tidak valid |
+| `400` | `Input tidak valid.` | `:id` di alamat bukan bilangan bulat positif |
+| `401` | `Token tidak ditemukan. Silakan login.` | Tidak ada token |
+| `404` | `Pengingat tidak ditemukan.` | `:id` tidak ada atau milik pengguna lain |
+| `409` | `Pengingat sudah ditandai selesai.` | Ditandai selesai untuk kedua kalinya |
+
+Pesan yang tertulis di kartu Trello (`Berhasil disimpan`, `Berhasil diubah`, `Berhasil dihapus`, `Nominal harus berupa angka`) sengaja ditulis persis tanpa titik akhir agar sama dengan kartu.
+
+---
+
 # Ringkasan Endpoint yang Sudah Tersedia
 
 | Method | Endpoint | Auth | Keterangan |

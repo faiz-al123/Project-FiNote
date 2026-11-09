@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const AppError = require('../utils/appError');
 const { tanggalHariIni, bulanDariTanggal } = require('../utils/dateHelper');
 
 // "Terdekat" = jatuh tempo kurang dari 3 hari dari tanggal acuan (hari ini, +1, +2).
@@ -76,4 +77,95 @@ function getDaftarPengingat(userId, { bulan, tanggal, filter = 'semua', search }
   };
 }
 
-module.exports = { getDaftarPengingat, tambahHari };
+
+// ---------------------------------------------------------------
+// BE-07: tambah, ubah, hapus, dan tandai selesai
+// ---------------------------------------------------------------
+
+function findPengingat(userId, pengingatId) {
+  return db
+    .prepare(`
+      SELECT p.pengingat_id, p.deskripsi, p.kategori_id, k.nama_kategori,
+             p.jumlah, p.tanggal, p.status, p.selesai_pada
+      FROM Pengingat p
+      JOIN Kategori k ON k.kategori_id = p.kategori_id
+      WHERE p.pengingat_id = ? AND p.user_id = ?
+    `)
+    .get(pengingatId, userId);
+}
+
+// Pengingat milik user lain diperlakukan sama seperti tidak ada (404),
+// supaya pengguna tidak bisa menebak id milik orang lain.
+function ambilMilikUser(userId, pengingatId) {
+  const pengingat = findPengingat(userId, pengingatId);
+  if (!pengingat) {
+    throw new AppError('Pengingat tidak ditemukan.', 404);
+  }
+  return pengingat;
+}
+
+function pastikanKategoriAda(kategoriId) {
+  const ada = db.prepare('SELECT 1 FROM Kategori WHERE kategori_id = ?').get(kategoriId);
+  if (!ada) {
+    throw new AppError('Kategori tidak valid.', 400);
+  }
+}
+
+function createPengingat(userId, { deskripsi, kategori_id, jumlah, tanggal }) {
+  pastikanKategoriAda(Number(kategori_id));
+
+  const hasil = db
+    .prepare(`
+      INSERT INTO Pengingat (user_id, deskripsi, kategori_id, jumlah, tanggal)
+      VALUES (?, ?, ?, ?, ?)
+    `)
+    .run(userId, deskripsi.trim(), Number(kategori_id), Number(jumlah), tanggal.trim());
+
+  return findPengingat(userId, Number(hasil.lastInsertRowid));
+}
+
+// Ubah keempat kolom. Status (selesai/belum) tidak ikut berubah.
+function updatePengingat(userId, pengingatId, { deskripsi, kategori_id, jumlah, tanggal }) {
+  ambilMilikUser(userId, pengingatId);
+  pastikanKategoriAda(Number(kategori_id));
+
+  db.prepare(`
+    UPDATE Pengingat
+    SET deskripsi = ?, kategori_id = ?, jumlah = ?, tanggal = ?
+    WHERE pengingat_id = ? AND user_id = ?
+  `).run(deskripsi.trim(), Number(kategori_id), Number(jumlah), tanggal.trim(), pengingatId, userId);
+
+  return findPengingat(userId, pengingatId);
+}
+
+function deletePengingat(userId, pengingatId) {
+  ambilMilikUser(userId, pengingatId);
+
+  db.prepare('DELETE FROM Pengingat WHERE pengingat_id = ? AND user_id = ?').run(pengingatId, userId);
+}
+
+// Tandai selesai: status berubah, waktunya dicatat. Pengingat tidak dihapus,
+// sehingga otomatis masuk hitungan "selesai" dan keluar dari "terdekat"/"terlewat".
+function tandaiSelesai(userId, pengingatId) {
+  const pengingat = ambilMilikUser(userId, pengingatId);
+  if (pengingat.status === 'selesai') {
+    throw new AppError('Pengingat sudah ditandai selesai.', 409);
+  }
+
+  db.prepare(`
+    UPDATE Pengingat
+    SET status = 'selesai', selesai_pada = datetime('now', 'localtime')
+    WHERE pengingat_id = ? AND user_id = ?
+  `).run(pengingatId, userId);
+
+  return findPengingat(userId, pengingatId);
+}
+
+module.exports = {
+  getDaftarPengingat,
+  createPengingat,
+  updatePengingat,
+  deletePengingat,
+  tandaiSelesai,
+  tambahHari,
+};
