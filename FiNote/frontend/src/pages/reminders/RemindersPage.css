@@ -1,393 +1,669 @@
-
 /* =========================================
    FINOTE - HALAMAN PENGINGAT
+   Mengikuti desain UI/UX (UI_07 skenario 1-7)
 ========================================= */
 
 .reminder-layout {
   min-height: 100vh;
   min-height: 100dvh;
   background: #f0f3ff;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+.reminder-layout button,
+.reminder-layout input,
+.reminder-layout select {
+  font-family: inherit;
 }
 
 .reminder-workspace {
+  position: relative;
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-width: 0;
   background: #f0f3ff;
 }
 
-/* HEADER */
+/* =========================================
+   HEADER
+========================================= */
 
 .reminder-header {
-  min-height: 99px;
-  padding: 20px 5.1%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  border-bottom: 1px solid #aaa;
+  min-height: 110px;
+  padding: 16px 5.5% 16px 62px;
+  border-bottom: 1px solid #555;
   background: #f0f3ff;
 }
 
-.reminder-header-title {
+.reminder-header-left {
   display: flex;
   align-items: center;
   gap: 14px;
+  min-width: 0;
 }
 
 .reminder-header-icon {
-  width: 28px;
-  height: 28px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin-top: 6px;
+  color: #111;
 }
 
 .reminder-header-icon svg {
-  width: 27px;
-  height: 27px;
+  width: 28px;
+  height: 28px;
 }
 
-.reminder-header h1 {
+.reminder-heading h1 {
   margin: 0;
-  color: #111;
-  font-size: 23px;
+  color: #000;
+  font-size: clamp(22px, 1.9vw, 29px);
   font-weight: 700;
+  line-height: 1.2;
 }
 
-.reminder-header p {
+.reminder-heading p {
   margin: 4px 0 0;
-  color: #222;
-  font-size: 14px;
+  color: #111;
+  font-size: 15px;
 }
+
+/* Tombol "tambah pengingat" */
 
 .reminder-add-button {
-  min-height: 49px;
-  padding: 0 20px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   gap: 10px;
+  height: 55px;
+  padding: 0 22px;
   border: 1px solid #222;
-  border-radius: 8px;
-  background: white;
+  border-radius: 9px;
+  background: #b8cdf6;
   color: #111;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
   cursor: pointer;
-  transition: .2s;
-}
-
-.reminder-add-button:hover {
-  background: #e8efff;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .reminder-add-button svg {
-  width: 23px;
-  height: 23px;
+  width: 26px;
+  height: 26px;
 }
 
-/* MAIN */
+.reminder-add-button:hover:not(:disabled) {
+  background: #a5c0f2;
+  transform: translateY(-1px);
+}
+
+.reminder-add-button:focus-visible {
+  outline: 2px solid #347cf6;
+  outline-offset: 3px;
+}
+
+.reminder-add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   NOTIFIKASI
+========================================= */
+
+.reminder-notice {
+  position: absolute;
+  top: 99px;
+  left: 50%;
+  z-index: 20;
+  max-width: calc(100% - 30px);
+  padding: 13px 24px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  animation: reminder-notice-in 0.25s ease-out;
+}
+
+.reminder-notice.danger {
+  background: #ffc9c9;
+  color: #ee0000;
+}
+
+.reminder-notice.success {
+  background: #cdf5cf;
+  color: #087b1e;
+}
+
+@keyframes reminder-notice-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* =========================================
+   AREA KONTEN
+========================================= */
 
 .reminder-main {
+  flex: 1;
   min-width: 0;
-  padding: 50px 3.5%;
+  padding: 58px 3.5% 48px;
 }
 
 .reminder-content {
   width: 100%;
-  min-height: 650px;
-  padding: 60px 4%;
-  border-radius: 15px;
-  background: white;
+  padding: 68px 4% 78px;
+  border-radius: 16px;
+  background: #fff;
 }
 
-/* SUMMARY */
+/* =========================================
+   KARTU RINGKASAN
+   Satu baris, kartu mengecil mengikuti lebar layar
+========================================= */
 
 .reminder-summary {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 30px;
-  margin-bottom: 30px;
+  display: flex;
+  gap: 34px;
+  margin-bottom: 36px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.reminder-summary::-webkit-scrollbar {
+  display: none;
 }
 
 .reminder-summary-card {
-  min-width: 0;
-  min-height: 108px;
-  padding: 13px 20px;
   display: flex;
+  flex: 1 1 0;
   align-items: center;
-  gap: 12px;
-  border: 1px solid #222;
-  border-radius: 15px;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 200px;
+  height: 122px;
+  padding: 12px 18px 12px 30px;
+  border: 1px solid;
+  border-radius: 16px;
+  color: #111;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
+.reminder-summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+}
+
+.reminder-summary-card:focus-visible {
+  outline: 2px solid #347cf6;
+  outline-offset: 2px;
+}
+
+/* Warna latar dan garis mengikuti desain: tiap kartu punya garis warna lembut */
+
 .reminder-summary-card.nearest {
-  background: #fff0f0;
+  border-color: #e3a9a9;
+  background: #fdeded;
 }
 
 .reminder-summary-card.total {
-  background: #f2fff0;
+  border-color: #9cc3ec;
+  background: #eef7fe;
 }
 
 .reminder-summary-card.completed {
-  background: #eff9ff;
+  border-color: #93d894;
+  background: #f0fcec;
 }
 
 .reminder-summary-card.missed {
-  background: #fff0ff;
+  border-color: #e9b98a;
+  background: #fff6ee;
 }
 
-.reminder-summary-card > img {
-  width: 36px;
-  height: 36px;
+.reminder-summary-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.reminder-summary-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.reminder-summary-top img {
+  display: block;
   flex-shrink: 0;
+  width: 36px;
+  height: 40px;
   object-fit: contain;
 }
 
-.reminder-summary-card > div {
-  min-width: 0;
-  flex: 1;
+.reminder-summary-top strong {
+  color: #111;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
 }
 
-.reminder-summary-card strong {
-  display: block;
-  margin-bottom: 5px;
-  color: #999;
-  font-size: 25px;
+.reminder-summary-top strong.zero {
+  color: #8a8a8a;
   font-weight: 600;
 }
 
 .reminder-summary-card h3 {
-  margin: 0 0 5px;
+  margin: 0 0 6px;
   color: #111;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .reminder-summary-card p {
   margin: 0;
   color: #999;
-  font-size: 13px;
+  font-size: 15px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.reminder-summary-card > span {
-  width: 18px;
-  height: 18px;
+.reminder-summary-arrow {
+  display: flex;
   flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  color: #111;
 }
 
-.reminder-summary-card > span svg {
+.reminder-summary-arrow svg {
   width: 100%;
   height: 100%;
 }
 
-/* TOOLBAR */
+/* =========================================
+   TOOLBAR: cari, bulan, filter
+========================================= */
 
 .reminder-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 42px;
+  flex-wrap: nowrap;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding: 0 14px;
 }
 
 .reminder-toolbar-left {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+  gap: 40px;
+  min-width: 0;
 }
 
-.reminder-search {
-  width: 335px;
-  height: 44px;
-  padding: 0 13px;
+.reminder-search,
+.reminder-month {
   display: flex;
+  flex: 1 1 0;
   align-items: center;
   gap: 10px;
-  border: 1px solid #333;
-  border-radius: 15px;
-  background: white;
+  min-width: 160px;
+  max-width: 275px;
+  height: 49px;
+  padding: 0 14px;
+  border: 1px solid #111;
+  border-radius: 14px;
+  background: #fff;
+  color: #111;
 }
 
 .reminder-search svg {
-  width: 20px;
-  height: 20px;
+  display: block;
   flex-shrink: 0;
+  width: 22px;
+  height: 22px;
 }
 
 .reminder-search input {
-  width: 100%;
+  flex: 1;
   min-width: 0;
+  height: 100%;
   border: none;
   outline: none;
   background: transparent;
-  font-family: inherit;
-  font-size: 14px;
+  color: #111;
+  font-size: 15px;
+}
+
+.reminder-search input::placeholder {
+  color: #333;
+}
+
+.reminder-search:focus-within,
+.reminder-month:focus-within {
+  border-color: #347cf6;
+  box-shadow: 0 0 0 2px rgba(52, 124, 246, 0.18);
 }
 
 .reminder-month {
-  height: 44px;
-  max-width: 165px;
-  padding: 0 10px;
-  border: 1px solid #333;
-  border-radius: 12px;
-  background: white;
-  font-family: inherit;
-  font-size: 13px;
+  position: relative;
   cursor: pointer;
 }
 
-/* FILTER */
+.reminder-month-icon,
+.reminder-month-arrow {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.reminder-month-icon svg,
+.reminder-month-arrow svg {
+  width: 22px;
+  height: 22px;
+}
+
+.reminder-month-arrow {
+  pointer-events: none;
+}
+
+.reminder-month select {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  appearance: none;
+  background: transparent;
+  color: #111;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* Tombol filter status (state aktif = biru, sesuai desain) */
 
 .reminder-filters {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
-  flex-wrap: wrap;
   gap: 8px;
 }
 
 .reminder-filters button {
-  min-width: 90px;
-  height: 44px;
-  padding: 0 17px;
+  height: 49px;
+  padding: 0 24px;
   border: 1px solid #333;
-  border-radius: 15px;
-  background: white;
-  color: #777;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: 14px;
+  background: #fff;
+  color: #7a7a7a;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  transition: .2s;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
 }
 
-.reminder-filters button:hover {
-  background: #edf2ff;
-  color: #222;
+.reminder-filters button:hover:not(.selected) {
+  background: #eef2ff;
+  transform: translateY(-1px);
 }
 
 .reminder-filters button.selected {
-  background: #347cf6;
-  border-color: #347cf6;
-  color: white;
+  background: #b8cdf6;
+  color: #111;
 }
 
-/* TABLE */
+.reminder-filters button:focus-visible {
+  outline: 2px solid #347cf6;
+  outline-offset: 2px;
+}
+
+/* =========================================
+   TABEL
+========================================= */
 
 .reminder-table-wrapper {
+  position: relative;
   width: 100%;
+  min-height: 445px;
   overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid #111;
+  border-radius: 8px;
+  background: #edf3f3;
+  transition: opacity 0.2s;
+}
+
+.reminder-table-wrapper.is-loading {
+  opacity: 0.6;
 }
 
 .reminder-table {
   width: 100%;
+  min-width: 820px;
   border-collapse: collapse;
   table-layout: fixed;
 }
 
-.reminder-table thead {
+/* Lebar kolom mengikuti posisi di desain */
+
+.reminder-table th:nth-child(1),
+.reminder-table td:nth-child(1) { width: 13%; }
+
+.reminder-table th:nth-child(2),
+.reminder-table td:nth-child(2) { width: 28%; }
+
+.reminder-table th:nth-child(3),
+.reminder-table td:nth-child(3) { width: 17%; }
+
+.reminder-table th:nth-child(4),
+.reminder-table td:nth-child(4) { width: 16%; }
+
+.reminder-table th:nth-child(5),
+.reminder-table td:nth-child(5) { width: 26%; }
+
+.reminder-table thead tr {
   background: #c6dafa;
 }
 
 .reminder-table th {
-  height: 43px;
-  padding: 10px;
+  height: 47px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #111;
   color: #111;
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 700;
   text-align: center;
 }
 
+.reminder-table tbody tr {
+  background: #e9effc;
+}
+
+.reminder-table tbody tr:hover {
+  background: #dfe8fb;
+}
+
 .reminder-table td {
-  min-height: 45px;
-  padding: 13px 10px;
-  border-bottom: 1px solid #eee;
-  color: #333;
-  font-size: 14px;
+  height: 47px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #111;
+  color: #111;
+  font-size: 16px;
   text-align: center;
   overflow-wrap: anywhere;
 }
 
-.reminder-table tbody tr:hover {
-  background: #f8faff;
+/* Badge kategori (gambar dari pengingat-assets) */
+
+.reminder-badge-image {
+  display: inline-block;
+  width: 141px;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+  object-fit: contain;
 }
 
-.reminder-table th:nth-child(1) {
-  width: 19%;
+.reminder-badge-text {
+  display: inline-block;
+  max-width: 100%;
+  padding: 4px 14px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #f0f3ff;
+  color: #111;
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.reminder-table th:nth-child(2) {
-  width: 23%;
-}
-
-.reminder-table th:nth-child(3) {
-  width: 20%;
-}
-
-.reminder-table th:nth-child(4) {
-  width: 19%;
-}
-
-.reminder-table th:nth-child(5) {
-  width: 19%;
-}
-
-.reminder-message {
-  height: 180px;
-  color: #888 !important;
-  font-size: 15px !important;
-  text-align: center;
-}
-
-.reminder-message.error {
-  color: #d32f2f !important;
-}
+/* =========================================
+   TOMBOL AKSI
+========================================= */
 
 .reminder-actions {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 12px;
 }
 
-.reminder-actions button {
-  width: 29px;
-  height: 29px;
-  border: none;
-  border-radius: 6px;
-  font-size: 19px;
+/* Tombol selesai: normal (putih) */
+
+.reminder-done-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 130px;
+  height: 31px;
+  padding: 0 8px;
+  border: 1px solid #111;
+  border-radius: 7px;
+  background: #fff;
+  color: #111;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
-.complete-action {
-  background: #dff7e6;
-  color: #159447;
+.reminder-done-button svg {
+  flex-shrink: 0;
+  width: 21px;
+  height: 21px;
 }
 
-.delete-action {
-  background: #ffe5e5;
-  color: #e53935;
+.reminder-done-button:hover:not(:disabled) {
+  background: #e6ebff;
 }
 
-.reminder-actions button:hover {
-  filter: brightness(.93);
+/* Tombol selesai: nonaktif / terlewat (abu-abu) */
+
+.reminder-done-button:disabled {
+  border-color: #b5b9c2;
+  background: #eef1f5;
+  color: #9a9fa8;
+  cursor: not-allowed;
 }
 
-.reminder-footnote {
-  margin-top: 15px;
-  color: #999;
-  font-size: 11px;
+/* Tombol selesai: sudah ditandai selesai (hijau) */
+
+.reminder-done-button.is-done:disabled {
+  border-color: #1f9d3a;
+  background: #def5e3;
+  color: #0b6b22;
+  cursor: default;
 }
 
-/* MODAL */
+/* Tombol hapus */
 
-.reminder-modal-overlay {
+.reminder-delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.reminder-delete-button img {
+  display: block;
+  width: 27px;
+  height: 27px;
+  object-fit: contain;
+}
+
+.reminder-delete-button:hover {
+  background: #ffdcdc;
+}
+
+.reminder-done-button:focus-visible,
+.reminder-delete-button:focus-visible {
+  outline: 2px solid #347cf6;
+  outline-offset: 2px;
+}
+
+/* =========================================
+   PESAN KOSONG / ERROR / MEMUAT
+========================================= */
+
+.reminder-empty {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #7b7b7b;
+  font-size: 19px;
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+}
+
+.reminder-empty.error {
+  color: #d32f2f;
+}
+
+/* =========================================
+   OVERLAY MODAL (latar blur)
+========================================= */
+
+.reminder-overlay {
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -395,44 +671,190 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: rgba(0, 0, 0, .45);
+  background: rgba(225, 229, 240, 0.45);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
 }
+
+/* =========================================
+   MODAL KONFIRMASI (hapus / selesai)
+========================================= */
+
+.reminder-confirm {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 404px;
+  padding: 40px 28px 28px;
+  border: 1px solid #c9d1dc;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
+}
+
+.reminder-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #111;
+  cursor: pointer;
+}
+
+.reminder-modal-close svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
+}
+
+.reminder-confirm-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+  border-radius: 50%;
+}
+
+.reminder-confirm-icon img {
+  display: block;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.reminder-confirm-icon svg {
+  width: 52px;
+  height: 52px;
+  stroke-width: 1.5;
+}
+
+.reminder-confirm-icon.danger {
+  background: #ffc9c9;
+  color: #f21b1b;
+}
+
+.reminder-confirm-icon.success {
+  background: #dcffcd;
+  color: #10dc10;
+}
+
+.reminder-confirm h2 {
+  margin: 0 0 24px;
+  color: #444;
+  font-size: 27px;
+  font-weight: 600;
+}
+
+.reminder-confirm p {
+  max-width: 330px;
+  margin: 0 0 28px;
+  color: #7d7d7d;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.reminder-confirm-buttons {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.reminder-confirm-buttons button {
+  flex: 1;
+  height: 56px;
+  border: 3px solid #111;
+  border-radius: 14px;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.reminder-confirm-buttons button:hover:not(:disabled) {
+  filter: brightness(0.94);
+}
+
+.reminder-confirm-buttons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.reminder-btn-cancel {
+  background: #fff;
+  color: #777;
+}
+
+.reminder-btn-confirm.danger {
+  background: #ff0000;
+  color: #fff;
+}
+
+.reminder-btn-confirm.success {
+  background: #0be80b;
+  color: #fff;
+}
+
+/* =========================================
+   MODAL TAMBAH PENGINGAT
+========================================= */
 
 .reminder-modal {
   width: 100%;
-  max-width: 480px;
+  max-width: 460px;
   max-height: 90vh;
+  padding: 26px;
   overflow-y: auto;
-  padding: 25px;
-  border-radius: 13px;
-  background: white;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, .15);
+  border: 1px solid #c9d1dc;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 .reminder-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 23px;
+  margin-bottom: 22px;
 }
 
 .reminder-modal-header h2 {
   margin: 0;
-  font-size: 21px;
+  color: #333;
+  font-size: 23px;
+  font-weight: 600;
 }
 
 .reminder-modal-header button {
+  display: flex;
+  padding: 0;
   border: none;
   background: transparent;
-  color: #777;
-  font-size: 28px;
+  color: #111;
   cursor: pointer;
+}
+
+.reminder-modal-header button svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
 }
 
 .reminder-modal form {
   display: flex;
   flex-direction: column;
-  gap: 17px;
+  gap: 15px;
 }
 
 .reminder-modal form label {
@@ -441,137 +863,185 @@
   gap: 7px;
   color: #333;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .reminder-modal input,
 .reminder-modal select {
   width: 100%;
-  height: 43px;
+  height: 46px;
   padding: 0 12px;
-  border: 1px solid #bbb;
-  border-radius: 7px;
+  border: 1px solid #111;
+  border-radius: 12px;
   outline: none;
-  background: white;
-  font-family: inherit;
-  font-size: 14px;
+  background: #fff;
+  color: #222;
+  font-size: 15px;
 }
 
 .reminder-modal input:focus,
 .reminder-modal select:focus {
   border-color: #347cf6;
+  box-shadow: 0 0 0 2px rgba(52, 124, 246, 0.18);
+}
+
+.reminder-form-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #ffe1e1;
+  color: #d00000;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .reminder-modal-buttons {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 14px;
+  margin-top: 8px;
 }
 
 .reminder-modal-buttons button {
-  min-width: 100px;
-  height: 42px;
-  border-radius: 7px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
+  flex: 1;
+  height: 50px;
+  border: 3px solid #111;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
 }
 
+.reminder-modal-buttons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .cancel-button {
-  border: 1px solid #aaa;
-  background: white;
-  color: #333;
+  background: #fff;
+  color: #777;
 }
 
 .save-button {
-  border: 1px solid #347cf6;
-  background: #347cf6;
-  color: white;
+  background: #b8cdf6;
+  color: #111;
 }
 
-/* TOAST */
+/* =========================================
+   RESPONSIVE
+========================================= */
 
-.reminder-toast {
-  position: fixed;
-  right: 25px;
-  bottom: 25px;
-  z-index: 1100;
-  max-width: calc(100vw - 40px);
-  padding: 14px 22px;
-  border-radius: 8px;
-  background: #222;
-  color: white;
-  font-size: 14px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, .2);
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 1200px) {
+@media (max-width: 1500px) {
   .reminder-summary {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 15px;
+    gap: 18px;
   }
 
-  .reminder-content {
-    padding: 35px 25px;
+  .reminder-summary-card {
+    gap: 6px;
+    padding: 12px 12px 12px 18px;
   }
 
-  .reminder-main {
-    padding: 35px 25px;
-  }
-}
-
-@media (max-width: 850px) {
-  .reminder-header {
-    align-items: flex-start;
-    padding: 20px;
+  .reminder-summary-top {
+    gap: 10px;
   }
 
-  .reminder-header h1 {
-    font-size: 19px;
+  .reminder-summary-top strong {
+    font-size: 26px;
   }
 
-  .reminder-main {
-    padding: 20px 12px;
+  .reminder-summary-card h3 {
+    font-size: 14px;
   }
 
-  .reminder-content {
-    padding: 25px 15px;
+  .reminder-summary-card p {
+    font-size: 13px;
+  }
+
+  .reminder-summary-arrow {
+    width: 18px;
+    height: 18px;
   }
 
   .reminder-toolbar {
-    align-items: stretch;
+    padding: 0;
+  }
+
+  .reminder-toolbar-left {
+    gap: 20px;
+  }
+
+  .reminder-filters button {
+    padding: 0 18px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .reminder-main {
+    padding: 36px 24px;
+  }
+
+  .reminder-content {
+    padding: 36px 24px 44px;
+  }
+
+  .reminder-header {
+    padding-left: 30px;
+  }
+
+  .reminder-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .reminder-summary-card {
+    min-width: 0;
+  }
+
+  .reminder-toolbar {
+    flex-wrap: wrap;
   }
 
   .reminder-toolbar-left {
     width: 100%;
   }
 
-  .reminder-search {
-    flex: 1;
-    width: auto;
-  }
-
   .reminder-filters {
+    flex-wrap: wrap;
     width: 100%;
   }
+}
 
-  .reminder-filters button {
+@media (max-width: 850px) {
+  .reminder-header {
+    padding: 14px 20px;
+  }
+
+  .reminder-main {
+    padding: 24px 14px;
+  }
+
+  .reminder-content {
+    padding: 24px 14px 30px;
+  }
+
+  .reminder-search,
+  .reminder-month {
     flex: 1;
-    min-width: 0;
+    min-width: 180px;
   }
 }
 
 @media (max-width: 560px) {
   .reminder-header {
     flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px;
   }
 
   .reminder-add-button {
-    width: 100%;
+    align-self: flex-end;
   }
 
   .reminder-summary {
@@ -579,11 +1049,7 @@
   }
 
   .reminder-summary-card {
-    min-height: 95px;
-  }
-
-  .reminder-table {
-    min-width: 700px;
+    height: 110px;
   }
 
   .reminder-toolbar-left {
@@ -594,11 +1060,22 @@
   .reminder-search,
   .reminder-month {
     width: 100%;
-    max-width: none;
   }
 
   .reminder-filters {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .reminder-confirm {
+    padding: 36px 18px 22px;
+  }
+
+  .reminder-confirm-buttons {
+    gap: 12px;
+  }
+
+  .reminder-confirm-buttons button {
+    font-size: 16px;
   }
 }

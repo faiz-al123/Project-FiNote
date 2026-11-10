@@ -1,8 +1,7 @@
-
 import { request } from './client'
 import { getToken } from './auth.api'
 
-// Mengambil tanggal lokal browser.
+// Mengambil tanggal lokal browser (YYYY-MM-DD).
 function getLocalDate() {
   const now = new Date()
   const year = now.getFullYear()
@@ -13,6 +12,7 @@ function getLocalDate() {
 }
 
 // GET /api/pengingat
+// Mengembalikan { bulan, tanggal_acuan, filter, search, ringkasan, reminders }
 export async function getReminders(filters = {}) {
   const params = new URLSearchParams()
 
@@ -28,6 +28,49 @@ export async function getReminders(filters = {}) {
     `/pengingat?${params.toString()}`,
     { token: getToken() },
   )
+
+  return result.data
+}
+
+// POST /api/pengingat
+// payload: { deskripsi, kategori_id, jumlah, tanggal: 'YYYY-MM-DD' }
+export async function createReminder(payload) {
+  const result = await request('/pengingat', {
+    method: 'POST',
+    body: payload,
+    token: getToken(),
+  })
+
+  return result.data?.reminder
+}
+
+// PUT /api/pengingat/:id  (belum dipakai di UI, disiapkan untuk fitur ubah)
+export async function updateReminder(id, payload) {
+  const result = await request(`/pengingat/${id}`, {
+    method: 'PUT',
+    body: payload,
+    token: getToken(),
+  })
+
+  return result.data?.reminder
+}
+
+// PATCH /api/pengingat/:id/selesai
+export async function completeReminder(id) {
+  const result = await request(`/pengingat/${id}/selesai`, {
+    method: 'PATCH',
+    token: getToken(),
+  })
+
+  return result.data?.reminder
+}
+
+// DELETE /api/pengingat/:id
+export async function deleteReminder(id) {
+  const result = await request(`/pengingat/${id}`, {
+    method: 'DELETE',
+    token: getToken(),
+  })
 
   return result.data
 }

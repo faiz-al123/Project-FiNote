@@ -1,37 +1,169 @@
-
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import Logo from '../../assets/Logo.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
 
+// Aset dari folder pengingat-assets yang cocok dengan desain UI/UX.
+// Header, tombol tambah, tombol filter, header tabel, dan tombol selesai
+// SENGAJA dibuat dengan HTML/CSS (bukan gambar) karena di desain
+// elemen-elemen itu punya state aktif/nonaktif dan harus tajam di layar apa pun.
+import DeleteImage from '../../assets/pengingat-assets/Delete.png'
+
 import RedCalendar from '../../assets/pengingat-assets/RedCalender.png'
-import GreenCalendar from '../../assets/pengingat-assets/GreenCalender.png'
 import BlueCalendar from '../../assets/pengingat-assets/BlueCalender.png'
-import PinkCalendar from '../../assets/pengingat-assets/PinkCalender.png'
+import GreenCalendar from '../../assets/pengingat-assets/GreenCalender.png'
+import OrangeCalendar from '../../assets/pengingat-assets/OrangeCalender.png'
 
-import { getReminders } from '../../api/reminder.api'
+import BadgeTagihan from '../../assets/pengingat-assets/Tagihan.png'
+import BadgeMakanan from '../../assets/pengingat-assets/Makanan.png'
+import BadgeBelanja from '../../assets/pengingat-assets/Belanja.png'
+import BadgeHiburan from '../../assets/pengingat-assets/Hiburan.png'
+import BadgeTransportasi from '../../assets/pengingat-assets/Tansportasi.png'
+
+import {
+  getReminders,
+  createReminder,
+  completeReminder,
+  deleteReminder,
+} from '../../api/reminder.api'
+
 import { getTransactionCategories } from '../../api/transaction.api'
-import { formatRupiah } from '../../utils/format'
 
-import './RemindersPage.css'
 import '../dashboard/DashboardPage.css'
+import './RemindersPage.css'
+
+const NOTICE_DURATION = 3500
+const SEARCH_DELAY = 350
+
+// Sesuai desain (skenario 4): pengingat yang sudah terlewat
+// tombol "selesai"-nya nonaktif (abu-abu).
+const BLOCK_OVERDUE_COMPLETE = true
+
+const MONTH_NAMES = [
+  'Januari', 'Februari', 'Maret', 'April',
+  'Mei', 'Juni', 'Juli', 'Agustus',
+  'September', 'Oktober', 'November', 'Desember',
+]
+
+const EMPTY_SUMMARY = {
+  terdekat: 0,
+  total: 0,
+  selesai: 0,
+  terlewat: 0,
+}
+
+const EMPTY_FORM = {
+  deskripsi: '',
+  kategori_id: '',
+  jumlah: '',
+  tanggal: '',
+}
+
+const FILTERS = [
+  { id: 'semua', label: 'semua' },
+  { id: 'terdekat', label: 'terdekat' },
+  { id: 'terlewat', label: 'terlewat' },
+  { id: 'selesai', label: 'selesai' },
+]
+
+const SUMMARY_CARDS = [
+  {
+    key: 'terdekat',
+    filter: 'terdekat',
+    tone: 'nearest',
+    icon: RedCalendar,
+    title: 'Terdekat',
+    note: '< 3 hari',
+  },
+  {
+    key: 'total',
+    filter: 'semua',
+    tone: 'total',
+    icon: BlueCalendar,
+    title: 'Total satu bulan',
+    note: 'semua pengingat',
+  },
+  {
+    key: 'selesai',
+    filter: 'selesai',
+    tone: 'completed',
+    icon: GreenCalendar,
+    title: 'Selesai',
+    note: 'sudah ditandai selesai',
+  },
+  {
+    key: 'terlewat',
+    filter: 'terlewat',
+    tone: 'missed',
+    icon: OrangeCalendar,
+    title: 'Terlewat',
+    note: 'belum ditandai selesai',
+  },
+]
+
+const CATEGORY_BADGES = {
+  tagihan: BadgeTagihan,
+  makanan: BadgeMakanan,
+  belanja: BadgeBelanja,
+  hiburan: BadgeHiburan,
+  transportasi: BadgeTransportasi,
+}
+
+const MENU_ITEMS = [
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'transaksi', label: 'Transaksi' },
+  { id: 'riwayat', label: 'Riwayat' },
+  { id: 'pengingat', label: 'pengingat' },
+]
+
+/* =========================================
+   FUNGSI BANTU
+========================================= */
 
 function getToday() {
-  const date = new Date()
+  const now = new Date()
 
   return [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0'),
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
   ].join('-')
 }
 
 function formatDate(value) {
   if (!value) return '-'
 
-  const [year, month, day] = String(value).slice(0, 10).split('-')
+  const [year, month, day] = String(value)
+    .slice(0, 10)
+    .split('-')
 
-  return `${day}-${month}-${year}`
+  return `${day}/${month}/${year}`
+}
+
+function formatNominal(value) {
+  return new Intl.NumberFormat('id-ID', {
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0)
+}
+
+function buildMonthOptions() {
+  const currentYear = new Date().getFullYear()
+  const options = []
+
+  for (
+    let year = currentYear - 2;
+    year <= currentYear + 2;
+    year++
+  ) {
+    MONTH_NAMES.forEach((name, index) => {
+      options.push({
+        value: `${year}-${String(index + 1).padStart(2, '0')}`,
+        label: `${name} ${year}`,
+      })
+    })
+  }
+
+  return options
 }
 
 function getCategories(result) {
@@ -52,109 +184,324 @@ function getCategoryId(item) {
 }
 
 function getCategoryName(item) {
-  return (
-    item.nama_kategori ??
-    item.nama ??
-    item.name ??
-    ''
-  )
+  return item.nama_kategori ?? item.nama ?? item.name ?? ''
+}
+
+function getEmptyMessage(filter, searching) {
+  if (searching) return 'pengingat tidak ditemukan'
+  if (filter === 'terlewat') return 'tidak ada pengingat yang terlewat'
+  if (filter === 'selesai') return 'belum ada pengingat yang selesai'
+
+  // "semua" dan "terdekat" memakai teks yang sama seperti di desain (skenario 7)
+  return 'tidak ada pengingat dalam waktu terdekat'
+}
+
+/* =========================================
+   IKON
+========================================= */
+
+const iconProps = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.8,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  'aria-hidden': true,
 }
 
 function BellIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="1.8"
-      strokeLinecap="round" strokeLinejoin="round">
+    <svg {...iconProps}>
       <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
       <path d="M10 21h4M5 5 7 3M19 3l2 2" />
     </svg>
   )
 }
 
+function PlusSquareIcon() {
+  return (
+    <svg {...iconProps}>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="2" />
+      <path d="M12 8v8M8 12h8" />
+    </svg>
+  )
+}
+
 function SearchIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="1.8"
-      strokeLinecap="round" strokeLinejoin="round">
+    <svg {...iconProps}>
       <circle cx="10.8" cy="10.8" r="7" />
       <path d="m16 16 5 5" />
     </svg>
   )
 }
 
-function PlusIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="1.8"
-      strokeLinecap="round">
-      <rect x="3" y="3" width="18" height="18" rx="1" />
-      <path d="M12 7v10M7 12h10" />
-    </svg>
-  )
-}
-
 function ChevronRight() {
   return (
-    <svg viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="1.8"
-      strokeLinecap="round" strokeLinejoin="round">
+    <svg {...iconProps}>
       <path d="m9 18 6-6-6-6" />
     </svg>
   )
 }
 
-function ReminderPageIcon() {
+function ChevronDown() {
   return (
-    <svg viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="1.8"
-      strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-      <path d="M10 21h4" />
+    <svg {...iconProps}>
+      <path d="m6 9 6 6 6-6" />
     </svg>
   )
 }
 
+function MonthIcon() {
+  return (
+    <svg {...iconProps}>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M8 3v4M16 3v4M3.5 10h17" />
+      <path d="M10.3 13.3 12 12.2v5" />
+    </svg>
+  )
+}
+
+function CheckCircleIcon() {
+  return (
+    <svg {...iconProps}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m8 12.3 2.8 2.8L16.2 9.4" />
+    </svg>
+  )
+}
+
+function CalendarCheckIcon() {
+  return (
+    <svg {...iconProps}>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M8 3v4M16 3v4M3.5 10h17" />
+      <path d="m8.8 15 2.2 2.2 4.2-4.2" />
+    </svg>
+  )
+}
+
+function CloseIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  )
+}
+
+function renderSidebarIcon(id) {
+  if (id === 'dashboard') {
+    return (
+      <svg {...iconProps}>
+        <circle cx="7" cy="7" r="3" />
+        <circle cx="17" cy="7" r="3" />
+        <circle cx="7" cy="17" r="3" />
+        <circle cx="17" cy="17" r="3" />
+      </svg>
+    )
+  }
+
+  if (id === 'transaksi') {
+    return (
+      <svg {...iconProps}>
+        <rect x="3.5" y="3.5" width="17" height="17" rx="1" />
+        <path d="M12 7v10M7 12h10" />
+      </svg>
+    )
+  }
+
+  if (id === 'riwayat') {
+    return (
+      <svg {...iconProps}>
+        <path d="M6 3h9l5 5v13H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
+        <path d="M15 3v5h5" />
+      </svg>
+    )
+  }
+
+  return <BellIcon />
+}
+
+/* =========================================
+   BADGE KATEGORI
+========================================= */
+
+function CategoryBadge({ name }) {
+  const badge =
+    CATEGORY_BADGES[String(name || '').trim().toLowerCase()]
+
+  if (badge) {
+    return (
+      <img
+        className="reminder-badge-image"
+        src={badge}
+        alt={name}
+      />
+    )
+  }
+
+  return (
+    <span className="reminder-badge-text">
+      {name || '-'}
+    </span>
+  )
+}
+
+/* =========================================
+   MODAL KONFIRMASI (hapus / tandai selesai)
+========================================= */
+
+function ConfirmModal({
+  variant,
+  title,
+  message,
+  confirmLabel,
+  busy,
+  onCancel,
+  onConfirm,
+}) {
+  useEffect(() => {
+    function handleKey(event) {
+      if (event.key === 'Escape' && !busy) {
+        onCancel()
+      }
+    }
+
+    window.addEventListener('keydown', handleKey)
+
+    return () => {
+      window.removeEventListener('keydown', handleKey)
+    }
+  }, [busy, onCancel])
+
+  return (
+    <div
+      className="reminder-overlay"
+      onClick={() => {
+        if (!busy) onCancel()
+      }}
+    >
+      <div
+        className="reminder-confirm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reminder-confirm-title"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="reminder-modal-close"
+          aria-label="Tutup"
+          onClick={onCancel}
+          disabled={busy}
+        >
+          <CloseIcon />
+        </button>
+
+        <span className={`reminder-confirm-icon ${variant}`}>
+          {variant === 'danger' ? (
+            <img src={DeleteImage} alt="" />
+          ) : (
+            <CalendarCheckIcon />
+          )}
+        </span>
+
+        <h2 id="reminder-confirm-title">{title}</h2>
+
+        <p>{message}</p>
+
+        <div className="reminder-confirm-buttons">
+          <button
+            type="button"
+            className="reminder-btn-cancel"
+            onClick={onCancel}
+            disabled={busy}
+          >
+            Batal
+          </button>
+
+          <button
+            type="button"
+            className={`reminder-btn-confirm ${variant}`}
+            onClick={onConfirm}
+            disabled={busy}
+          >
+            {busy ? 'Memproses...' : confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* =========================================
+   HALAMAN PENGINGAT
+========================================= */
+
 function RemindersPage({ user, onLogout, onNavigate }) {
   const [reminders, setReminders] = useState([])
-  const [summary, setSummary] = useState({
-    terdekat: 0,
-    total: 0,
-    selesai: 0,
-    terlewat: 0,
-  })
-
+  const [summary, setSummary] = useState(EMPTY_SUMMARY)
   const [categories, setCategories] = useState([])
 
-  const [selectedMonth, setSelectedMonth] = useState(
-    getToday().slice(0, 7),
-  )
+  const [selectedMonth, setSelectedMonth] = useState('')
+  const [activeFilter, setActiveFilter] = useState('semua')
 
   const [search, setSearch] = useState('')
-  const [activeFilter, setActiveFilter] = useState('semua')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
+  const [refreshKey, setRefreshKey] = useState(0)
 
-  const [showModal, setShowModal] = useState(false)
+  const [notice, setNotice] = useState(null)
+  const noticeTimer = useRef(null)
 
-  const [form, setForm] = useState({
-    deskripsi: '',
-    kategori_id: '',
-    jumlah: '',
-    tanggal: '',
-  })
+  const [confirmTarget, setConfirmTarget] = useState(null)
+  const [actionBusy, setActionBusy] = useState(false)
 
-  // Data sementara untuk interaksi frontend.
-  const [localReminders, setLocalReminders] = useState([])
+  const [showForm, setShowForm] = useState(false)
+  const [form, setForm] = useState(EMPTY_FORM)
+  const [formError, setFormError] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  const monthOptions = useMemo(() => buildMonthOptions(), [])
+
+  const activeMonth = selectedMonth || getToday().slice(0, 7)
 
   const username =
-    user?.username ||
-    user?.nama ||
-    user?.name ||
-    'Pengguna'
+    user?.username || user?.nama || user?.name || 'Pengguna'
 
-  // Mengambil kategori.
+  /* NOTIFIKASI */
+
+  function showNotice(message, type = 'danger') {
+    window.clearTimeout(noticeTimer.current)
+
+    setNotice({ message, type })
+
+    noticeTimer.current = window.setTimeout(() => {
+      setNotice(null)
+    }, NOTICE_DURATION)
+  }
+
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(noticeTimer.current)
+    }
+  }, [])
+
+  /* PENCARIAN (debounce) */
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDebouncedSearch(search)
+    }, SEARCH_DELAY)
+
+    return () => window.clearTimeout(timer)
+  }, [search])
+
+  /* KATEGORI UNTUK FORM TAMBAH */
+
   useEffect(() => {
     let cancelled = false
 
@@ -165,10 +512,12 @@ function RemindersPage({ user, onLogout, onNavigate }) {
 
         if (!cancelled) {
           setCategories(
-            rows.map((item) => ({
-              id: getCategoryId(item),
-              name: getCategoryName(item),
-            })).filter((item) => item.id != null && item.name),
+            rows
+              .map((item) => ({
+                id: getCategoryId(item),
+                name: getCategoryName(item),
+              }))
+              .filter((item) => item.id != null && item.name),
           )
         }
       } catch (err) {
@@ -183,7 +532,8 @@ function RemindersPage({ user, onLogout, onNavigate }) {
     }
   }, [])
 
-  // Mengambil daftar pengingat berdasarkan bulan dan filter.
+  /* DAFTAR PENGINGAT */
+
   useEffect(() => {
     let cancelled = false
 
@@ -193,28 +543,22 @@ function RemindersPage({ user, onLogout, onNavigate }) {
 
       try {
         const result = await getReminders({
-          bulan: selectedMonth,
+          bulan: activeMonth,
           tanggal: getToday(),
           filter: activeFilter,
-          search,
+          search: debouncedSearch,
         })
 
         if (cancelled) return
 
         setReminders(
-          Array.isArray(result?.reminders)
-            ? result.reminders
-            : [],
+          Array.isArray(result?.reminders) ? result.reminders : [],
         )
 
-        setSummary(
-          result?.ringkasan || {
-            terdekat: 0,
-            total: 0,
-            selesai: 0,
-            terlewat: 0,
-          },
-        )
+        setSummary({
+          ...EMPTY_SUMMARY,
+          ...(result?.ringkasan || {}),
+        })
       } catch (err) {
         if (cancelled) return
 
@@ -223,11 +567,13 @@ function RemindersPage({ user, onLogout, onNavigate }) {
           return
         }
 
-        setError(
-          err.message || 'Gagal memuat daftar pengingat.',
-        )
+        setReminders([])
+        setSummary(EMPTY_SUMMARY)
+        setError(err.message || 'Gagal memuat daftar pengingat.')
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+        }
       }
     }
 
@@ -236,61 +582,87 @@ function RemindersPage({ user, onLogout, onNavigate }) {
     return () => {
       cancelled = true
     }
-  }, [selectedMonth, activeFilter, search, onLogout])
+  }, [activeMonth, activeFilter, debouncedSearch, refreshKey, onLogout])
 
-  // Menggabungkan data server dengan data sementara frontend.
-  const displayedReminders = useMemo(() => {
-    return [...localReminders, ...reminders]
-      .filter((item) => {
-        if (activeFilter === 'selesai') {
-          return item.status === 'selesai'
-        }
+  /* URUTAN: yang terlewat di bagian bawah (sesuai desain), lalu per tanggal */
 
-        if (activeFilter === 'terlewat') {
-          return item.terlewat
-        }
+  const sortedReminders = useMemo(() => {
+    return [...reminders].sort((a, b) => {
+      const overdueDifference =
+        Number(Boolean(a.terlewat)) - Number(Boolean(b.terlewat))
 
-        if (activeFilter === 'terdekat') {
-          return item.terdekat
-        }
+      if (overdueDifference !== 0) {
+        return overdueDifference
+      }
 
-        return true
-      })
-      .sort((a, b) =>
-        String(a.tanggal).localeCompare(String(b.tanggal)),
-      )
-  }, [localReminders, reminders, activeFilter])
+      return String(a.tanggal).localeCompare(String(b.tanggal))
+    })
+  }, [reminders])
 
-  // Statistik tampilan.
-  const displayedSummary = useMemo(() => {
-    const local = localReminders.filter((item) =>
-      String(item.tanggal).startsWith(selectedMonth),
-    )
+  /* KONFIRMASI HAPUS / SELESAI */
 
-    return {
-      terdekat:
-        Number(summary.terdekat) +
-        local.filter((item) => item.terdekat).length,
-
-      total:
-        Number(summary.total) + local.length,
-
-      selesai:
-        Number(summary.selesai) +
-        local.filter((item) => item.status === 'selesai').length,
-
-      terlewat:
-        Number(summary.terlewat) +
-        local.filter((item) => item.terlewat).length,
+  function closeConfirm() {
+    if (!actionBusy) {
+      setConfirmTarget(null)
     }
-  }, [summary, localReminders, selectedMonth])
+  }
 
-  function showNotice(message) {
-    setNotice(message)
+  async function handleConfirm() {
+    if (!confirmTarget) return
 
-    window.setTimeout(() => {
-      setNotice('')
-    }, 3000)
+    const { type, item } = confirmTarget
+
+    setActionBusy(true)
+
+    try {
+      if (type === 'delete') {
+        await deleteReminder(item.pengingat_id)
+
+        showNotice(
+          'baris pengingat yang dipilih berhasil dihapus',
+          'danger',
+        )
+      } else {
+        await completeReminder(item.pengingat_id)
+
+        showNotice(
+          'pengingat berhasil ditandai selesai',
+          'success',
+        )
+      }
+
+      setConfirmTarget(null)
+      setRefreshKey((key) => key + 1)
+    } catch (err) {
+      if (err.status === 401) {
+        onLogout?.()
+        return
+      }
+
+      // Data sudah berubah di server (dihapus / sudah selesai) -> segarkan tabel
+      if (err.status === 404 || err.status === 409) {
+        setConfirmTarget(null)
+        setRefreshKey((key) => key + 1)
+      }
+
+      showNotice(err.message || 'Aksi gagal dilakukan.', 'danger')
+    } finally {
+      setActionBusy(false)
+    }
+  }
+
+  /* TAMBAH PENGINGAT */
+
+  function openForm() {
+    setForm(EMPTY_FORM)
+    setFormError('')
+    setShowForm(true)
+  }
+
+  function closeForm() {
+    if (!saving) {
+      setShowForm(false)
+    }
   }
 
   function handleFormChange(event) {
@@ -302,8 +674,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
     }))
   }
 
-  // Tambah data sementara pada frontend.
-  function handleAddReminder(event) {
+  async function handleAddReminder(event) {
     event.preventDefault()
 
     if (
@@ -312,151 +683,78 @@ function RemindersPage({ user, onLogout, onNavigate }) {
       !form.jumlah ||
       !form.tanggal
     ) {
-      showNotice('Lengkapi seluruh data pengingat.')
+      setFormError('Lengkapi seluruh data pengingat.')
       return
     }
 
     if (Number(form.jumlah) <= 0) {
-      showNotice('Nominal harus lebih dari 0.')
+      setFormError('Nominal harus lebih dari 0.')
       return
     }
 
-    const category = categories.find(
-      (item) => String(item.id) === String(form.kategori_id),
-    )
-
-    const reminder = {
-      pengingat_id: `local-${Date.now()}`,
-      deskripsi: form.deskripsi.trim(),
-      kategori_id: form.kategori_id,
-      nama_kategori: category?.name || '-',
-      jumlah: Number(form.jumlah),
-      tanggal: form.tanggal,
-      status: 'belum_selesai',
-      terlewat: form.tanggal < getToday(),
-      terdekat:
-        form.tanggal >= getToday() &&
-        form.tanggal < (() => {
-          const date = new Date(`${getToday()}T00:00:00`)
-          date.setDate(date.getDate() + 3)
-          return [
-            date.getFullYear(),
-            String(date.getMonth() + 1).padStart(2, '0'),
-            String(date.getDate()).padStart(2, '0'),
-          ].join('-')
-        })(),
+    if (form.deskripsi.trim().length > 200) {
+      setFormError('Deskripsi maksimal 200 karakter.')
+      return
     }
 
-    setLocalReminders((previous) => [
-      ...previous,
-      reminder,
-    ])
+    setSaving(true)
+    setFormError('')
 
-    setForm({
-      deskripsi: '',
-      kategori_id: '',
-      jumlah: '',
-      tanggal: '',
-    })
+    try {
+      await createReminder({
+        deskripsi: form.deskripsi.trim(),
+        kategori_id: Number(form.kategori_id),
+        jumlah: Number(form.jumlah),
+        tanggal: form.tanggal,
+      })
 
-    setShowModal(false)
-    showNotice('Pengingat berhasil ditambahkan sementara.')
+      setShowForm(false)
+      showNotice('pengingat berhasil disimpan', 'success')
+
+      const newMonth = form.tanggal.slice(0, 7)
+
+      if (newMonth !== activeMonth) {
+        setSelectedMonth(newMonth)
+      }
+
+      setActiveFilter('semua')
+      setSearch('')
+      setDebouncedSearch('')
+      setRefreshKey((key) => key + 1)
+    } catch (err) {
+      if (err.status === 401) {
+        onLogout?.()
+        return
+      }
+
+      setFormError(err.message || 'Gagal menyimpan pengingat.')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  // Menandai selesai secara lokal.
-  function handleComplete(id) {
-    setLocalReminders((previous) =>
-      previous.map((item) =>
-        item.pengingat_id === id
-          ? {
-              ...item,
-              status: 'selesai',
-              selesai_pada: getToday(),
-              terdekat: false,
-              terlewat: false,
-            }
-          : item,
-      ),
-    )
+  /* TAMPILAN */
 
-    showNotice('Status pengingat lokal berhasil diperbarui.')
-  }
+  const isSearching = Boolean(debouncedSearch.trim())
 
-  // Menghapus data secara lokal.
-  function handleDelete(id) {
-    const confirmed = window.confirm(
-      'Apakah kamu yakin ingin menghapus pengingat ini?',
-    )
+  const showEmpty =
+    !error && !loading && sortedReminders.length === 0
 
-    if (!confirmed) return
-
-    setLocalReminders((previous) =>
-      previous.filter((item) => item.pengingat_id !== id),
-    )
-
-    showNotice('Pengingat lokal berhasil dihapus.')
-  }
-
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'transaksi', label: 'Transaksi' },
-    { id: 'riwayat', label: 'Riwayat' },
-    { id: 'pengingat', label: 'pengingat' },
-  ]
-
-  function renderSidebarIcon(id) {
-    const props = {
-      viewBox: '0 0 24 24',
-      fill: 'none',
-      stroke: 'currentColor',
-      strokeWidth: 1.8,
-      strokeLinecap: 'round',
-      strokeLinejoin: 'round',
-    }
-
-    if (id === 'dashboard') {
-      return (
-        <svg {...props}>
-          <circle cx="7" cy="7" r="3" />
-          <circle cx="17" cy="7" r="3" />
-          <circle cx="7" cy="17" r="3" />
-          <circle cx="17" cy="17" r="3" />
-        </svg>
-      )
-    }
-
-    if (id === 'transaksi') {
-      return (
-        <svg {...props}>
-          <rect x="3.5" y="3.5" width="17" height="17" rx="1" />
-          <path d="M12 7v10M7 12h10" />
-        </svg>
-      )
-    }
-
-    if (id === 'riwayat') {
-      return (
-        <svg {...props}>
-          <path d="M6 3h9l5 5v13H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
-          <path d="M15 3v5h5" />
-        </svg>
-      )
-    }
-
-    return <ReminderPageIcon />
-  }
+  const showLoadingMessage =
+    !error && loading && sortedReminders.length === 0
 
   return (
     <div className="dashboard-layout reminder-layout">
 
       {/* SIDEBAR */}
+
       <aside className="dashboard-sidebar">
         <div className="dashboard-brand">
           <img src={Logo} alt="FiNote" />
         </div>
 
         <nav className="dashboard-navigation">
-          {menuItems.map((item) => (
+          {MENU_ITEMS.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -500,129 +798,142 @@ function RemindersPage({ user, onLogout, onNavigate }) {
             className="dashboard-logout"
             onClick={onLogout}
           >
-            Keluar
+            keluar
           </button>
         </div>
       </aside>
 
-      {/* WORKSPACE */}
+      {/* AREA KERJA */}
+
       <div className="reminder-workspace">
 
         {/* HEADER */}
+
         <header className="reminder-header">
-          <div className="reminder-header-title">
+          <div className="reminder-header-left">
             <span className="reminder-header-icon">
               <BellIcon />
             </span>
 
-            <div>
+            <div className="reminder-heading">
               <h1>Halaman pengingat transaksi</h1>
-              <p>
-                buat pengingat untuk pengeluaranmu kedepan
-              </p>
+              <p>buat pengingat untuk pengeluaranmu kedepan</p>
             </div>
           </div>
 
           <button
             className="reminder-add-button"
             type="button"
-            onClick={() => setShowModal(true)}
+            onClick={openForm}
+            disabled={saving}
           >
-            <PlusIcon />
+            <PlusSquareIcon />
             tambah pengingat
           </button>
         </header>
 
+        {/* NOTIFIKASI */}
+
+        {notice && (
+          <div
+            className={`reminder-notice ${notice.type}`}
+            role="status"
+            aria-live="polite"
+          >
+            {notice.message}
+          </div>
+        )}
+
         <main className="reminder-main">
           <section className="reminder-content">
 
-            {/* SUMMARY */}
+            {/* KARTU RINGKASAN */}
+
             <div className="reminder-summary">
+              {SUMMARY_CARDS.map((card) => {
+                const count = Number(summary[card.key]) || 0
 
-              <div className="reminder-summary-card nearest">
-                <img src={RedCalendar} alt="" />
+                return (
+                  <button
+                    key={card.key}
+                    type="button"
+                    className={`reminder-summary-card ${card.tone}`}
+                    onClick={() => setActiveFilter(card.filter)}
+                    aria-label={`${card.title}: ${count}`}
+                  >
+                    <div className="reminder-summary-body">
+                      <div className="reminder-summary-top">
+                        <img src={card.icon} alt="" />
 
-                <div>
-                  <strong>{displayedSummary.terdekat}</strong>
-                  <h3>Terdekat</h3>
-                  <p>&lt; 3 hari</p>
-                </div>
+                        <strong className={count === 0 ? 'zero' : ''}>
+                          {count}
+                        </strong>
+                      </div>
 
-                <span><ChevronRight /></span>
-              </div>
+                      <h3>{card.title}</h3>
+                      <p>{card.note}</p>
+                    </div>
 
-              <div className="reminder-summary-card total">
-                <img src={GreenCalendar} alt="" />
-
-                <div>
-                  <strong>{displayedSummary.total}</strong>
-                  <h3>Total satu bulan</h3>
-                  <p>semua pengingat</p>
-                </div>
-
-                <span><ChevronRight /></span>
-              </div>
-
-              <div className="reminder-summary-card completed">
-                <img src={BlueCalendar} alt="" />
-
-                <div>
-                  <strong>{displayedSummary.selesai}</strong>
-                  <h3>Selesai</h3>
-                  <p>sudah ditandai selesai</p>
-                </div>
-
-                <span><ChevronRight /></span>
-              </div>
-
-              <div className="reminder-summary-card missed">
-                <img src={PinkCalendar} alt="" />
-
-                <div>
-                  <strong>{displayedSummary.terlewat}</strong>
-                  <h3>Terlewat</h3>
-                  <p>belum ditandai selesai</p>
-                </div>
-
-                <span><ChevronRight /></span>
-              </div>
+                    <span className="reminder-summary-arrow">
+                      <ChevronRight />
+                    </span>
+                  </button>
+                )
+              })}
             </div>
 
-            {/* TOOLBAR */}
-            <div className="reminder-toolbar">
+            {/* PENCARIAN, BULAN, FILTER */}
 
+            <div className="reminder-toolbar">
               <div className="reminder-toolbar-left">
-                <div className="reminder-search">
+
+                <label className="reminder-search">
                   <SearchIcon />
 
                   <input
                     type="text"
                     placeholder="cari pengingat..."
                     value={search}
-                    onChange={(event) =>
-                      setSearch(event.target.value)
-                    }
+                    maxLength={100}
+                    onChange={(event) => setSearch(event.target.value)}
+                    aria-label="Cari pengingat"
                   />
-                </div>
+                </label>
 
-                <input
-                  className="reminder-month"
-                  type="month"
-                  value={selectedMonth}
-                  onChange={(event) =>
-                    setSelectedMonth(event.target.value)
-                  }
-                  aria-label="Pilih bulan pengingat"
-                />
+                <label className="reminder-month">
+                  <span className="reminder-month-icon">
+                    <MonthIcon />
+                  </span>
+
+                  <select
+                    value={selectedMonth}
+                    onChange={(event) =>
+                      setSelectedMonth(event.target.value)
+                    }
+                    aria-label="Pilih bulan pengingat"
+                  >
+                    <option value="">Pilih bulan...</option>
+
+                    {monthOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <span className="reminder-month-arrow">
+                    <ChevronDown />
+                  </span>
+                </label>
+
               </div>
 
-              <div className="reminder-filters">
-                {[
-                  { id: 'semua', label: 'semua' },
-                  { id: 'terdekat', label: 'terdekat' },
-                  { id: 'terlewat', label: 'terlewat' },
-                  { id: 'selesai', label: 'selesai' },
-                ].map((filter) => (
+              <div
+                className="reminder-filters"
+                role="group"
+                aria-label="Filter status pengingat"
+              >
+                {FILTERS.map((filter) => (
                   <button
                     key={filter.id}
                     type="button"
@@ -630,6 +941,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                       activeFilter === filter.id ? 'selected' : ''
                     }
                     onClick={() => setActiveFilter(filter.id)}
+                    aria-pressed={activeFilter === filter.id}
                   >
                     {filter.label}
                   </button>
@@ -637,8 +949,13 @@ function RemindersPage({ user, onLogout, onNavigate }) {
               </div>
             </div>
 
-            {/* TABLE */}
-            <div className="reminder-table-wrapper">
+            {/* TABEL */}
+
+            <div
+              className={`reminder-table-wrapper ${
+                loading ? 'is-loading' : ''
+              }`}
+            >
               <table className="reminder-table">
                 <thead>
                   <tr>
@@ -651,108 +968,153 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                 </thead>
 
                 <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan="5" className="reminder-message">
-                        Memuat daftar pengingat...
-                      </td>
-                    </tr>
-                  ) : error ? (
-                    <tr>
-                      <td colSpan="5" className="reminder-message error">
-                        {error}
-                      </td>
-                    </tr>
-                  ) : displayedReminders.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className="reminder-message">
-                        {activeFilter === 'terdekat'
-                          ? 'Tidak ada pengingat dalam waktu terdekat.'
-                          : 'Belum ada pengingat pada bulan ini.'}
-                      </td>
-                    </tr>
-                  ) : (
-                    displayedReminders.map((item) => (
+                  {sortedReminders.map((item) => {
+                    const isDone = item.status === 'selesai'
+
+                    const blocked =
+                      !isDone &&
+                      BLOCK_OVERDUE_COMPLETE &&
+                      Boolean(item.terlewat)
+
+                    return (
                       <tr key={item.pengingat_id}>
                         <td>{formatDate(item.tanggal)}</td>
 
-                        <td>{item.deskripsi}</td>
-
-                        <td>{item.nama_kategori || '-'}</td>
+                        <td className="reminder-description">
+                          {item.deskripsi}
+                        </td>
 
                         <td>
-                          {formatRupiah(item.jumlah || 0)}
+                          <CategoryBadge name={item.nama_kategori} />
                         </td>
+
+                        <td>{formatNominal(item.jumlah)}</td>
 
                         <td>
                           <div className="reminder-actions">
-                            {item.status !== 'selesai' && (
-                              <button
-                                type="button"
-                                className="complete-action"
-                                title="Tandai selesai"
-                                onClick={() =>
-                                  handleComplete(item.pengingat_id)
-                                }
-                              >
-                                ✓
-                              </button>
-                            )}
 
                             <button
                               type="button"
-                              className="delete-action"
-                              title="Hapus pengingat"
+                              className={`reminder-done-button ${
+                                isDone ? 'is-done' : ''
+                              }`}
+                              disabled={isDone || blocked}
+                              aria-label={
+                                isDone
+                                  ? `${item.deskripsi} sudah selesai`
+                                  : `Tandai selesai ${item.deskripsi}`
+                              }
                               onClick={() =>
-                                handleDelete(item.pengingat_id)
+                                setConfirmTarget({
+                                  type: 'complete',
+                                  item,
+                                })
                               }
                             >
-                              ×
+                              <CheckCircleIcon />
+                              selesai
                             </button>
+
+                            <button
+                              type="button"
+                              className="reminder-delete-button"
+                              aria-label={`Hapus pengingat ${item.deskripsi}`}
+                              onClick={() =>
+                                setConfirmTarget({
+                                  type: 'delete',
+                                  item,
+                                })
+                              }
+                            >
+                              <img src={DeleteImage} alt="" />
+                            </button>
+
                           </div>
                         </td>
                       </tr>
-                    ))
-                  )}
+                    )
+                  })}
                 </tbody>
               </table>
-            </div>
 
-            <p className="reminder-footnote">
-              Data pengingat yang berasal dari server ditampilkan
-              berdasarkan bulan dan filter yang dipilih.
-            </p>
+              {error && (
+                <div className="reminder-empty error">{error}</div>
+              )}
+
+              {showLoadingMessage && (
+                <div className="reminder-empty">
+                  memuat daftar pengingat...
+                </div>
+              )}
+
+              {showEmpty && (
+                <div className="reminder-empty">
+                  {getEmptyMessage(activeFilter, isSearching)}
+                </div>
+              )}
+            </div>
           </section>
         </main>
       </div>
 
+      {/* MODAL KONFIRMASI */}
+
+      {confirmTarget && (
+        <ConfirmModal
+          variant={
+            confirmTarget.type === 'delete' ? 'danger' : 'success'
+          }
+          title={
+            confirmTarget.type === 'delete'
+              ? 'Hapus pengingat'
+              : 'Tandai selesai'
+          }
+          message={
+            confirmTarget.type === 'delete'
+              ? 'tindakan menghapus tidak dapat dikembalikan, apakah anda yakin.'
+              : 'apakah anda yakin telah selesai melakukan pengeluaran tersebut'
+          }
+          confirmLabel={
+            confirmTarget.type === 'delete' ? 'Hapus' : 'selesai'
+          }
+          busy={actionBusy}
+          onCancel={closeConfirm}
+          onConfirm={handleConfirm}
+        />
+      )}
+
       {/* MODAL TAMBAH PENGINGAT */}
-      {showModal && (
-        <div
-          className="reminder-modal-overlay"
-          onClick={() => setShowModal(false)}
-        >
+
+      {showForm && (
+        <div className="reminder-overlay" onClick={closeForm}>
           <div
             className="reminder-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reminder-form-title"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="reminder-modal-header">
-              <h2>Tambah pengingat</h2>
+              <h2 id="reminder-form-title">Tambah pengingat</h2>
 
               <button
                 type="button"
-                onClick={() => setShowModal(false)}
+                aria-label="Tutup"
+                onClick={closeForm}
+                disabled={saving}
               >
-                ×
+                <CloseIcon />
               </button>
             </div>
 
             <form onSubmit={handleAddReminder}>
+
               <label>
                 Deskripsi pengingat
                 <input
                   name="deskripsi"
                   type="text"
+                  maxLength={200}
                   placeholder="Contoh: Bayar listrik"
                   value={form.deskripsi}
                   onChange={handleFormChange}
@@ -771,10 +1133,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                   <option value="">Pilih kategori</option>
 
                   {categories.map((category) => (
-                    <option
-                      key={category.id}
-                      value={category.id}
-                    >
+                    <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
                   ))}
@@ -787,6 +1146,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                   name="jumlah"
                   type="number"
                   min="1"
+                  step="1"
                   placeholder="Masukkan nominal"
                   value={form.jumlah}
                   onChange={handleFormChange}
@@ -805,11 +1165,18 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                 />
               </label>
 
+              {formError && (
+                <p className="reminder-form-error" role="alert">
+                  {formError}
+                </p>
+              )}
+
               <div className="reminder-modal-buttons">
                 <button
                   type="button"
                   className="cancel-button"
-                  onClick={() => setShowModal(false)}
+                  onClick={closeForm}
+                  disabled={saving}
                 >
                   Batal
                 </button>
@@ -817,21 +1184,17 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                 <button
                   type="submit"
                   className="save-button"
+                  disabled={saving}
                 >
-                  Simpan
+                  {saving ? 'Menyimpan...' : 'Simpan'}
                 </button>
               </div>
+
             </form>
           </div>
         </div>
       )}
 
-      {/* NOTIFICATION */}
-      {notice && (
-        <div className="reminder-toast">
-          {notice}
-        </div>
-      )}
     </div>
   )
 }
