@@ -215,3 +215,27 @@ test('tanpa token -> 401', async () => {
   const { status } = await riwayat('', null);
   assert.strictEqual(status, 401);
 });
+
+test('filter rentang nominal: nominal_min / nominal_max (inklusif)', async () => {
+  // nominal milik user: 10000, 8000, 15000, 50000, 30000
+  assert.strictEqual((await riwayat('?nominal_min=10000')).json.data.transactions.length, 4);
+  assert.strictEqual((await riwayat('?nominal_max=10000')).json.data.transactions.length, 2);
+  assert.strictEqual((await riwayat('?nominal_min=10000&nominal_max=30000')).json.data.transactions.length, 3);
+  const kosong = await riwayat('?nominal_min=60000');
+  assert.strictEqual(kosong.json.data.transactions.length, 0);
+  assert.strictEqual(kosong.json.message, 'Data tidak ditemukan.');
+});
+
+test('rentang nominal tidak valid -> 400 "Input tidak valid."', async () => {
+  for (const q of [
+    '?nominal_min=abc',
+    '?nominal_max=12.5',
+    '?nominal_min=-1',
+    '?nominal_min=5000&nominal_max=1000',
+    '?nominal=10000&nominal_min=5000',
+  ]) {
+    const { status, json } = await riwayat(q);
+    assert.strictEqual(status, 400, q);
+    assert.strictEqual(json.message, 'Input tidak valid.');
+  }
+});
