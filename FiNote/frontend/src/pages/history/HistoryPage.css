@@ -1,4 +1,3 @@
-
 /* =========================================
    HISTORY PAGE - FINOTE
    REVISI DESAIN UI/UX
@@ -141,7 +140,7 @@
   width: 100%;
   min-width: 0;
   height: 100%;
-  padding: 0 7px;
+  padding: 0 30px 0 10px;
   border: 0;
   outline: 0;
   appearance: none;
@@ -152,11 +151,38 @@
   cursor: pointer;
 }
 
+.history-date-control input::-webkit-datetime-edit-text { color: transparent; }
+.history-date-control input::-webkit-datetime-edit-month-field { color: transparent; }
+.history-date-control input::-webkit-datetime-edit-day-field { color: transparent; }
+.history-date-control input::-webkit-datetime-edit-year-field { color: transparent; }
+
+.history-date-control input:valid::-webkit-datetime-edit-text { color: #555; }
+.history-date-control input:valid::-webkit-datetime-edit-month-field { color: #555; }
+.history-date-control input:valid::-webkit-datetime-edit-day-field { color: #555; }
+.history-date-control input:valid::-webkit-datetime-edit-year-field { color: #555; }
+
 .history-date-control input::-webkit-calendar-picker-indicator {
-  width: 14px;
-  height: 14px;
-  margin: 0 2px 0 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 100%;
   cursor: pointer;
+}
+
+.custom-date-icon {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  pointer-events: none;
+}
+
+.custom-date-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 .history-date-arrow {
@@ -314,20 +340,22 @@
 }
 
 /* =========================================
-   TABEL RIWAYAT
+   TABEL RIWAYAT & PAGINATION AREA
 ========================================= */
 
 .history-table-section {
+  position: relative; /* Penting agar pagination bisa di-absolute */
   width: 100%;
-  height: 375px;
-  min-width: 0;
-  overflow: hidden;
+  min-height: 400px; /* Tinggi minimal agar tabel tidak terlalu pendek */
+  padding-bottom: 50px; /* Ruang untuk pagination di bagian bawah */
   background: #fff;
+  border: 1px solid #e0e0e0;
 }
 
 .history-table-scroll {
   width: 100%;
   height: 100%;
+  max-height: 400px; /* Scroll vertikal jika data sangat banyak */
   overflow: auto;
 }
 
@@ -341,6 +369,9 @@
 
 .history-table thead {
   background: #c5d9fb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .history-table th {
@@ -362,31 +393,15 @@
 }
 
 .history-table th:nth-child(1),
-.history-table td:nth-child(1) {
-  width: 13%;
-  text-align: center;
-}
-
+.history-table td:nth-child(1) { width: 13%; text-align: center; }
 .history-table th:nth-child(2),
-.history-table td:nth-child(2) {
-  width: 20%;
-}
-
+.history-table td:nth-child(2) { width: 20%; }
 .history-table th:nth-child(3),
-.history-table td:nth-child(3) {
-  width: 20%;
-}
-
+.history-table td:nth-child(3) { width: 20%; }
 .history-table th:nth-child(4),
-.history-table td:nth-child(4) {
-  width: 20%;
-}
-
+.history-table td:nth-child(4) { width: 20%; }
 .history-table th:nth-child(5),
-.history-table td:nth-child(5) {
-  width: 27%;
-  text-align: center;
-}
+.history-table td:nth-child(5) { width: 27%; text-align: center; }
 
 .history-table td.history-number-column {
   font-size: 12px;
@@ -397,11 +412,6 @@
   white-space: nowrap;
 }
 
-/* Transaksi yang tidak sesuai filter dibuat redup. */
-.history-table tbody tr.history-row-dimmed td {
-  color: #d5d5d5;
-}
-
 .history-state-cell {
   height: 150px !important;
   color: #626d85 !important;
@@ -409,19 +419,40 @@
   font-size: 12px !important;
 }
 
+/* Empty State Badge Biru */
+.history-empty-state-cell {
+  height: 340px !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.history-empty-badge {
+  display: inline-block;
+  padding: 14px 28px;
+  border-radius: 8px;
+  background: #b8cdf6;
+  color: #1e56c9;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 /* =========================================
-   PAGINATION
+   PAGINATION (FIXED BOTTOM RIGHT)
 ========================================= */
 
 .history-pagination {
+  position: absolute;
+  bottom: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 7px;
   width: 100%;
-  margin-top: 15px;
-  padding-right: 2px;
+  padding: 10px 15px;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
 }
 
 .history-page-button,
@@ -459,90 +490,31 @@
   cursor: not-allowed;
 }
 
-.history-total {
-  margin: 8px 0 0;
-  color: #626d85;
-  font-size: 11px;
-  text-align: right;
-}
-
 /* =========================================
    RESPONSIVE
 ========================================= */
 
 @media (max-width: 1100px) {
-  .history-main {
-    padding-right: 22px;
-    padding-left: 22px;
-  }
-
+  .history-main { padding-right: 22px; padding-left: 22px; }
   .history-filter-panel {
-    grid-template-columns:
-      minmax(220px, 1.3fr)
-      minmax(150px, 0.9fr);
+    grid-template-columns: minmax(220px, 1.3fr) minmax(150px, 0.9fr);
     gap: 12px;
   }
-
-  .history-range-fields {
-    grid-column: 1;
-  }
-
-  .history-filter-button {
-    grid-column: 2;
-    align-self: end;
-  }
+  .history-range-fields { grid-column: 1; }
+  .history-filter-button { grid-column: 2; align-self: end; }
 }
 
 @media (max-width: 768px) {
-  .history-layout {
-    flex-direction: column;
-  }
-
-  .history-main {
-    padding: 0 14px 24px;
-  }
-
-  .history-header {
-    margin-bottom: 16px;
-    padding-top: 20px;
-  }
-
-  .history-header h1 {
-    font-size: 18px;
-  }
-
-  .history-filter-panel {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 13px;
-  }
-
-  .history-range-fields,
-  .history-filter-button {
-    grid-column: auto;
-  }
-
-  .history-filter-button {
-    width: 100%;
-  }
-
-  .history-reset-button {
-    grid-column: auto;
-  }
-
-  .history-table-section {
-    height: 360px;
-  }
-
-  .history-table th {
-    font-size: 11px;
-  }
-
-  .history-table td {
-    font-size: 10px;
-  }
-
-  .history-pagination {
-    justify-content: center;
-  }
+  .history-layout { flex-direction: column; }
+  .history-main { padding: 0 14px 24px; }
+  .history-header { margin-bottom: 16px; padding-top: 20px; }
+  .history-header h1 { font-size: 18px; }
+  .history-filter-panel { grid-template-columns: 1fr; gap: 12px; padding: 13px; }
+  .history-range-fields, .history-filter-button { grid-column: auto; }
+  .history-filter-button { width: 100%; }
+  .history-reset-button { grid-column: auto; }
+  .history-table-scroll { max-height: 360px; }
+  .history-table th { font-size: 11px; }
+  .history-table td { font-size: 10px; }
+  .history-pagination { justify-content: center; }
 }

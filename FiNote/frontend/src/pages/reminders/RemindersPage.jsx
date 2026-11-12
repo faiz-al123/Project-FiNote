@@ -3,10 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Logo from '../../assets/Logo.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
 
-// Aset dari folder pengingat-assets yang cocok dengan desain UI/UX.
-// Header, tombol tambah, tombol filter, header tabel, dan tombol selesai
-// SENGAJA dibuat dengan HTML/CSS (bukan gambar) karena di desain
-// elemen-elemen itu punya state aktif/nonaktif dan harus tajam di layar apa pun.
 import DeleteImage from '../../assets/pengingat-assets/Delete.png'
 import ReminderBellImage from '../../assets/pengingat-assets/Bell.png'
 
@@ -35,9 +31,6 @@ import './RemindersPage.css'
 
 const NOTICE_DURATION = 3500
 const SEARCH_DELAY = 350
-
-// Sesuai desain (skenario 4): pengingat yang sudah terlewat
-// tombol "selesai"-nya nonaktif (abu-abu).
 const BLOCK_OVERDUE_COMPLETE = true
 
 const MONTH_NAMES = [
@@ -68,38 +61,10 @@ const FILTERS = [
 ]
 
 const SUMMARY_CARDS = [
-  {
-    key: 'terdekat',
-    filter: 'terdekat',
-    tone: 'nearest',
-    icon: RedCalendar,
-    title: 'Terdekat',
-    note: '< 3 hari',
-  },
-  {
-    key: 'total',
-    filter: 'semua',
-    tone: 'total',
-    icon: BlueCalendar,
-    title: 'Total satu bulan',
-    note: 'semua pengingat',
-  },
-  {
-    key: 'selesai',
-    filter: 'selesai',
-    tone: 'completed',
-    icon: GreenCalendar,
-    title: 'Selesai',
-    note: 'sudah ditandai selesai',
-  },
-  {
-    key: 'terlewat',
-    filter: 'terlewat',
-    tone: 'missed',
-    icon: OrangeCalendar,
-    title: 'Terlewat',
-    note: 'belum ditandai selesai',
-  },
+  { key: 'terdekat', filter: 'terdekat', tone: 'nearest', icon: RedCalendar, title: 'Terdekat', note: '< 3 hari' },
+  { key: 'total', filter: 'semua', tone: 'total', icon: BlueCalendar, title: 'Total satu bulan', note: 'semua pengingat' },
+  { key: 'selesai', filter: 'selesai', tone: 'completed', icon: GreenCalendar, title: 'Selesai', note: 'sudah ditandai selesai' },
+  { key: 'terlewat', filter: 'terlewat', tone: 'missed', icon: OrangeCalendar, title: 'Terlewat', note: 'belum ditandai selesai' },
 ]
 
 const CATEGORY_BADGES = {
@@ -123,21 +88,12 @@ const MENU_ITEMS = [
 
 function getToday() {
   const now = new Date()
-
-  return [
-    now.getFullYear(),
-    String(now.getMonth() + 1).padStart(2, '0'),
-    String(now.getDate()).padStart(2, '0'),
-  ].join('-')
+  return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-')
 }
 
 function formatDate(value) {
   if (!value) return '-'
-
-  const [year, month, day] = String(value)
-    .slice(0, 10)
-    .split('-')
-
+  const [year, month, day] = String(value).slice(0, 10).split('-')
   return `${day}/${month}/${year}`
 }
 
@@ -147,15 +103,22 @@ function formatNominal(value) {
   }).format(Number(value) || 0)
 }
 
+// Fungsi untuk merapikan input nominal (hanya angka)
+function formatNumberInput(value) {
+  const number = String(value).replace(/[^\d]/g, '')
+  if (!number) return ''
+  return new Intl.NumberFormat('id-ID').format(Number(number))
+}
+
+// Fungsi untuk mengambil angka murni dari string berformat (misal "10.000" jadi 10000)
+function parseRawNumber(value) {
+  return Number(String(value).replace(/[^\d]/g, ''))
+}
+
 function buildMonthOptions() {
   const currentYear = new Date().getFullYear()
   const options = []
-
-  for (
-    let year = currentYear - 2;
-    year <= currentYear + 2;
-    year++
-  ) {
+  for (let year = currentYear - 2; year <= currentYear + 2; year++) {
     MONTH_NAMES.forEach((name, index) => {
       options.push({
         value: `${year}-${String(index + 1).padStart(2, '0')}`,
@@ -163,20 +126,11 @@ function buildMonthOptions() {
       })
     })
   }
-
   return options
 }
 
 function getCategories(result) {
-  const candidates = [
-    result?.data?.categories,
-    result?.data?.kategori,
-    result?.data?.kategoris,
-    result?.categories,
-    result?.kategori,
-    result?.data,
-  ]
-
+  const candidates = [result?.data?.categories, result?.data?.kategori, result?.data?.kategoris, result?.categories, result?.kategori, result?.data]
   return candidates.find(Array.isArray) || []
 }
 
@@ -192,8 +146,6 @@ function getEmptyMessage(filter, searching) {
   if (searching) return 'pengingat tidak ditemukan'
   if (filter === 'terlewat') return 'tidak ada pengingat yang terlewat'
   if (filter === 'selesai') return 'belum ada pengingat yang selesai'
-
-  // "semua" dan "terdekat" memakai teks yang sama seperti di desain (skenario 7)
   return 'tidak ada pengingat dalam waktu terdekat'
 }
 
@@ -201,233 +153,64 @@ function getEmptyMessage(filter, searching) {
    IKON
 ========================================= */
 
-const iconProps = {
-  viewBox: '0 0 24 24',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 1.8,
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
-  'aria-hidden': true,
-}
+const iconProps = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }
 
-function BellIcon() {
-  return (
-    <svg {...iconProps}>
-      <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-      <path d="M10 21h4M5 5 7 3M19 3l2 2" />
-    </svg>
-  )
-}
+function BellIcon() { return <svg {...iconProps}><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" /><path d="M10 21h4M5 5 7 3M19 3l2 2" /></svg> }
+function PlusSquareIcon() { return <svg {...iconProps}><rect x="3.5" y="3.5" width="17" height="17" rx="2" /><path d="M12 8v8M8 12h8" /></svg> }
+function SearchIcon() { return <svg {...iconProps}><circle cx="10.8" cy="10.8" r="7" /><path d="m16 16 5 5" /></svg> }
+function ChevronRight() { return <svg {...iconProps}><path d="m9 18 6-6-6-6" /></svg> }
+function ChevronDown() { return <svg {...iconProps}><path d="m6 9 6 6 6-6" /></svg> }
+function MonthIcon() { return <svg {...iconProps}><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M8 3v4M16 3v4M3.5 10h17" /><path d="M10.3 13.3 12 12.2v5" /></svg> }
+function CheckCircleIcon() { return <svg {...iconProps}><circle cx="12" cy="12" r="9" /><path d="m8 12.3 2.8 2.8L16.2 9.4" /></svg> }
+function CalendarCheckIcon() { return <svg {...iconProps}><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M8 3v4M16 3v4M3.5 10h17" /><path d="m8.8 15 2.2 2.2 4.2-4.2" /></svg> }
+function CloseIcon() { return <svg {...iconProps}><path d="M6 6l12 12M18 6 6 18" /></svg> }
 
-function PlusSquareIcon() {
-  return (
-    <svg {...iconProps}>
-      <rect x="3.5" y="3.5" width="17" height="17" rx="2" />
-      <path d="M12 8v8M8 12h8" />
-    </svg>
-  )
-}
-
-function SearchIcon() {
-  return (
-    <svg {...iconProps}>
-      <circle cx="10.8" cy="10.8" r="7" />
-      <path d="m16 16 5 5" />
-    </svg>
-  )
-}
-
-function ChevronRight() {
-  return (
-    <svg {...iconProps}>
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  )
-}
-
-function ChevronDown() {
-  return (
-    <svg {...iconProps}>
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  )
-}
-
-function MonthIcon() {
+function FormCalendarIcon() {
   return (
     <svg {...iconProps}>
       <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
       <path d="M8 3v4M16 3v4M3.5 10h17" />
-      <path d="M10.3 13.3 12 12.2v5" />
-    </svg>
-  )
-}
-
-function CheckCircleIcon() {
-  return (
-    <svg {...iconProps}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m8 12.3 2.8 2.8L16.2 9.4" />
-    </svg>
-  )
-}
-
-function CalendarCheckIcon() {
-  return (
-    <svg {...iconProps}>
-      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
-      <path d="M8 3v4M16 3v4M3.5 10h17" />
-      <path d="m8.8 15 2.2 2.2 4.2-4.2" />
-    </svg>
-  )
-}
-
-function CloseIcon() {
-  return (
-    <svg {...iconProps}>
-      <path d="M6 6l12 12M18 6 6 18" />
+      <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" />
     </svg>
   )
 }
 
 function renderSidebarIcon(id) {
-  if (id === 'dashboard') {
-    return (
-      <svg {...iconProps}>
-        <circle cx="7" cy="7" r="3" />
-        <circle cx="17" cy="7" r="3" />
-        <circle cx="7" cy="17" r="3" />
-        <circle cx="17" cy="17" r="3" />
-      </svg>
-    )
-  }
-
-  if (id === 'transaksi') {
-    return (
-      <svg {...iconProps}>
-        <rect x="3.5" y="3.5" width="17" height="17" rx="1" />
-        <path d="M12 7v10M7 12h10" />
-      </svg>
-    )
-  }
-
-  if (id === 'riwayat') {
-    return (
-      <svg {...iconProps}>
-        <path d="M6 3h9l5 5v13H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
-        <path d="M15 3v5h5" />
-      </svg>
-    )
-  }
-
+  if (id === 'dashboard') return <svg {...iconProps}><circle cx="7" cy="7" r="3" /><circle cx="17" cy="7" r="3" /><circle cx="7" cy="17" r="3" /><circle cx="17" cy="17" r="3" /></svg>
+  if (id === 'transaksi') return <svg {...iconProps}><rect x="3.5" y="3.5" width="17" height="17" rx="1" /><path d="M12 7v10M7 12h10" /></svg>
+  if (id === 'riwayat') return <svg {...iconProps}><path d="M6 3h9l5 5v13H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" /><path d="M15 3v5h5" /></svg>
   return <BellIcon />
 }
 
 /* =========================================
-   BADGE KATEGORI
+   BADGE KATEGORI & MODAL
 ========================================= */
 
 function CategoryBadge({ name }) {
-  const badge =
-    CATEGORY_BADGES[String(name || '').trim().toLowerCase()]
-
-  if (badge) {
-    return (
-      <img
-        className="reminder-badge-image"
-        src={badge}
-        alt={name}
-      />
-    )
-  }
-
-  return (
-    <span className="reminder-badge-text">
-      {name || '-'}
-    </span>
-  )
+  const badge = CATEGORY_BADGES[String(name || '').trim().toLowerCase()]
+  if (badge) return <img className="reminder-badge-image" src={badge} alt={name} />
+  return <span className="reminder-badge-text">{name || '-'}</span>
 }
 
-/* =========================================
-   MODAL KONFIRMASI (hapus / tandai selesai)
-========================================= */
-
-function ConfirmModal({
-  variant,
-  title,
-  message,
-  confirmLabel,
-  busy,
-  onCancel,
-  onConfirm,
-}) {
+function ConfirmModal({ variant, title, message, confirmLabel, busy, onCancel, onConfirm }) {
   useEffect(() => {
-    function handleKey(event) {
-      if (event.key === 'Escape' && !busy) {
-        onCancel()
-      }
-    }
-
+    function handleKey(event) { if (event.key === 'Escape' && !busy) onCancel() }
     window.addEventListener('keydown', handleKey)
-
-    return () => {
-      window.removeEventListener('keydown', handleKey)
-    }
+    return () => window.removeEventListener('keydown', handleKey)
   }, [busy, onCancel])
 
   return (
-    <div
-      className="reminder-overlay"
-      onClick={() => {
-        if (!busy) onCancel()
-      }}
-    >
-      <div
-        className="reminder-confirm"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="reminder-confirm-title"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <button
-          type="button"
-          className="reminder-modal-close"
-          aria-label="Tutup"
-          onClick={onCancel}
-          disabled={busy}
-        >
-          <CloseIcon />
-        </button>
-
+    <div className="reminder-overlay" onClick={() => { if (!busy) onCancel() }}>
+      <div className="reminder-confirm" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="reminder-modal-close" aria-label="Tutup" onClick={onCancel} disabled={busy}><CloseIcon /></button>
         <span className={`reminder-confirm-icon ${variant}`}>
-          {variant === 'danger' ? (
-            <img src={DeleteImage} alt="" />
-          ) : (
-            <CalendarCheckIcon />
-          )}
+          {variant === 'danger' ? <img src={DeleteImage} alt="" /> : <CalendarCheckIcon />}
         </span>
-
-        <h2 id="reminder-confirm-title">{title}</h2>
-
+        <h2>{title}</h2>
         <p>{message}</p>
-
         <div className="reminder-confirm-buttons">
-          <button
-            type="button"
-            className="reminder-btn-cancel"
-            onClick={onCancel}
-            disabled={busy}
-          >
-            Batal
-          </button>
-
-          <button
-            type="button"
-            className={`reminder-btn-confirm ${variant}`}
-            onClick={onConfirm}
-            disabled={busy}
-          >
+          <button type="button" className="reminder-btn-cancel" onClick={onCancel} disabled={busy}>Batal</button>
+          <button type="button" className={`reminder-btn-confirm ${variant}`} onClick={onConfirm} disabled={busy}>
             {busy ? 'Memproses...' : confirmLabel}
           </button>
         </div>
@@ -444,20 +227,15 @@ function RemindersPage({ user, onLogout, onNavigate }) {
   const [reminders, setReminders] = useState([])
   const [summary, setSummary] = useState(EMPTY_SUMMARY)
   const [categories, setCategories] = useState([])
-
   const [selectedMonth, setSelectedMonth] = useState('')
   const [activeFilter, setActiveFilter] = useState('semua')
-
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [refreshKey, setRefreshKey] = useState(0)
-
   const [notice, setNotice] = useState(null)
   const noticeTimer = useRef(null)
-
   const [confirmTarget, setConfirmTarget] = useState(null)
   const [actionBusy, setActionBusy] = useState(false)
 
@@ -467,81 +245,49 @@ function RemindersPage({ user, onLogout, onNavigate }) {
   const [saving, setSaving] = useState(false)
 
   const monthOptions = useMemo(() => buildMonthOptions(), [])
-
   const activeMonth = selectedMonth || getToday().slice(0, 7)
-
-  const username =
-    user?.username || user?.nama || user?.name || 'Pengguna'
-
-  /* NOTIFIKASI */
+  const username = user?.username || user?.nama || user?.name || 'Pengguna'
 
   function showNotice(message, type = 'danger') {
     window.clearTimeout(noticeTimer.current)
-
     setNotice({ message, type })
-
-    noticeTimer.current = window.setTimeout(() => {
-      setNotice(null)
-    }, NOTICE_DURATION)
+    noticeTimer.current = window.setTimeout(() => setNotice(null), NOTICE_DURATION)
   }
 
   useEffect(() => {
-    return () => {
-      window.clearTimeout(noticeTimer.current)
-    }
+    return () => window.clearTimeout(noticeTimer.current)
   }, [])
 
-  /* PENCARIAN (debounce) */
-
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setDebouncedSearch(search)
-    }, SEARCH_DELAY)
-
+    const timer = window.setTimeout(() => setDebouncedSearch(search), SEARCH_DELAY)
     return () => window.clearTimeout(timer)
   }, [search])
 
-  /* KATEGORI UNTUK FORM TAMBAH */
-
   useEffect(() => {
     let cancelled = false
-
     async function loadCategories() {
       try {
         const result = await getTransactionCategories()
         const rows = getCategories(result)
-
         if (!cancelled) {
           setCategories(
-            rows
-              .map((item) => ({
-                id: getCategoryId(item),
-                name: getCategoryName(item),
-              }))
-              .filter((item) => item.id != null && item.name),
+            rows.map((item) => ({ id: getCategoryId(item), name: getCategoryName(item) }))
+                .filter((item) => item.id != null && item.name)
           )
         }
       } catch (err) {
         console.error('Gagal mengambil kategori:', err)
       }
     }
-
     loadCategories()
-
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [])
-
-  /* DAFTAR PENGINGAT */
 
   useEffect(() => {
     let cancelled = false
-
     async function loadReminders() {
       setLoading(true)
       setError('')
-
       try {
         const result = await getReminders({
           bulan: activeMonth,
@@ -549,110 +295,60 @@ function RemindersPage({ user, onLogout, onNavigate }) {
           filter: activeFilter,
           search: debouncedSearch,
         })
-
         if (cancelled) return
-
-        setReminders(
-          Array.isArray(result?.reminders) ? result.reminders : [],
-        )
-
-        setSummary({
-          ...EMPTY_SUMMARY,
-          ...(result?.ringkasan || {}),
-        })
+        setReminders(Array.isArray(result?.reminders) ? result.reminders : [])
+        setSummary({ ...EMPTY_SUMMARY, ...(result?.ringkasan || {}) })
       } catch (err) {
         if (cancelled) return
-
-        if (err.status === 401) {
-          onLogout?.()
-          return
-        }
-
+        if (err.status === 401) { onLogout?.(); return }
         setReminders([])
         setSummary(EMPTY_SUMMARY)
         setError(err.message || 'Gagal memuat daftar pengingat.')
       } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
+        if (!cancelled) setLoading(false)
       }
     }
-
     loadReminders()
-
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [activeMonth, activeFilter, debouncedSearch, refreshKey, onLogout])
-
-  /* URUTAN: yang terlewat di bagian bawah (sesuai desain), lalu per tanggal */
 
   const sortedReminders = useMemo(() => {
     return [...reminders].sort((a, b) => {
-      const overdueDifference =
-        Number(Boolean(a.terlewat)) - Number(Boolean(b.terlewat))
-
-      if (overdueDifference !== 0) {
-        return overdueDifference
-      }
-
+      const overdueDifference = Number(Boolean(a.terlewat)) - Number(Boolean(b.terlewat))
+      if (overdueDifference !== 0) return overdueDifference
       return String(a.tanggal).localeCompare(String(b.tanggal))
     })
   }, [reminders])
 
-  /* KONFIRMASI HAPUS / SELESAI */
-
   function closeConfirm() {
-    if (!actionBusy) {
-      setConfirmTarget(null)
-    }
+    if (!actionBusy) setConfirmTarget(null)
   }
 
   async function handleConfirm() {
     if (!confirmTarget) return
-
     const { type, item } = confirmTarget
-
     setActionBusy(true)
-
     try {
       if (type === 'delete') {
         await deleteReminder(item.pengingat_id)
-
-        showNotice(
-          'baris pengingat yang dipilih berhasil dihapus',
-          'danger',
-        )
+        showNotice('baris pengingat yang dipilih berhasil dihapus', 'danger')
       } else {
         await completeReminder(item.pengingat_id)
-
-        showNotice(
-          'pengingat berhasil ditandai selesai',
-          'success',
-        )
+        showNotice('pengingat berhasil ditandai selesai', 'success')
       }
-
       setConfirmTarget(null)
       setRefreshKey((key) => key + 1)
     } catch (err) {
-      if (err.status === 401) {
-        onLogout?.()
-        return
-      }
-
-      // Data sudah berubah di server (dihapus / sudah selesai) -> segarkan tabel
+      if (err.status === 401) { onLogout?.(); return }
       if (err.status === 404 || err.status === 409) {
         setConfirmTarget(null)
         setRefreshKey((key) => key + 1)
       }
-
       showNotice(err.message || 'Aksi gagal dilakukan.', 'danger')
     } finally {
       setActionBusy(false)
     }
   }
-
-  /* TAMBAH PENGINGAT */
 
   function openForm() {
     setForm(EMPTY_FORM)
@@ -661,34 +357,38 @@ function RemindersPage({ user, onLogout, onNavigate }) {
   }
 
   function closeForm() {
-    if (!saving) {
-      setShowForm(false)
-    }
+    if (!saving) setShowForm(false)
   }
 
   function handleFormChange(event) {
     const { name, value } = event.target
+    let formattedValue = value
+
+    // Cegah scroll mouse mengubah nominal & format otomatis pakai titik
+    if (name === 'jumlah') {
+      formattedValue = formatNumberInput(value)
+    }
 
     setForm((previous) => ({
       ...previous,
-      [name]: value,
+      [name]: formattedValue,
     }))
+
+    if (formError) setFormError('')
   }
 
   async function handleAddReminder(event) {
     event.preventDefault()
 
-    if (
-      !form.deskripsi.trim() ||
-      !form.kategori_id ||
-      !form.jumlah ||
-      !form.tanggal
-    ) {
+    // Ambil nilai mentah (angka murni) dari string berformat
+    const rawJumlah = parseRawNumber(form.jumlah)
+
+    if (!form.deskripsi.trim() || !form.kategori_id || !form.jumlah || !form.tanggal) {
       setFormError('Lengkapi seluruh data pengingat.')
       return
     }
 
-    if (Number(form.jumlah) <= 0) {
+    if (rawJumlah <= 0) {
       setFormError('Nominal harus lebih dari 0.')
       return
     }
@@ -705,244 +405,132 @@ function RemindersPage({ user, onLogout, onNavigate }) {
       await createReminder({
         deskripsi: form.deskripsi.trim(),
         kategori_id: Number(form.kategori_id),
-        jumlah: Number(form.jumlah),
+        jumlah: rawJumlah, // Kirim angka murni, misal 10000
         tanggal: form.tanggal,
       })
 
       setShowForm(false)
       showNotice('pengingat berhasil disimpan', 'success')
-
       const newMonth = form.tanggal.slice(0, 7)
-
-      if (newMonth !== activeMonth) {
-        setSelectedMonth(newMonth)
-      }
-
+      if (newMonth !== activeMonth) setSelectedMonth(newMonth)
       setActiveFilter('semua')
       setSearch('')
       setDebouncedSearch('')
       setRefreshKey((key) => key + 1)
     } catch (err) {
-      if (err.status === 401) {
-        onLogout?.()
-        return
-      }
-
+      if (err.status === 401) { onLogout?.(); return }
       setFormError(err.message || 'Gagal menyimpan pengingat.')
     } finally {
       setSaving(false)
     }
   }
 
-  /* TAMPILAN */
-
   const isSearching = Boolean(debouncedSearch.trim())
-
-  const showEmpty =
-    !error && !loading && sortedReminders.length === 0
-
-  const showLoadingMessage =
-    !error && loading && sortedReminders.length === 0
+  const showEmpty = !error && !loading && sortedReminders.length === 0
+  const showLoadingMessage = !error && loading && sortedReminders.length === 0
 
   return (
     <div className="dashboard-layout reminder-layout">
-
       {/* SIDEBAR */}
-
       <aside className="dashboard-sidebar">
-        <div className="dashboard-brand">
-          <img src={Logo} alt="FiNote" />
-        </div>
-
+        <div className="dashboard-brand"><img src={Logo} alt="FiNote" /></div>
         <nav className="dashboard-navigation">
           {MENU_ITEMS.map((item) => (
             <button
               key={item.id}
               type="button"
-              className={`dashboard-menu-item ${
-                item.id === 'pengingat' ? 'active' : ''
-              }`}
+              className={`dashboard-menu-item ${item.id === 'pengingat' ? 'active' : ''}`}
               onClick={() => onNavigate?.(item.id)}
             >
-              <span className="dashboard-menu-icon">
-                {renderSidebarIcon(item.id)}
-              </span>
-
-              <span className="dashboard-menu-label">
-                {item.label}
-              </span>
+              <span className="dashboard-menu-icon">{renderSidebarIcon(item.id)}</span>
+              <span className="dashboard-menu-label">{item.label}</span>
             </button>
           ))}
         </nav>
-
         <div className="dashboard-sidebar-bottom">
           <div className="dashboard-user-profile">
-            <img
-              src={ProfileIcon}
-              alt=""
-              className="dashboard-user-icon"
-            />
-
+            <img src={ProfileIcon} alt="" className="dashboard-user-icon" />
             <div className="dashboard-user-info">
-              <span className="dashboard-user-name">
-                {username}
-              </span>
-
-              <span className="dashboard-user-role">
-                mahasiswa
-              </span>
+              <span className="dashboard-user-name">{username}</span>
+              <span className="dashboard-user-role">mahasiswa</span>
             </div>
           </div>
-
-          <button
-            type="button"
-            className="dashboard-logout"
-            onClick={onLogout}
-          >
-            keluar
-          </button>
+          <button type="button" className="dashboard-logout" onClick={onLogout}>keluar</button>
         </div>
       </aside>
 
       {/* AREA KERJA */}
-
       <div className="reminder-workspace">
-
-        {/* HEADER */}
-
         <header className="reminder-header">
           <div className="reminder-header-left">
-            <span className="reminder-header-icon">
-              <BellIcon />
-            </span>
-
+            <span className="reminder-header-icon"><BellIcon /></span>
             <div className="reminder-heading">
               <h1>Halaman pengingat transaksi</h1>
               <p>buat pengingat untuk pengeluaranmu kedepan</p>
             </div>
           </div>
-
-          <button
-            className="reminder-add-button"
-            type="button"
-            onClick={openForm}
-            disabled={saving}
-          >
-            <PlusSquareIcon />
-            tambah pengingat
+          <button className="reminder-add-button" type="button" onClick={openForm} disabled={saving}>
+            <PlusSquareIcon /> tambah pengingat
           </button>
         </header>
 
-        {/* NOTIFIKASI */}
-
         {notice && (
-          <div
-            className={`reminder-notice ${notice.type}`}
-            role="status"
-            aria-live="polite"
-          >
+          <div className={`reminder-notice ${notice.type}`} role="status" aria-live="polite">
             {notice.message}
           </div>
         )}
 
         <main className="reminder-main">
           <section className="reminder-content">
-
-            {/* KARTU RINGKASAN */}
-
             <div className="reminder-summary">
               {SUMMARY_CARDS.map((card) => {
                 const count = Number(summary[card.key]) || 0
-
                 return (
-                  <button
-                    key={card.key}
-                    type="button"
-                    className={`reminder-summary-card ${card.tone}`}
-                    onClick={() => setActiveFilter(card.filter)}
-                    aria-label={`${card.title}: ${count}`}
-                  >
+                  <button key={card.key} type="button" className={`reminder-summary-card ${card.tone}`} onClick={() => setActiveFilter(card.filter)}>
                     <div className="reminder-summary-body">
                       <div className="reminder-summary-top">
                         <img src={card.icon} alt="" />
-
-                        <strong className={count === 0 ? 'zero' : ''}>
-                          {count}
-                        </strong>
+                        <strong className={count === 0 ? 'zero' : ''}>{count}</strong>
                       </div>
-
                       <h3>{card.title}</h3>
                       <p>{card.note}</p>
                     </div>
-
-                    <span className="reminder-summary-arrow">
-                      <ChevronRight />
-                    </span>
+                    <span className="reminder-summary-arrow"><ChevronRight /></span>
                   </button>
                 )
               })}
             </div>
 
-            {/* PENCARIAN, BULAN, FILTER */}
-
             <div className="reminder-toolbar">
               <div className="reminder-toolbar-left">
-
                 <label className="reminder-search">
                   <SearchIcon />
-
                   <input
                     type="text"
                     placeholder="cari pengingat..."
                     value={search}
                     maxLength={100}
-                    onChange={(event) => setSearch(event.target.value)}
-                    aria-label="Cari pengingat"
+                    onChange={(e) => setSearch(e.target.value)}
                   />
                 </label>
-
                 <label className="reminder-month">
-                  <span className="reminder-month-icon">
-                    <MonthIcon />
-                  </span>
-
-                  <select
-                    value={selectedMonth}
-                    onChange={(event) =>
-                      setSelectedMonth(event.target.value)
-                    }
-                    aria-label="Pilih bulan pengingat"
-                  >
+                  <span className="reminder-month-icon"><MonthIcon /></span>
+                  <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
                     <option value="">Pilih bulan...</option>
-
-                    {monthOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
+                    {monthOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                   </select>
-
-                  <span className="reminder-month-arrow">
-                    <ChevronDown />
-                  </span>
+                  <span className="reminder-month-arrow"><ChevronDown /></span>
                 </label>
-
               </div>
-
-              <div
-                className="reminder-filters"
-                role="group"
-                aria-label="Filter status pengingat"
-              >
+              <div className="reminder-filters">
                 {FILTERS.map((filter) => (
                   <button
                     key={filter.id}
                     type="button"
-                    className={
-                      activeFilter === filter.id ? 'selected' : ''
-                    }
+                    className={activeFilter === filter.id ? 'selected' : ''}
                     onClick={() => setActiveFilter(filter.id)}
-                    aria-pressed={activeFilter === filter.id}
                   >
                     {filter.label}
                   </button>
@@ -950,13 +538,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
               </div>
             </div>
 
-            {/* TABEL */}
-
-            <div
-              className={`reminder-table-wrapper ${
-                loading ? 'is-loading' : ''
-              }`}
-            >
+            <div className={`reminder-table-wrapper ${loading ? 'is-loading' : ''}`}>
               <table className="reminder-table">
                 <thead>
                   <tr>
@@ -967,69 +549,33 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                     <th>aksi</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {sortedReminders.map((item) => {
                     const isDone = item.status === 'selesai'
-
-                    const blocked =
-                      !isDone &&
-                      BLOCK_OVERDUE_COMPLETE &&
-                      Boolean(item.terlewat)
-
+                    const blocked = !isDone && BLOCK_OVERDUE_COMPLETE && Boolean(item.terlewat)
                     return (
                       <tr key={item.pengingat_id}>
                         <td>{formatDate(item.tanggal)}</td>
-
-                        <td className="reminder-description">
-                          {item.deskripsi}
-                        </td>
-
-                        <td>
-                          <CategoryBadge name={item.nama_kategori} />
-                        </td>
-
+                        <td className="reminder-description">{item.deskripsi}</td>
+                        <td><CategoryBadge name={item.nama_kategori} /></td>
                         <td>{formatNominal(item.jumlah)}</td>
-
                         <td>
                           <div className="reminder-actions">
-
                             <button
                               type="button"
-                              className={`reminder-done-button ${
-                                isDone ? 'is-done' : ''
-                              }`}
+                              className={`reminder-done-button ${isDone ? 'is-done' : ''}`}
                               disabled={isDone || blocked}
-                              aria-label={
-                                isDone
-                                  ? `${item.deskripsi} sudah selesai`
-                                  : `Tandai selesai ${item.deskripsi}`
-                              }
-                              onClick={() =>
-                                setConfirmTarget({
-                                  type: 'complete',
-                                  item,
-                                })
-                              }
+                              onClick={() => setConfirmTarget({ type: 'complete', item })}
                             >
-                              <CheckCircleIcon />
-                              selesai
+                              <CheckCircleIcon /> selesai
                             </button>
-
                             <button
                               type="button"
                               className="reminder-delete-button"
-                              aria-label={`Hapus pengingat ${item.deskripsi}`}
-                              onClick={() =>
-                                setConfirmTarget({
-                                  type: 'delete',
-                                  item,
-                                })
-                              }
+                              onClick={() => setConfirmTarget({ type: 'delete', item })}
                             >
                               <img src={DeleteImage} alt="" />
                             </button>
-
                           </div>
                         </td>
                       </tr>
@@ -1038,80 +584,38 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                 </tbody>
               </table>
 
-              {error && (
-                <div className="reminder-empty error">{error}</div>
-              )}
-
-              {showLoadingMessage && (
-                <div className="reminder-empty">
-                  memuat daftar pengingat...
-                </div>
-              )}
-
-              {showEmpty && (
-                <div className="reminder-empty">
-                  {getEmptyMessage(activeFilter, isSearching)}
-                </div>
-              )}
+              {error && <div className="reminder-empty error">{error}</div>}
+              {showLoadingMessage && <div className="reminder-empty">memuat daftar pengingat...</div>}
+              {showEmpty && <div className="reminder-empty">{getEmptyMessage(activeFilter, isSearching)}</div>}
             </div>
           </section>
         </main>
       </div>
 
-      {/* MODAL KONFIRMASI */}
-
       {confirmTarget && (
         <ConfirmModal
-          variant={
-            confirmTarget.type === 'delete' ? 'danger' : 'success'
-          }
-          title={
-            confirmTarget.type === 'delete'
-              ? 'Hapus pengingat'
-              : 'Tandai selesai'
-          }
-          message={
-            confirmTarget.type === 'delete'
-              ? 'tindakan menghapus tidak dapat dikembalikan, apakah anda yakin.'
-              : 'apakah anda yakin telah selesai melakukan pengeluaran tersebut'
-          }
-          confirmLabel={
-            confirmTarget.type === 'delete' ? 'Hapus' : 'selesai'
-          }
+          variant={confirmTarget.type === 'delete' ? 'danger' : 'success'}
+          title={confirmTarget.type === 'delete' ? 'Hapus pengingat' : 'Tandai selesai'}
+          message={confirmTarget.type === 'delete' ? 'tindakan menghapus tidak dapat dikembalikan, apakah anda yakin.' : 'apakah anda yakin telah selesai melakukan pengeluaran tersebut'}
+          confirmLabel={confirmTarget.type === 'delete' ? 'Hapus' : 'selesai'}
           busy={actionBusy}
           onCancel={closeConfirm}
           onConfirm={handleConfirm}
         />
       )}
 
-      {/* MODAL TAMBAH PENGINGAT */}
-
       {showForm && (
         <div className="reminder-overlay reminder-form-overlay" onClick={closeForm}>
-          <div
-            className="reminder-modal reminder-create-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="reminder-form-title"
-            onClick={(event) => event.stopPropagation()}
-          >
+          <div className="reminder-modal reminder-create-modal" onClick={(e) => e.stopPropagation()}>
             <div className="reminder-create-header">
               <div className="reminder-create-heading">
-                <span className="reminder-create-icon">
-                  <img src={ReminderBellImage} alt="" />
-                </span>
+                <span className="reminder-create-icon"><img src={ReminderBellImage} alt="" /></span>
                 <div>
-                  <h2 id="reminder-form-title">Buat pengingat baru</h2>
+                  <h2>Buat pengingat baru</h2>
                   <p>lengkapi form untuk pengingat</p>
                 </div>
               </div>
-              <button
-                type="button"
-                className="reminder-create-close"
-                aria-label="Tutup"
-                onClick={closeForm}
-                disabled={saving}
-              >
+              <button type="button" className="reminder-create-close" onClick={closeForm} disabled={saving}>
                 <CloseIcon />
               </button>
             </div>
@@ -1121,14 +625,15 @@ function RemindersPage({ user, onLogout, onNavigate }) {
             <form className="reminder-create-form" onSubmit={handleAddReminder}>
               <label className="reminder-create-field">
                 <span>tanggal<span className="required-mark">*</span></span>
-                <input
-                  name="tanggal"
-                  type="date"
-                  value={form.tanggal}
-                  onChange={handleFormChange}
-                  aria-label="Tanggal pengingat"
-                  required
-                />
+                <div className="reminder-date-input-wrapper">
+                  <input
+                    name="tanggal"
+                    type="date"
+                    value={form.tanggal}
+                    onChange={handleFormChange}
+                  />
+                  <span className="reminder-date-icon"><FormCalendarIcon /></span>
+                </div>
               </label>
 
               <label className="reminder-create-field">
@@ -1140,23 +645,15 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                   placeholder="nama pengeluaran"
                   value={form.deskripsi}
                   onChange={handleFormChange}
-                  required
                 />
               </label>
 
               <label className="reminder-create-field">
                 <span>Kategori<span className="required-mark">*</span></span>
-                <select
-                  name="kategori_id"
-                  value={form.kategori_id}
-                  onChange={handleFormChange}
-                  required
-                >
+                <select name="kategori_id" value={form.kategori_id} onChange={handleFormChange}>
                   <option value="">Pilih kategori</option>
                   {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
+                    <option key={category.id} value={category.id}>{category.name}</option>
                   ))}
                 </select>
               </label>
@@ -1167,37 +664,20 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                   <span>Rp</span>
                   <input
                     name="jumlah"
-                    type="number"
-                    min="1"
-                    step="1"
+                    type="text"
+                    inputMode="numeric"
                     placeholder="10.000"
                     value={form.jumlah}
                     onChange={handleFormChange}
-                    required
                   />
                 </div>
               </label>
 
-              {formError && (
-                <p className="reminder-form-error" role="alert">
-                  {formError}
-                </p>
-              )}
+              {formError && <p className="reminder-form-error" role="alert">{formError}</p>}
 
               <div className="reminder-create-buttons">
-                <button
-                  type="button"
-                  className="reminder-create-cancel"
-                  onClick={closeForm}
-                  disabled={saving}
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  className="reminder-create-save"
-                  disabled={saving}
-                >
+                <button type="button" className="reminder-create-cancel" onClick={closeForm} disabled={saving}>Batal</button>
+                <button type="submit" className="reminder-create-save" disabled={saving}>
                   {saving ? 'Menyimpan...' : 'Simpan'}
                 </button>
               </div>
@@ -1205,7 +685,6 @@ function RemindersPage({ user, onLogout, onNavigate }) {
           </div>
         </div>
       )}
-
     </div>
   )
 }
