@@ -1,3 +1,4 @@
+// TODO: menyelesaikan fitur pengingat FE-07
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import Logo from '../../assets/Logo.png'
