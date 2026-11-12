@@ -807,84 +807,195 @@
 }
 
 /* =========================================
-   MODAL TAMBAH PENGINGAT
+   MODAL BUAT PENGINGAT BARU
 ========================================= */
-
-.reminder-modal {
-  width: 100%;
-  max-width: 460px;
-  max-height: 90vh;
-  padding: 26px;
+.reminder-form-overlay {
+  padding: 24px;
+  background: rgba(225, 229, 240, 0.48);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+}
+.reminder-create-modal {
+  width: min(100%, 630px);
+  max-width: 630px;
+  max-height: calc(100vh - 48px);
+  padding: 27px 27px 55px;
   overflow-y: auto;
-  border: 1px solid #c9d1dc;
+  border: 1.5px solid #777;
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
-
-.reminder-modal-header {
+.reminder-create-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 72px;
+}
+.reminder-create-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 22px;
+  gap: 17px;
+  min-width: 0;
 }
-
-.reminder-modal-header h2 {
-  margin: 0;
-  color: #333;
-  font-size: 23px;
-  font-weight: 600;
-}
-
-.reminder-modal-header button {
+.reminder-create-icon {
   display: flex;
+  flex: 0 0 72px;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 9px;
+  background: #4787f7;
+}
+.reminder-create-icon img {
+  display: block;
+  width: 37px;
+  height: 37px;
+  object-fit: contain;
+}
+.reminder-create-heading h2 {
+  margin: 0 0 6px;
+  color: #111;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.reminder-create-heading p {
+  margin: 0;
+  color: #858585;
+  font-size: 14px;
+}
+.reminder-create-close {
+  display: flex;
+  flex: 0 0 30px;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: -5px -5px 0 0;
   padding: 0;
-  border: none;
+  border: 0;
   background: transparent;
   color: #111;
   cursor: pointer;
 }
-
-.reminder-modal-header button svg {
-  width: 24px;
-  height: 24px;
-  stroke-width: 2;
+.reminder-create-close svg {
+  width: 30px;
+  height: 30px;
+  stroke-width: 1.5;
 }
-
-.reminder-modal form {
+.reminder-create-close:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.reminder-create-divider {
+  width: 100%;
+  height: 1.5px;
+  margin: 20px 0 34px;
+  background: #111;
+}
+.reminder-create-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
+  padding: 0 9px;
 }
-
-.reminder-modal form label {
+.reminder-create-field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  color: #333;
-  font-size: 13px;
+  gap: 10px;
+  color: #111;
+  font-size: 16px;
   font-weight: 700;
 }
-
-.reminder-modal input,
-.reminder-modal select {
+.reminder-create-field > span:first-child {
+  display: block;
+  padding-left: 9px;
+}
+.required-mark { color: #f00000; }
+.reminder-create-field > input,
+.reminder-create-field > select,
+.reminder-nominal-input {
+  box-sizing: border-box;
   width: 100%;
-  height: 46px;
-  padding: 0 12px;
-  border: 1px solid #111;
-  border-radius: 12px;
-  outline: none;
+  height: 52px;
+  border: 1px solid #929292;
+  border-radius: 16px;
   background: #fff;
   color: #222;
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 400;
 }
-
-.reminder-modal input:focus,
-.reminder-modal select:focus {
-  border-color: #347cf6;
-  box-shadow: 0 0 0 2px rgba(52, 124, 246, 0.18);
+.reminder-create-field > input,
+.reminder-create-field > select {
+  padding: 0 18px;
+  outline: none;
 }
-
+.reminder-create-field > input::placeholder,
+.reminder-nominal-input input::placeholder {
+  color: #858585;
+  opacity: 1;
+}
+.reminder-create-field > input:focus,
+.reminder-create-field > select:focus,
+.reminder-nominal-input:focus-within {
+  border-color: #4787f7;
+  box-shadow: 0 0 0 2px rgba(71, 135, 247, 0.13);
+}
+.reminder-create-field > select {
+  appearance: none;
+  padding-right: 48px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23c6d3e5' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  cursor: pointer;
+}
+.reminder-create-field > input[type="date"] {
+  color: #777;
+  color-scheme: light;
+  cursor: pointer;
+}
+.reminder-create-field > input[type="date"]::-webkit-calendar-picker-indicator {
+  width: 19px;
+  height: 19px;
+  margin-right: 2px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.reminder-nominal-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+}
+.reminder-nominal-input > span {
+  flex: 0 0 auto;
+  color: #111;
+  font-size: 14px;
+  font-weight: 500;
+}
+.reminder-nominal-input input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #222;
+  font-size: 14px;
+}
+.reminder-nominal-input input::-webkit-inner-spin-button,
+.reminder-nominal-input input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+.reminder-nominal-input input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
 .reminder-form-error {
   margin: 0;
   padding: 10px 12px;
@@ -894,37 +1005,36 @@
   font-size: 13px;
   font-weight: 700;
 }
-
-.reminder-modal-buttons {
+.reminder-create-buttons {
   display: flex;
-  gap: 14px;
-  margin-top: 8px;
+  justify-content: flex-end;
+  gap: 17px;
+  margin-top: 30px;
 }
-
-.reminder-modal-buttons button {
-  flex: 1;
+.reminder-create-buttons button {
+  width: 142px;
   height: 50px;
-  border: 3px solid #111;
-  border-radius: 14px;
+  border: 2px solid #4787ff;
+  border-radius: 16px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  transition: background 0.2s, filter 0.2s;
 }
-
-.reminder-modal-buttons button:disabled {
+.reminder-create-buttons button:disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.65;
 }
-
-.cancel-button {
+.reminder-create-cancel {
   background: #fff;
-  color: #777;
+  color: #4787ff;
 }
-
-.save-button {
-  background: #b8cdf6;
-  color: #111;
+.reminder-create-cancel:hover:not(:disabled) { background: #f1f6ff; }
+.reminder-create-save {
+  background: #4787f7;
+  color: #fff;
 }
+.reminder-create-save:hover:not(:disabled) { filter: brightness(0.95); }
 
 /* =========================================
    RESPONSIVE
@@ -1078,4 +1188,19 @@
   .reminder-confirm-buttons button {
     font-size: 16px;
   }
+}
+@media (max-width: 600px) {
+  .reminder-create-modal { padding: 20px 17px 28px; }
+  .reminder-create-icon {
+    flex-basis: 58px;
+    width: 58px;
+    height: 58px;
+  }
+  .reminder-create-heading { gap: 12px; }
+  .reminder-create-heading h2 { font-size: 16px; }
+  .reminder-create-heading p { font-size: 12px; }
+  .reminder-create-divider { margin: 16px 0 24px; }
+  .reminder-create-form { gap: 14px; padding: 0; }
+  .reminder-create-buttons { gap: 10px; margin-top: 16px; }
+  .reminder-create-buttons button { flex: 1; width: auto; }
 }

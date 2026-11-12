@@ -8,6 +8,7 @@ import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
 // SENGAJA dibuat dengan HTML/CSS (bukan gambar) karena di desain
 // elemen-elemen itu punya state aktif/nonaktif dan harus tajam di layar apa pun.
 import DeleteImage from '../../assets/pengingat-assets/Delete.png'
+import ReminderBellImage from '../../assets/pengingat-assets/Bell.png'
 
 import RedCalendar from '../../assets/pengingat-assets/RedCalender.png'
 import BlueCalendar from '../../assets/pengingat-assets/BlueCalender.png'
@@ -1086,19 +1087,27 @@ function RemindersPage({ user, onLogout, onNavigate }) {
       {/* MODAL TAMBAH PENGINGAT */}
 
       {showForm && (
-        <div className="reminder-overlay" onClick={closeForm}>
+        <div className="reminder-overlay reminder-form-overlay" onClick={closeForm}>
           <div
-            className="reminder-modal"
+            className="reminder-modal reminder-create-modal"
             role="dialog"
             aria-modal="true"
             aria-labelledby="reminder-form-title"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="reminder-modal-header">
-              <h2 id="reminder-form-title">Tambah pengingat</h2>
-
+            <div className="reminder-create-header">
+              <div className="reminder-create-heading">
+                <span className="reminder-create-icon">
+                  <img src={ReminderBellImage} alt="" />
+                </span>
+                <div>
+                  <h2 id="reminder-form-title">Buat pengingat baru</h2>
+                  <p>lengkapi form untuk pengingat</p>
+                </div>
+              </div>
               <button
                 type="button"
+                className="reminder-create-close"
                 aria-label="Tutup"
                 onClick={closeForm}
                 disabled={saving}
@@ -1107,23 +1116,36 @@ function RemindersPage({ user, onLogout, onNavigate }) {
               </button>
             </div>
 
-            <form onSubmit={handleAddReminder}>
+            <div className="reminder-create-divider" />
 
-              <label>
-                Deskripsi pengingat
+            <form className="reminder-create-form" onSubmit={handleAddReminder}>
+              <label className="reminder-create-field">
+                <span>tanggal<span className="required-mark">*</span></span>
+                <input
+                  name="tanggal"
+                  type="date"
+                  value={form.tanggal}
+                  onChange={handleFormChange}
+                  aria-label="Tanggal pengingat"
+                  required
+                />
+              </label>
+
+              <label className="reminder-create-field">
+                <span>Deskripsi<span className="required-mark">*</span></span>
                 <input
                   name="deskripsi"
                   type="text"
                   maxLength={200}
-                  placeholder="Contoh: Bayar listrik"
+                  placeholder="nama pengeluaran"
                   value={form.deskripsi}
                   onChange={handleFormChange}
                   required
                 />
               </label>
 
-              <label>
-                Kategori
+              <label className="reminder-create-field">
+                <span>Kategori<span className="required-mark">*</span></span>
                 <select
                   name="kategori_id"
                   value={form.kategori_id}
@@ -1131,7 +1153,6 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                   required
                 >
                   <option value="">Pilih kategori</option>
-
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
@@ -1140,29 +1161,21 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                 </select>
               </label>
 
-              <label>
-                Nominal
-                <input
-                  name="jumlah"
-                  type="number"
-                  min="1"
-                  step="1"
-                  placeholder="Masukkan nominal"
-                  value={form.jumlah}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-
-              <label>
-                Tanggal pengingat
-                <input
-                  name="tanggal"
-                  type="date"
-                  value={form.tanggal}
-                  onChange={handleFormChange}
-                  required
-                />
+              <label className="reminder-create-field">
+                <span>Nominal<span className="required-mark">*</span></span>
+                <div className="reminder-nominal-input">
+                  <span>Rp</span>
+                  <input
+                    name="jumlah"
+                    type="number"
+                    min="1"
+                    step="1"
+                    placeholder="10.000"
+                    value={form.jumlah}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
               </label>
 
               {formError && (
@@ -1171,25 +1184,23 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                 </p>
               )}
 
-              <div className="reminder-modal-buttons">
+              <div className="reminder-create-buttons">
                 <button
                   type="button"
-                  className="cancel-button"
+                  className="reminder-create-cancel"
                   onClick={closeForm}
                   disabled={saving}
                 >
                   Batal
                 </button>
-
                 <button
                   type="submit"
-                  className="save-button"
+                  className="reminder-create-save"
                   disabled={saving}
                 >
                   {saving ? 'Menyimpan...' : 'Simpan'}
                 </button>
               </div>
-
             </form>
           </div>
         </div>
