@@ -1,0 +1,24 @@
+$kind: http-request
+url: http://localhost:3000/api/pengingat/2
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "deskripsi": "Bayar listrik",
+      "kategori_id": 4,
+      "jumlah": 400000,
+      "tanggal": "2026-11-20"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_17sb}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+examples: .resources/15. UBAH pengingat.resources/examples
+order: 16000

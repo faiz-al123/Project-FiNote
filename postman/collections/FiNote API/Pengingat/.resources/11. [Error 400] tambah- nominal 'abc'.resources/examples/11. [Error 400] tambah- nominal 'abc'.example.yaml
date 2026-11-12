@@ -1,0 +1,38 @@
+$kind: http-example
+name: "11. [Error 400] tambah: nominal 'abc'"
+request:
+  url: http://localhost:3000/api/pengingat
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "deskripsi": "Bayar listrik",
+        "kategori_id": 4,
+        "jumlah": "abc",
+        "tanggal": "2026-11-20"
+      }
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "68"
+    ETag: W/"44-W3CNQW5eJZSFMrUodnReZa1rD1w"
+    Date: Wed, 11 Nov 2026 16:45:38 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Nominal harus berupa angka",
+        "data": null
+      }
+order: 1000

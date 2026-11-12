@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:3000/api/pengingat/2
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_17sb}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+examples: .resources/18. HAPUS pengingat.resources/examples
+order: 19000

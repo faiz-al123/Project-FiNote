@@ -2,6 +2,8 @@
 workspace:
   id: 78966e31-fd8d-4d41-802c-ca5068ae2d87
 
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
 cloudResources:
   collections:
     ../postman/collections/FiNote API: b601a70b-a02e-47c9-adb6-5a25f2c025b1

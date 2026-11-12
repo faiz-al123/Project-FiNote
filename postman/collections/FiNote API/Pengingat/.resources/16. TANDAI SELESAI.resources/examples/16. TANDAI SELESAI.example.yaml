@@ -1,0 +1,37 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/pengingat/2/selesai
+  method: PATCH
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "260"
+    ETag: W/"104-+7Y7ZB6OLYrKwoVMStK/mX/R5bQ"
+    Date: Wed, 11 Nov 2026 16:55:49 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Pengingat ditandai selesai.",
+        "data": {
+          "reminder": {
+            "pengingat_id": 2,
+            "deskripsi": "Bayar listrik",
+            "kategori_id": 4,
+            "nama_kategori": "Tagihan",
+            "jumlah": 400000,
+            "tanggal": "2026-11-20",
+            "status": "selesai",
+            "selesai_pada": "2026-11-11 23:55:49"
+          }
+        }
+      }
+order: 1000

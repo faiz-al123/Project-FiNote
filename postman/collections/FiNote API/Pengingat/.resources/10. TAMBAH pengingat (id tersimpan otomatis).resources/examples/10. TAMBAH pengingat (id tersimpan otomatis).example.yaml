@@ -1,0 +1,48 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/pengingat
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "deskripsi": "Bayar listrik",
+        "kategori_id": 4,
+        "jumlah": 350000,
+        "tanggal": "2026-11-20"
+      }
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "239"
+    ETag: W/"ef-HR0i4+jty1CugqZTSrvopQ0I5+o"
+    Date: Wed, 11 Nov 2026 16:40:02 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Berhasil disimpan",
+        "data": {
+          "reminder": {
+            "pengingat_id": 1,
+            "deskripsi": "Bayar listrik",
+            "kategori_id": 4,
+            "nama_kategori": "Tagihan",
+            "jumlah": 350000,
+            "tanggal": "2026-11-20",
+            "status": "belum_selesai",
+            "selesai_pada": null
+          }
+        }
+      }
+order: 1000

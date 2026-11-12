@@ -1,0 +1,55 @@
+$kind: http-example
+name: "6. Daftar: cari 'listrik'"
+request:
+  url: http://localhost:3000/api/pengingat?bulan=2026-11&search=listrik
+  method: GET
+  queryParams:
+    bulan: 2026-11
+    search: listrik
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "438"
+    ETag: W/"1b6-Zx3rq7g1sm0wX3JN9NfP+p+rrAw"
+    Date: Wed, 11 Nov 2026 16:42:42 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Daftar pengingat berhasil diambil.",
+        "data": {
+          "bulan": "2026-11",
+          "tanggal_acuan": "2026-11-11",
+          "filter": "semua",
+          "search": "listrik",
+          "ringkasan": {
+            "terdekat": 0,
+            "total": 1,
+            "selesai": 0,
+            "terlewat": 0
+          },
+          "reminders": [
+            {
+              "pengingat_id": 1,
+              "deskripsi": "Bayar listrik",
+              "kategori_id": 4,
+              "nama_kategori": "Tagihan",
+              "jumlah": 350000,
+              "tanggal": "2026-11-20",
+              "status": "belum_selesai",
+              "selesai_pada": null,
+              "terlewat": false,
+              "terdekat": false
+            }
+          ]
+        }
+      }
+order: 1000

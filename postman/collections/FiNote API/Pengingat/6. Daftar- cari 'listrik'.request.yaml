@@ -1,0 +1,17 @@
+$kind: http-request
+name: "6. Daftar: cari 'listrik'"
+url: http://localhost:3000/api/pengingat?bulan=2026-11&search=listrik
+method: GET
+queryParams:
+  bulan: 2026-11
+  search: listrik
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_17sb}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+examples: .resources/6. Daftar- cari 'listrik'.resources/examples
+order: 7000

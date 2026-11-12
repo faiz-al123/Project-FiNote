@@ -1,0 +1,30 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/pengingat?filter=abc
+  method: GET
+  queryParams:
+    filter: abc
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "134"
+    ETag: W/"86-pQpY+lEpSAG4pI3oZI9lZwwAJ9w"
+    Date: Wed, 11 Nov 2026 16:44:23 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Input tidak valid.",
+        "data": {
+          "detail": "Filter harus salah satu dari: semua, terdekat, terlewat, selesai."
+        }
+      }
+order: 1000

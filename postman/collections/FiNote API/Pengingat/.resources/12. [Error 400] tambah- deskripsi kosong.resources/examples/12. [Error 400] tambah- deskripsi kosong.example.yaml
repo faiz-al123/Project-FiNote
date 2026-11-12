@@ -1,0 +1,38 @@
+$kind: http-example
+name: "12. [Error 400] tambah: deskripsi kosong"
+request:
+  url: http://localhost:3000/api/pengingat
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "deskripsi": "",
+        "kategori_id": 4,
+        "jumlah": 350000,
+        "tanggal": "2026-11-20"
+      }
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "64"
+    ETag: W/"40-ti9WJwfywVH2k6VVcfJcJqGyh8U"
+    Date: Wed, 11 Nov 2026 16:46:09 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Deskripsi wajib diisi.",
+        "data": null
+      }
+order: 1000

@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:3000/api/pengingat?filter=abc
+method: GET
+queryParams:
+  filter: abc
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_17sb}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 400', () => pm.response.to.have.status(400));
+    language: text/javascript
+examples: .resources/9. [Error 400] filter salah.resources/examples
+order: 10000

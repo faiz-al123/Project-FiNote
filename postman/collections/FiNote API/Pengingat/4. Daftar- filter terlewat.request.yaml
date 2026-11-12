@@ -1,0 +1,17 @@
+$kind: http-request
+name: "4. Daftar: filter terlewat"
+url: http://localhost:3000/api/pengingat?bulan=2026-11&filter=terlewat
+method: GET
+queryParams:
+  bulan: 2026-11
+  filter: terlewat
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_17sb}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+examples: .resources/4. Daftar- filter terlewat.resources/examples
+order: 5000

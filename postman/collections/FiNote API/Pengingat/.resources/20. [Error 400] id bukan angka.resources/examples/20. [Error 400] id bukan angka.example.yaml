@@ -1,0 +1,28 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/pengingat/abc
+  method: DELETE
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "101"
+    ETag: W/"65-yErSZpOFis6HFftbts1TcM+0JHQ"
+    Date: Wed, 11 Nov 2026 16:58:11 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Input tidak valid.",
+        "data": {
+          "detail": "id pengingat harus berupa angka."
+        }
+      }
+order: 1000

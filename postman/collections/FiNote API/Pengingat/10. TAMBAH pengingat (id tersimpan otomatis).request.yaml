@@ -1,0 +1,27 @@
+$kind: http-request
+url: http://localhost:3000/api/pengingat
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "deskripsi": "Bayar listrik",
+      "kategori_id": 4,
+      "jumlah": 350000,
+      "tanggal": "2026-11-20"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_17sb}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 201', () => pm.response.to.have.status(201));
+      const j = pm.response.json();
+      if (j.data && j.data.reminder) { pm.collectionVariables.set('pengingat_id', j.data.reminder.pengingat_id); }
+    language: text/javascript
+examples: .resources/10. TAMBAH pengingat (id tersimpan otomatis).resources/examples
+order: 11000

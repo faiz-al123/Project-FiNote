@@ -2,6 +2,9 @@ $kind: http-example
 request:
   url: http://localhost:3000/api/kategori
   method: GET
+  body:
+    type: json
+    content: ""
 response:
   statusCode: 200
   statusText: OK

@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:3000/api/pengingat/2/selesai
+method: PATCH
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_17sb}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 409', () => pm.response.to.have.status(409));
+    language: text/javascript
+examples: .resources/17. [Error 409] tandai selesai lagi.resources/examples
+order: 18000

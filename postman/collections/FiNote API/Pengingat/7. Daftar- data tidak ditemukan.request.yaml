@@ -1,0 +1,16 @@
+$kind: http-request
+name: "7. Daftar: data tidak ditemukan"
+url: http://localhost:3000/api/pengingat?bulan=2030-01
+method: GET
+queryParams:
+  bulan: 2030-01
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_17sb}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+examples: .resources/7. Daftar- data tidak ditemukan.resources/examples
+order: 8000

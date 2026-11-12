@@ -1,0 +1,52 @@
+$kind: http-example
+name: "1. Daftar: bulan ini"
+request:
+  url: http://localhost:3000/api/pengingat
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "433"
+    ETag: W/"1b1-J219l5MyA9KagZ3LAsv8IoE1rVU"
+    Date: Wed, 11 Nov 2026 16:40:25 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Daftar pengingat berhasil diambil.",
+        "data": {
+          "bulan": "2026-11",
+          "tanggal_acuan": "2026-11-11",
+          "filter": "semua",
+          "search": null,
+          "ringkasan": {
+            "terdekat": 0,
+            "total": 1,
+            "selesai": 0,
+            "terlewat": 0
+          },
+          "reminders": [
+            {
+              "pengingat_id": 1,
+              "deskripsi": "Bayar listrik",
+              "kategori_id": 4,
+              "nama_kategori": "Tagihan",
+              "jumlah": 350000,
+              "tanggal": "2026-11-20",
+              "status": "belum_selesai",
+              "selesai_pada": null,
+              "terlewat": false,
+              "terdekat": false
+            }
+          ]
+        }
+      }
+order: 2000

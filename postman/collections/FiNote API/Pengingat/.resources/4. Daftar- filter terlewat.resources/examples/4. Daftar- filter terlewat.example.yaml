@@ -1,0 +1,42 @@
+$kind: http-example
+name: "4. Daftar: filter terlewat"
+request:
+  url: http://localhost:3000/api/pengingat?bulan=2026-11&filter=terlewat
+  method: GET
+  queryParams:
+    bulan: 2026-11
+    filter: terlewat
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "217"
+    ETag: W/"d9-BWlNGreCTwcSosBJncgTGn7E8t0"
+    Date: Wed, 11 Nov 2026 16:38:29 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Data tidak ditemukan.",
+        "data": {
+          "bulan": "2026-11",
+          "tanggal_acuan": "2026-11-11",
+          "filter": "terlewat",
+          "search": null,
+          "ringkasan": {
+            "terdekat": 0,
+            "total": 0,
+            "selesai": 0,
+            "terlewat": 0
+          },
+          "reminders": []
+        }
+      }
+order: 1000
