@@ -1007,7 +1007,7 @@ Response `200 OK`: `message` `Berhasil dihapus`, `data` berisi `{ "pengingat_id"
 PATCH /api/pengingat/:id/selesai
 ```
 
-Response `200 OK`: `message` `Pengingat ditandai selesai.` dan `data.reminder` dengan `status` `selesai` serta `selesai_pada` terisi. Pengingat tidak dihapus: ia tetap muncul di daftar dengan status selesai, masuk hitungan "selesai", dan tidak lagi dihitung "terdekat" atau "terlewat".
+Response `200 OK`: `message` `Pengingat ditandai selesai.` dan `data.reminder` dengan `status` `selesai` serta `selesai_pada` terisi. Pengingat tidak dihapus: ia tetap muncul di daftar dengan status selesai, masuk hitungan "selesai", dan tidak lagi dihitung "terdekat" atau "terlewat". Pada saat yang sama, pengeluarannya otomatis dicatat sebagai transaksi baru di tabel `Transaksi` (kategori, nominal, dan deskripsi diambil dari pengingat; `catatan` = deskripsi pengingat; `tanggal` = hari ini di server), sehingga muncul di halaman **Riwayat** (`GET /api/transaksi`). Pembaruan status dan pencatatan transaksi dijalankan dalam satu transaksi database: jika salah satu gagal, keduanya dibatalkan. Menandai selesai untuk kedua kalinya ditolak (`409`), jadi tidak membuat transaksi ganda.
 
 ### Pesan error
 
