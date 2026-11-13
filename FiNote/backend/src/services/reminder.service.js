@@ -144,19 +144,36 @@ function deletePengingat(userId, pengingatId) {
   db.prepare('DELETE FROM Pengingat WHERE pengingat_id = ? AND user_id = ?').run(pengingatId, userId);
 }
 
-// Tandai selesai: status berubah, waktunya dicatat. Pengingat tidak dihapus,
-// sehingga otomatis masuk hitungan "selesai" dan keluar dari "terdekat"/"terlewat".
+// Tandai selesai: status berubah, waktunya dicatat, dan pengeluarannya otomatis
+// dicatat sebagai Transaksi (tanggal = hari ini) sehingga muncul di halaman Riwayat.
+// Pengingat tidak dihapus, jadi tetap masuk hitungan "selesai" dan keluar dari
+// "terdekat"/"terlewat".
+// Dua perubahan (update Pengingat + insert Transaksi) dijalankan dalam satu
+// transaksi database: kalau salah satu gagal, keduanya dibatalkan.
 function tandaiSelesai(userId, pengingatId) {
   const pengingat = ambilMilikUser(userId, pengingatId);
   if (pengingat.status === 'selesai') {
     throw new AppError('Pengingat sudah ditandai selesai.', 409);
   }
 
-  db.prepare(`
-    UPDATE Pengingat
-    SET status = 'selesai', selesai_pada = datetime('now', 'localtime')
-    WHERE pengingat_id = ? AND user_id = ?
-  `).run(pengingatId, userId);
+  db.exec('BEGIN');
+  try {
+    db.prepare(`
+      UPDATE Pengingat
+      SET status = 'selesai', selesai_pada = datetime('now', 'localtime')
+      WHERE pengingat_id = ? AND user_id = ?
+    `).run(pengingatId, userId);
+
+    db.prepare(`
+      INSERT INTO Transaksi (user_id, kategori_id, jumlah, tanggal, catatan)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(userId, pengingat.kategori_id, pengingat.jumlah, tanggalHariIni(), pengingat.deskripsi);
+
+    db.exec('COMMIT');
+  } catch (err) {
+    db.exec('ROLLBACK');
+    throw err;
+  }
 
   return findPengingat(userId, pengingatId);
 }
