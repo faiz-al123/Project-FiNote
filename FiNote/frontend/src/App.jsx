@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import LoginPage from './pages/auth/LoginPage'
-import RegisterPage from './pages/auth/RegisterPageWithSkeleton'
+import RegisterPage from './pages/auth/RegisterPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import TransactionsPage from './pages/transactions/TransactionsPage'
 import HistoryPage from './pages/history/HistoryPage'

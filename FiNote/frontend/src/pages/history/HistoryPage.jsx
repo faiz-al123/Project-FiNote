@@ -74,25 +74,27 @@ function formatNominalInput(value) {
   return new Intl.NumberFormat('id-ID').format(number)
 }
 
-function CustomCalendarIcon() {
+// Ikon Header (Sesuai desain UI/UX)
+function HeaderCalendarIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
-      <path d="M8 3v4M16 3v4M3.5 10h17" />
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M16 3v4M8 3v4M3 10h18" />
       <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" />
     </svg>
   )
 }
 
-function HeaderCalendarIcon() {
+// Ikon Filter Tanggal
+function FilterCalendarIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -103,8 +105,9 @@ function HeaderCalendarIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <path d="M16 3v4M8 3v4M3 10h18" />
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M8 3v4M16 3v4M3.5 10h17" />
+      <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" />
     </svg>
   )
 }
@@ -416,13 +419,11 @@ function HistoryPage({ user, onLogout, onNavigate }) {
           <form className="history-filter-panel" onSubmit={handleFilter}>
 
             {/* RENTANG TANGGAL */}
-            <div className="history-filter-field history-date-range-field">
-              <label className="history-field-label">
-                Rentang tanggal
-              </label>
+            <div className="history-range-fields">
+              <label className="history-range-label">Rentang tanggal</label>
 
               <div className="history-date-range-controls">
-                <div className="history-date-control">
+                <div className={`history-date-control ${startDate ? '' : 'is-empty'}`}>
                   <input
                     type="date"
                     value={startDate}
@@ -432,12 +433,15 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                     }}
                     aria-label="Tanggal awal"
                   />
-                  <span className="custom-date-icon"><CustomCalendarIcon /></span>
+                  {!startDate && (
+                    <span className="date-placeholder">01/10/2026</span>
+                  )}
+                  <span className="custom-date-icon"><FilterCalendarIcon /></span>
                 </div>
 
                 <span className="history-date-arrow">→</span>
 
-                <div className="history-date-control">
+                <div className={`history-date-control ${endDate ? '' : 'is-empty'}`}>
                   <input
                     type="date"
                     value={endDate}
@@ -447,7 +451,10 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                     }}
                     aria-label="Tanggal akhir"
                   />
-                  <span className="custom-date-icon"><CustomCalendarIcon /></span>
+                  {!endDate && (
+                    <span className="date-placeholder">23/10/2026</span>
+                  )}
+                  <span className="custom-date-icon"><FilterCalendarIcon /></span>
                 </div>
               </div>
             </div>
@@ -543,7 +550,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
             </div>
           )}
 
-          {/* TABEL & PAGINATION WRAPPER */}
+          {/* TABEL RIWAYAT */}
           <section className="history-table-section">
             <div className="history-table-scroll">
               <table className="history-table">
@@ -592,45 +599,44 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                 </tbody>
               </table>
             </div>
-
-            {/* PAGINATION */}
-            {/* Syarat totalPages > 1 DIHAPUS agar pagination selalu tampil */}
-            {!loading && (
-              <nav className="history-pagination" aria-label="Pagination riwayat transaksi">
-                <button
-                  type="button"
-                  className="history-page-arrow"
-                  onClick={() => changePage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  aria-label="Halaman sebelumnya"
-                >
-                  ‹
-                </button>
-
-                {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                  <button
-                    key={page}
-                    type="button"
-                    className={`history-page-button ${currentPage === page ? 'active' : ''}`}
-                    onClick={() => changePage(page)}
-                    aria-current={currentPage === page ? 'page' : undefined}
-                  >
-                    {page}
-                  </button>
-                ))}
-
-                <button
-                  type="button"
-                  className="history-page-arrow"
-                  onClick={() => changePage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  aria-label="Halaman berikutnya"
-                >
-                  ›
-                </button>
-              </nav>
-            )}
           </section>
+
+          {/* PAGINATION (DIPINDAHKAN KE LUAR TABEL SECTION AGAR DI BAWAH KOTAK PUTIH) */}
+          {!loading && (
+            <nav className="history-pagination" aria-label="Pagination riwayat transaksi">
+              <button
+                type="button"
+                className="history-page-arrow"
+                onClick={() => changePage(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="Halaman sebelumnya"
+              >
+                ‹
+              </button>
+
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  className={`history-page-button ${currentPage === page ? 'active' : ''}`}
+                  onClick={() => changePage(page)}
+                  aria-current={currentPage === page ? 'page' : undefined}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                className="history-page-arrow"
+                onClick={() => changePage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                aria-label="Halaman berikutnya"
+              >
+                ›
+              </button>
+            </nav>
+          )}
 
         </main>
       </div>

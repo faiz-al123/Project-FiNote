@@ -1,7 +1,9 @@
 
 import { useEffect, useRef, useState } from 'react'
+
 import Logo from '../../assets/Logo.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
+
 import ForkKnifeIcon from '../../assets/transaksi-assets/ForkKnife.png'
 import TransportIcon from '../../assets/transaksi-assets/mdi_transportation.png'
 import ShoppingCartIcon from '../../assets/transaksi-assets/ShoppingCartSimple.png'
@@ -17,14 +19,26 @@ import {
 import './TransactionsPage.css'
 import '../dashboard/DashboardPage.css'
 
+// Urutan kategori mengikuti desain UI/UX
 const CATEGORY_DEFAULTS = [
-  { id: 'makanan', label: 'Makanan', icon: 'food' },
-  { id: 'transportasi', label: 'Transportasi', icon: 'transport' },
   { id: 'belanja', label: 'Belanja', icon: 'shopping' },
-  { id: 'tagihan', label: 'Tagihan', icon: 'bill' },
   { id: 'hiburan', label: 'Hiburan', icon: 'game' },
+  { id: 'lainnya', label: 'Lainnya', icon: 'category' },
+  { id: 'makanan', label: 'Makanan', icon: 'food' },
+  { id: 'tagihan', label: 'Tagihan', icon: 'bill' },
+  { id: 'transportasi', label: 'Transportasi', icon: 'transport' },
 ]
 
+const CATEGORY_ORDER = [
+  'Belanja',
+  'Hiburan',
+  'Lainnya',
+  'Makanan',
+  'Tagihan',
+  'Transportasi',
+]
+
+// Mengambil daftar kategori dari response API
 function getCategoriesFromResponse(result) {
   const candidates = [
     result?.data?.categories,
@@ -38,6 +52,7 @@ function getCategoriesFromResponse(result) {
   return candidates.find(Array.isArray) || []
 }
 
+// Mengambil ID kategori
 function getCategoryId(category) {
   return (
     category.kategori_id ??
@@ -46,6 +61,7 @@ function getCategoryId(category) {
   )
 }
 
+// Mengambil nama kategori
 function getCategoryName(category) {
   return (
     category.nama_kategori ??
@@ -56,11 +72,13 @@ function getCategoryName(category) {
   )
 }
 
+// Mengubah format kategori API
 function formatCategory(category) {
   const name = getCategoryName(category)
 
   const fallback = CATEGORY_DEFAULTS.find(
-    (item) => item.label.toLowerCase() === String(name).toLowerCase(),
+    (item) =>
+      item.label.toLowerCase() === String(name).toLowerCase(),
   )
 
   return {
@@ -70,6 +88,7 @@ function formatCategory(category) {
   }
 }
 
+// Mengatur gambar ikon kategori
 const CATEGORY_ICON_IMAGES = {
   food: ForkKnifeIcon,
   transport: TransportIcon,
@@ -78,6 +97,7 @@ const CATEGORY_ICON_IMAGES = {
   game: GameControllerIcon,
 }
 
+// Komponen ikon kategori
 function CategoryIcon({ type }) {
   const imageSource = CATEGORY_ICON_IMAGES[type]
 
@@ -92,7 +112,6 @@ function CategoryIcon({ type }) {
     )
   }
 
-  // Ikon cadangan untuk kategori tambahan yang tidak ada di desain.
   return (
     <svg
       className="transaction-category-icon"
@@ -110,6 +129,7 @@ function CategoryIcon({ type }) {
   )
 }
 
+// Ikon simpan
 function SaveIcon() {
   return (
     <svg
@@ -129,6 +149,7 @@ function SaveIcon() {
   )
 }
 
+// Ikon reset
 function ResetIcon() {
   return (
     <svg
@@ -148,6 +169,7 @@ function ResetIcon() {
   )
 }
 
+// Ikon informasi notifikasi
 function InfoIcon() {
   return (
     <svg
@@ -171,8 +193,9 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
   const [nominal, setNominal] = useState('')
   const [kategori, setKategori] = useState('')
   const [tanggal, setTanggal] = useState('')
-  const tanggalInputRef = useRef(null)
   const [catatan, setCatatan] = useState('')
+
+  const tanggalInputRef = useRef(null)
 
   const [categories, setCategories] = useState([])
   const [loadingCategories, setLoadingCategories] = useState(true)
@@ -188,6 +211,10 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
     user?.name ||
     'Pengguna'
 
+  // ========================================
+  // MENGAMBIL KATEGORI DARI BACKEND
+  // ========================================
+
   useEffect(() => {
     let cancelled = false
 
@@ -197,11 +224,38 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
 
       try {
         const result = await getTransactionCategories()
+
         const rows = getCategoriesFromResponse(result)
 
         const formatted = rows
           .map(formatCategory)
           .filter((item) => item.id != null && item.label)
+          .sort((a, b) => {
+            const indexA = CATEGORY_ORDER.findIndex(
+              (name) =>
+                name.toLowerCase() ===
+                String(a.label).toLowerCase(),
+            )
+
+            const indexB = CATEGORY_ORDER.findIndex(
+              (name) =>
+                name.toLowerCase() ===
+                String(b.label).toLowerCase(),
+            )
+
+            // Kategori yang tidak dikenal tetap ditampilkan
+            const orderA =
+              indexA === -1
+                ? CATEGORY_ORDER.length
+                : indexA
+
+            const orderB =
+              indexB === -1
+                ? CATEGORY_ORDER.length
+                : indexB
+
+            return orderA - orderB
+          })
 
         if (!cancelled) {
           setCategories(formatted)
@@ -237,7 +291,10 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
     }
   }, [onLogout])
 
-  // Membuka kalender saat ikon atau kolom tanggal diklik.
+  // ========================================
+  // MEMBUKA KALENDER
+  // ========================================
+
   function openDatePicker() {
     const dateInput = tanggalInputRef.current
 
@@ -254,23 +311,39 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
     }
   }
 
+  // ========================================
+  // PERUBAHAN NOMINAL
+  // ========================================
+
   function handleNominalChange(event) {
     setNominal(event.target.value)
+
     setFieldErrors((previous) => ({
       ...previous,
       nominal: '',
     }))
+
     setNotice(null)
   }
 
+  // ========================================
+  // MEMILIH KATEGORI
+  // ========================================
+
   function handleCategorySelect(categoryId) {
     setKategori(String(categoryId))
+
     setFieldErrors((previous) => ({
       ...previous,
       kategori: '',
     }))
+
     setNotice(null)
   }
+
+  // ========================================
+  // RESET FORM
+  // ========================================
 
   function resetForm() {
     setNominal('')
@@ -280,6 +353,10 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
     setFieldErrors({})
     setNotice(null)
   }
+
+  // ========================================
+  // MENYIMPAN TRANSAKSI
+  // ========================================
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -291,16 +368,19 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
     const errors = {}
     const amount = Number(nominal)
 
+    // Validasi nominal
     if (!nominal.trim()) {
       errors.nominal = 'Nominal wajib diisi'
     } else if (!Number.isFinite(amount) || amount <= 0) {
       errors.nominal = 'Nominal harus lebih besar dari 0'
     }
 
+    // Validasi kategori
     if (!kategori) {
       errors.kategori = 'Kategori wajib dipilih'
     }
 
+    // Jika terdapat kesalahan validasi
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors)
 
@@ -322,6 +402,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
       return
     }
 
+    // Memastikan kategori tersedia
     const selectedCategory = categories.find(
       (item) => String(item.id) === String(kategori),
     )
@@ -339,14 +420,14 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
       return
     }
 
+    // Data yang dikirim ke backend
     const payload = {
       kategori_id: Number(selectedCategory.id),
       jumlah: amount,
       catatan: catatan.trim(),
     }
 
-    // Jika tanggal kosong, jangan kirim field tanggal.
-    // Backend akan menetapkan tanggal hari ini.
+    // Jika tanggal kosong, backend menetapkan tanggal hari ini
     if (tanggal) {
       payload.tanggal = tanggal
     }
@@ -363,6 +444,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
           'Pengeluaran berhasil dicatat.',
       })
 
+      // Kosongkan form setelah berhasil
       setNominal('')
       setKategori('')
       setTanggal('')
@@ -391,12 +473,20 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
     }
   }
 
+  // ========================================
+  // MENU SIDEBAR
+  // ========================================
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
     { id: 'transaksi', label: 'Transaksi', icon: 'transaksi' },
     { id: 'riwayat', label: 'Riwayat', icon: 'riwayat' },
     { id: 'pengingat', label: 'pengingat', icon: 'pengingat' },
   ]
+
+  // ========================================
+  // IKON SIDEBAR
+  // ========================================
 
   function renderMenuIcon(icon) {
     const props = {
@@ -423,7 +513,13 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
       case 'transaksi':
         return (
           <svg {...props}>
-            <rect x="3.5" y="3.5" width="17" height="17" rx="1" />
+            <rect
+              x="3.5"
+              y="3.5"
+              width="17"
+              height="17"
+              rx="1"
+            />
             <path d="M12 7v10M7 12h10" />
           </svg>
         )
@@ -446,9 +542,16 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
     }
   }
 
+  // ========================================
+  // TAMPILAN HALAMAN TRANSAKSI
+  // ========================================
+
   return (
     <div className="dashboard-layout transaction-layout">
+
+      {/* SIDEBAR */}
       <aside className="dashboard-sidebar">
+
         <div className="dashboard-brand">
           <img src={Logo} alt="FiNote" />
         </div>
@@ -468,15 +571,15 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                 item.id === 'transaksi' ? 'page' : undefined
               }
               onClick={() => {
-              if (
-                item.id === 'dashboard' ||
-                item.id === 'transaksi' ||
-                item.id === 'riwayat' ||
-                item.id === 'pengingat'
-              ) {
-                onNavigate?.(item.id)
-              }
-            }}
+                if (
+                  item.id === 'dashboard' ||
+                  item.id === 'transaksi' ||
+                  item.id === 'riwayat' ||
+                  item.id === 'pengingat'
+                ) {
+                  onNavigate?.(item.id)
+                }
+              }}
             >
               <span className="dashboard-menu-icon">
                 {renderMenuIcon(item.icon)}
@@ -489,7 +592,9 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
           ))}
         </nav>
 
+        {/* PROFIL DAN LOGOUT */}
         <div className="dashboard-sidebar-bottom">
+
           <div className="dashboard-user-profile">
             <img
               src={ProfileIcon}
@@ -518,31 +623,44 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
           >
             Keluar
           </button>
+
         </div>
       </aside>
 
+      {/* AREA KONTEN */}
       <div className="dashboard-workspace transaction-workspace">
+
+        {/* HEADER */}
         <header className="transaction-header">
+
           <div className="transaction-header-icon">
             <img src={CalendarDotsIcon} alt="" />
           </div>
 
           <div>
             <h1>Catat Transaksi Pengeluaranmu</h1>
+
             <p>
               Lengkapi data transaksi di bawah ini dengan benar
             </p>
           </div>
+
         </header>
 
+        {/* FORM TRANSAKSI */}
         <main className="transaction-main">
+
           <form
             className="transaction-card"
             onSubmit={handleSubmit}
             noValidate
           >
+
+            {/* NOMINAL UANG */}
             <section className="transaction-field">
+
               <div className="transaction-field-heading">
+
                 <label htmlFor="transaction-amount">
                   Nominal Uang
                 </label>
@@ -550,6 +668,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                 <span className="transaction-required">
                   *Wajib diisi
                 </span>
+
               </div>
 
               <div
@@ -557,7 +676,10 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                   fieldErrors.nominal ? 'has-error' : ''
                 }`}
               >
-                <span className="transaction-currency">Rp</span>
+
+                <span className="transaction-currency">
+                  Rp
+                </span>
 
                 <input
                   id="transaction-amount"
@@ -570,16 +692,24 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                   onChange={handleNominalChange}
                   aria-invalid={Boolean(fieldErrors.nominal)}
                 />
+
               </div>
+
             </section>
 
+            {/* KATEGORI TRANSAKSI */}
             <section className="transaction-field">
+
               <div className="transaction-field-heading">
-                <label>Kategori Transaksi</label>
+
+                <label>
+                  Kategori Transaksi
+                </label>
 
                 <span className="transaction-hint">
                   Pilih yang paling sesuai
                 </span>
+
               </div>
 
               {loadingCategories ? (
@@ -587,11 +717,15 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                   Memuat kategori dari server...
                 </p>
               ) : categoryError ? (
-                <p className="transaction-inline-error" role="alert">
+                <p
+                  className="transaction-inline-error"
+                  role="alert"
+                >
                   {categoryError}
                 </p>
               ) : (
                 <div className="transaction-categories">
+
                   {categories.map((category) => (
                     <button
                       key={category.id}
@@ -608,26 +742,37 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                         String(kategori) === String(category.id)
                       }
                     >
+
                       <CategoryIcon type={category.icon} />
-                      <span>{category.label}</span>
+
+                      <span>
+                        {category.label}
+                      </span>
+
                     </button>
                   ))}
+
                 </div>
               )}
 
             </section>
 
+            {/* TANGGAL TRANSAKSI */}
             <section className="transaction-field">
+
               <div className="transaction-field-heading">
+
                 <label htmlFor="transaction-date">
                   Tanggal Transaksi
                 </label>
+
               </div>
 
               <div
                 className="transaction-date-input"
                 onClick={openDatePicker}
               >
+
                 <button
                   type="button"
                   className="transaction-date-icon-button"
@@ -646,7 +791,9 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                   }`}
                 >
                   {tanggal
-                    ? new Date(`${tanggal}T00:00:00`).toLocaleDateString(
+                    ? new Date(
+                        `${tanggal}T00:00:00`,
+                      ).toLocaleDateString(
                         'id-ID',
                         {
                           day: '2-digit',
@@ -670,11 +817,16 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                   }}
                   aria-label="Tanggal transaksi"
                 />
+
               </div>
+
             </section>
 
+            {/* KETERANGAN TAMBAHAN */}
             <section className="transaction-field">
+
               <div className="transaction-field-heading">
+
                 <label htmlFor="transaction-description">
                   Keterangan Tambahan
                 </label>
@@ -682,10 +834,13 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                 <span className="transaction-hint">
                   Opsional
                 </span>
+
               </div>
 
               <div className="transaction-description-input">
+
                 <span className="transaction-description-icon">
+
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -696,6 +851,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                   >
                     <path d="M4 6h16M4 12h16M4 18h10" />
                   </svg>
+
                 </span>
 
                 <textarea
@@ -708,13 +864,17 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                     setNotice(null)
                   }}
                 />
+
               </div>
+
             </section>
 
+            {/* NOTIFIKASI */}
             <div
               className="transaction-feedback"
               aria-live="polite"
             >
+
               {notice && (
                 <p
                   className={`transaction-notice ${
@@ -722,24 +882,45 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                       ? 'is-success'
                       : 'is-error'
                   }`}
-                  role={notice.type === 'error' ? 'alert' : 'status'}
+                  role={
+                    notice.type === 'error'
+                      ? 'alert'
+                      : 'status'
+                  }
                 >
+
                   <InfoIcon />
-                  <span>{notice.message}</span>
+
+                  <span>
+                    {notice.message}
+                  </span>
+
                 </p>
               )}
+
             </div>
 
+            {/* TOMBOL SIMPAN DAN RESET */}
             <div className="transaction-actions">
+
               <button
                 type="submit"
                 className="transaction-save-button"
-                disabled={saving || loadingCategories || Boolean(categoryError)}
+                disabled={
+                  saving ||
+                  loadingCategories ||
+                  Boolean(categoryError)
+                }
               >
+
                 <SaveIcon />
+
                 <span>
-                  {saving ? 'Menyimpan...' : 'Simpan Transaksi'}
+                  {saving
+                    ? 'Menyimpan...'
+                    : 'Simpan Transaksi'}
                 </span>
+
               </button>
 
               <button
@@ -748,12 +929,21 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                 onClick={resetForm}
                 disabled={saving}
               >
+
                 <ResetIcon />
-                <span>Reset</span>
+
+                <span>
+                  Reset
+                </span>
+
               </button>
+
             </div>
+
           </form>
+
         </main>
+
       </div>
     </div>
   )

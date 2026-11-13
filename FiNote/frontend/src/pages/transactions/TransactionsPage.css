@@ -1,32 +1,41 @@
+
 /* ========================================
    HALAMAN TRANSAKSI FINOTE
-   (mengikuti desain high fidelity UI/UX)
+   Mengikuti desain high fidelity UI/UX
 ======================================== */
 
 .transaction-layout {
   min-height: 100vh;
-  background: #f0f3ff;
+  background: #F1F4FD;
   font-family: Arial, Helvetica, sans-serif;
   color: #102039;
 }
 
-/* ========================================
-   HEADER
-======================================== */
+/* SIDEBAR */
+
+.transaction-layout .dashboard-sidebar {
+  flex: 0 0 247px;
+  width: 247px;
+}
+
+/* AREA KONTEN */
 
 .transaction-workspace {
   min-width: 0;
+  flex: 1;
 }
+
+/* HEADER */
 
 .transaction-header {
   display: flex;
   align-items: center;
   gap: 11px;
   min-height: 111px;
-  padding: 4px 64px 0;
+  padding: 4px 29px 0;
   box-sizing: border-box;
   border: none;
-  background: #f0f3ff;
+  background: #F1F4FD;
 }
 
 .transaction-header-icon {
@@ -37,7 +46,7 @@
   width: 43px;
   height: 43px;
   border-radius: 10px;
-  background: #dfe6fb;
+  background: #DFE6FB;
 }
 
 .transaction-header-icon img {
@@ -57,14 +66,12 @@
 
 .transaction-header p {
   margin: 2px 0 0;
-  color: #4b5262;
+  color: #4B5262;
   font-size: 16px;
   line-height: 1.4;
 }
 
-/* ========================================
-   KARTU FORM
-======================================== */
+/* KARTU FORM */
 
 .transaction-main {
   width: 100%;
@@ -82,14 +89,12 @@
   padding: 50px 32px 20px;
   box-sizing: border-box;
   border: none;
-  border-radius: 24px;
-  background: #ffffff;
+  border-radius: 16px;
+  background: #FFFFFF;
   box-shadow: 0 3px 10px rgba(30, 55, 100, 0.035);
 }
 
-/* ========================================
-   FIELD
-======================================== */
+/* FIELD */
 
 .transaction-field {
   margin-bottom: 42px;
@@ -111,20 +116,18 @@
 }
 
 .transaction-required {
-  color: #d90f16;
+  color: #FF0000;
   font-size: 15px;
   white-space: nowrap;
 }
 
 .transaction-hint {
-  color: #50576a;
+  color: #50576A;
   font-size: 15px;
   text-align: right;
 }
 
-/* ========================================
-   INPUT NOMINAL
-======================================== */
+/* NOMINAL UANG */
 
 .transaction-amount-input {
   display: flex;
@@ -132,18 +135,18 @@
   width: 100%;
   height: 84px;
   overflow: hidden;
-  border: 1px solid transparent;
-  border-radius: 14px;
-  background: #eef3ff;
+  border: 1px solid #222222;
+  border-radius: 11px;
+  background: #F1F4FD;
   box-sizing: border-box;
 }
 
 .transaction-amount-input:focus-within {
-  border-color: #4285ed;
+  border-color: #4285ED;
 }
 
 .transaction-amount-input.has-error {
-  border-color: #e51c23;
+  border-color: #E51C23;
 }
 
 .transaction-currency {
@@ -152,7 +155,7 @@
   align-items: center;
   justify-content: center;
   align-self: stretch;
-  background: #e1eafd;
+  background: #F1F4FD;
   color: #102039;
   font-size: 16px;
   font-weight: 700;
@@ -175,7 +178,6 @@
   -moz-appearance: textfield;
 }
 
-/* Hilangkan tombol panah naik/turun pada input angka */
 .transaction-amount-input input::-webkit-outer-spin-button,
 .transaction-amount-input input::-webkit-inner-spin-button {
   margin: 0;
@@ -183,19 +185,17 @@
 }
 
 .transaction-amount-input input::placeholder {
-  color: #c3cbdd;
+  color: #C3CBDD;
   font-weight: 500;
   opacity: 1;
 }
 
-/* ========================================
-   PILIHAN KATEGORI
-======================================== */
+/* KATEGORI */
 
 .transaction-categories {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px 25px;
+  gap: 25px;
   max-width: 784px;
 }
 
@@ -208,9 +208,9 @@
   height: 62px;
   padding: 0 12px;
   box-sizing: border-box;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  background: #eef3ff;
+  border: 1px solid #222222;
+  border-radius: 11px;
+  background: #F1F4FD;
   color: #102039;
   font-family: inherit;
   font-size: 16px;
@@ -228,18 +228,17 @@
 }
 
 .transaction-category:hover {
-  border-color: #a7c6ff;
+  background: #E5ECFC;
+  border-color: #4285ED;
 }
 
 .transaction-category.selected {
-  border-color: #4285ed;
-  background: #dce8ff;
-  color: #164bb5;
+  border-color: #4285ED;
+  background: #DCE8FF;
+  color: #164BB5;
 }
 
-/* ========================================
-   INPUT TANGGAL
-======================================== */
+/* TANGGAL TRANSAKSI */
 
 .transaction-date-input {
   position: relative;
@@ -247,18 +246,18 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  max-width: 784px;
+  max-width: 696px;
   height: 62px;
-  padding: 0 27px;
+  padding: 0 20px;
   box-sizing: border-box;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  background: #eef3ff;
+  border: 1px solid #222222;
+  border-radius: 11px;
+  background: #F1F4FD;
   cursor: pointer;
 }
 
 .transaction-date-input:focus-within {
-  border-color: #4285ed;
+  border-color: #4285ED;
 }
 
 .transaction-date-icon-button {
@@ -269,7 +268,7 @@
   width: 26px;
   height: 30px;
   padding: 0;
-  border: 0;
+  border: none;
   background: transparent;
   cursor: pointer;
 }
@@ -282,14 +281,14 @@
 }
 
 .transaction-date-icon-button:focus-visible {
-  outline: 2px solid #4285ed;
+  outline: 2px solid #4285ED;
   outline-offset: 3px;
   border-radius: 4px;
 }
 
 .transaction-date-display {
   flex: 1;
-  color: #6f7686;
+  color: #6F7686;
   font-family: inherit;
   font-size: 16px;
   pointer-events: none;
@@ -299,8 +298,6 @@
   color: #102039;
 }
 
-/* Input date asli disembunyikan, tetapi menutupi kolom
-   agar kalender muncul tepat di bawah kolom tanggal. */
 .transaction-date-native-input {
   position: absolute;
   top: 0;
@@ -313,24 +310,23 @@
   pointer-events: none;
 }
 
-/* ========================================
-   KETERANGAN TAMBAHAN
-======================================== */
+/* KETERANGAN TAMBAHAN */
 
 .transaction-description-input {
   display: flex;
   align-items: flex-start;
   gap: 10px;
+  width: 100%;
   height: 84px;
-  padding: 16px 20px 0 51px;
+  padding: 16px 20px 0 20px;
   box-sizing: border-box;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  background: #eef3ff;
+  border: 1px solid #222222;
+  border-radius: 11px;
+  background: #F1F4FD;
 }
 
 .transaction-description-input:focus-within {
-  border-color: #4285ed;
+  border-color: #4285ED;
 }
 
 .transaction-description-icon {
@@ -339,7 +335,7 @@
   width: 19px;
   height: 24px;
   align-items: center;
-  color: #2b3142;
+  color: #2B3142;
 }
 
 .transaction-description-icon svg {
@@ -364,14 +360,11 @@
 }
 
 .transaction-description-input textarea::placeholder {
-  color: #6f7686;
+  color: #6F7686;
   opacity: 1;
 }
 
-/* ========================================
-   PESAN VALIDASI / NOTIFIKASI
-   (diletakkan di tengah di atas tombol Simpan)
-======================================== */
+/* NOTIFIKASI */
 
 .transaction-feedback {
   display: flex;
@@ -379,7 +372,6 @@
   align-items: center;
   justify-content: center;
   min-height: 60px;
-  /* lebar tombol Reset (211px) + jarak (11px) */
   padding-right: 222px;
 }
 
@@ -402,24 +394,21 @@
 }
 
 .transaction-notice.is-success {
-  color: #16803d;
+  color: #16803D;
 }
 
 .transaction-notice.is-error {
-  color: #f01414;
+  color: #F01414;
 }
 
-/* Pesan galat singkat untuk kategori yang gagal dimuat */
 .transaction-inline-error {
   margin: 8px 0 0;
-  color: #e51c23;
+  color: #E51C23;
   font-size: 14px;
   line-height: 1.5;
 }
 
-/* ========================================
-   TOMBOL SIMPAN DAN RESET
-======================================== */
+/* TOMBOL */
 
 .transaction-actions {
   display: flex;
@@ -437,7 +426,7 @@
   height: 60px;
   padding: 0 16px;
   box-sizing: border-box;
-  border: none;
+  border: 1px solid #222222;
   border-radius: 10px;
   font-family: inherit;
   font-size: 20px;
@@ -448,22 +437,22 @@
 
 .transaction-save-button {
   flex: 1;
-  background: #3d82f6;
-  color: #ffffff;
+  background: #3D82F6;
+  color: #FFFFFF;
 }
 
 .transaction-save-button:hover {
-  background: #2a6fe3;
+  background: #2A6FE3;
 }
 
 .transaction-reset-button {
   flex: 0 0 211px;
-  background: #e8effe;
-  color: #3a4254;
+  background: #F1F4FD;
+  color: #111111;
 }
 
 .transaction-reset-button:hover {
-  background: #d8e4fd;
+  background: #D8E4FD;
 }
 
 .transaction-save-button svg,
@@ -482,22 +471,25 @@
 .transaction-save-button:focus-visible,
 .transaction-reset-button:focus-visible,
 .transaction-category:focus-visible {
-  outline: 2px solid #164bb5;
+  outline: 2px solid #164BB5;
   outline-offset: 3px;
 }
 
-/* ========================================
-   RESPONSIVE
-======================================== */
+/* RESPONSIVE TABLET */
 
 @media (max-width: 1024px) {
+  .transaction-layout .dashboard-sidebar {
+    flex-basis: 200px;
+    width: 200px;
+  }
+
   .transaction-header {
     padding-right: 30px;
     padding-left: 30px;
   }
 
   .transaction-main {
-    padding: 32px 20px 32px;
+    padding: 32px 20px;
   }
 
   .transaction-card {
@@ -505,7 +497,18 @@
   }
 }
 
+/* RESPONSIVE MOBILE */
+
 @media (max-width: 768px) {
+  .transaction-layout {
+    flex-direction: column;
+  }
+
+  .transaction-layout .dashboard-sidebar {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
   .transaction-header {
     min-height: 85px;
     padding: 18px;
@@ -561,6 +564,10 @@
     font-size: 14px;
   }
 
+  .transaction-date-input {
+    max-width: none;
+  }
+
   .transaction-feedback {
     min-height: 56px;
     margin-bottom: 8px;
@@ -614,5 +621,348 @@
 
   .transaction-reset-button {
     flex-basis: 96px;
+  }
+}
+
+/* ==========================================
+   PENYESUAIAN SKALA DESAIN UI/UX FINOTE
+   Acuan SVG: 1728 x 1117
+========================================== */
+
+/* SIDEBAR */
+.transaction-layout .dashboard-sidebar {
+  flex: 0 0 14.3vw;
+  width: 14.3vw;
+}
+
+/* AREA KONTEN */
+.transaction-workspace {
+  flex: 1;
+  min-width: 0;
+}
+
+/* HEADER */
+.transaction-header {
+  min-height: 6.43vw;
+  padding: 0 6.43vw;
+  gap: 0.64vw;
+}
+
+.transaction-header-icon {
+  flex: 0 0 2.49vw;
+  width: 2.49vw;
+  height: 2.49vw;
+  border-radius: 0.58vw;
+}
+
+.transaction-header-icon img {
+  width: 1.5vw;
+  height: 1.5vw;
+}
+
+.transaction-header h1 {
+  font-size: 1.62vw;
+}
+
+.transaction-header p {
+  font-size: 0.93vw;
+}
+
+/* AREA FORM */
+.transaction-main {
+  padding: 3.24vw 6.43vw 2.31vw;
+}
+
+.transaction-card {
+  width: 100%;
+  max-width: 73vw;
+  min-height: 51.56vw;
+  padding: 2.89vw 1.85vw 1.16vw;
+  border-radius: 0.94vw;
+}
+
+/* JARAK ANTAR FIELD */
+.transaction-field {
+  margin-bottom: 2.43vw;
+}
+
+.transaction-field-heading {
+  margin-bottom: 0.81vw;
+}
+
+.transaction-field-heading label {
+  font-size: 1.16vw;
+  line-height: 1.4;
+}
+
+.transaction-required,
+.transaction-hint {
+  font-size: 0.87vw;
+}
+
+/* NOMINAL */
+.transaction-amount-input {
+  height: 4.86vw;
+  border-radius: 0.81vw;
+}
+
+.transaction-currency {
+  flex-basis: 3.59vw;
+  font-size: 0.93vw;
+}
+
+.transaction-amount-input input {
+  padding: 0 1.27vw;
+  font-size: 1.74vw;
+}
+
+/* KATEGORI */
+.transaction-categories {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.45vw;
+  max-width: 45.37vw;
+}
+
+.transaction-category {
+  height: 3.59vw;
+  gap: 0.69vw;
+  padding: 0 0.69vw;
+  border-radius: 0.69vw;
+  font-size: 0.93vw;
+}
+
+.transaction-category-icon {
+  flex-basis: 1.39vw;
+  width: 1.39vw;
+  height: 1.39vw;
+}
+
+/* TANGGAL */
+.transaction-date-input {
+  max-width: 45.37vw;
+  height: 3.59vw;
+  gap: 0.69vw;
+  padding: 0 1.56vw;
+  border-radius: 0.69vw;
+}
+
+.transaction-date-icon-button {
+  flex-basis: 1.5vw;
+  width: 1.5vw;
+  height: 1.74vw;
+}
+
+.transaction-date-icon-button img {
+  width: 1.5vw;
+  height: 1.5vw;
+}
+
+.transaction-date-display {
+  font-size: 0.93vw;
+}
+
+/* KETERANGAN */
+.transaction-description-input {
+  height: 4.86vw;
+  padding: 0.93vw 1.16vw;
+  gap: 0.58vw;
+  border-radius: 0.69vw;
+}
+
+.transaction-description-icon {
+  flex-basis: 1.1vw;
+  width: 1.1vw;
+}
+
+.transaction-description-icon svg {
+  width: 1.1vw;
+  height: 1.1vw;
+}
+
+.transaction-description-input textarea {
+  font-size: 0.93vw;
+  line-height: 1.4;
+}
+
+/* NOTIFIKASI */
+.transaction-feedback {
+  min-height: 3.47vw;
+  padding-right: 12.85vw;
+}
+
+.transaction-notice {
+  font-size: 1.16vw;
+  gap: 0.58vw;
+}
+
+/* TOMBOL */
+.transaction-actions {
+  gap: 0.64vw;
+}
+
+.transaction-save-button,
+.transaction-reset-button {
+  height: 3.47vw;
+  padding: 0 0.93vw;
+  border-radius: 0.58vw;
+  font-size: 1.16vw;
+  gap: 0.58vw;
+}
+
+.transaction-reset-button {
+  flex-basis: 12.21vw;
+}
+
+/* RESPONSIVE DESKTOP KECIL */
+@media (max-width: 1100px) and (min-width: 769px) {
+  .transaction-header h1 {
+    font-size: 20px;
+  }
+
+  .transaction-header p {
+    font-size: 13px;
+  }
+
+  .transaction-field-heading label {
+    font-size: 16px;
+  }
+
+  .transaction-required,
+  .transaction-hint,
+  .transaction-category,
+  .transaction-date-display,
+  .transaction-description-input textarea {
+    font-size: 13px;
+  }
+}
+
+/* RESPONSIVE MOBILE */
+@media (max-width: 768px) {
+  .transaction-layout .dashboard-sidebar {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .transaction-header {
+    min-height: 85px;
+    padding: 18px;
+  }
+
+  .transaction-header-icon {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .transaction-header-icon img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .transaction-header h1 {
+    font-size: 20px;
+  }
+
+  .transaction-header p {
+    font-size: 13px;
+  }
+
+  .transaction-main {
+    padding: 16px 12px 25px;
+  }
+
+  .transaction-card {
+    max-width: none;
+    min-height: auto;
+    padding: 25px 18px 20px;
+    border-radius: 16px;
+  }
+
+  .transaction-field {
+    margin-bottom: 28px;
+  }
+
+  .transaction-field-heading label {
+    font-size: 16px;
+  }
+
+  .transaction-required,
+  .transaction-hint {
+    font-size: 12px;
+  }
+
+  .transaction-amount-input {
+    height: 68px;
+  }
+
+  .transaction-currency {
+    flex-basis: 62px;
+    font-size: 16px;
+  }
+
+  .transaction-amount-input input {
+    font-size: 24px;
+  }
+
+  .transaction-categories {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: none;
+    gap: 12px;
+  }
+
+  .transaction-category {
+    height: 54px;
+    font-size: 14px;
+    gap: 8px;
+  }
+
+  .transaction-category-icon {
+    flex-basis: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .transaction-date-input {
+    max-width: none;
+    height: 54px;
+    padding: 0 16px;
+  }
+
+  .transaction-date-icon-button,
+  .transaction-date-icon-button img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .transaction-date-display {
+    font-size: 14px;
+  }
+
+  .transaction-description-input {
+    height: 68px;
+    padding: 16px;
+  }
+
+  .transaction-description-input textarea {
+    font-size: 14px;
+  }
+
+  .transaction-feedback {
+    min-height: 56px;
+    padding-right: 0;
+  }
+
+  .transaction-notice {
+    font-size: 15px;
+  }
+
+  .transaction-save-button,
+  .transaction-reset-button {
+    height: 52px;
+    font-size: 15px;
+  }
+
+  .transaction-reset-button {
+    flex-basis: 120px;
   }
 }

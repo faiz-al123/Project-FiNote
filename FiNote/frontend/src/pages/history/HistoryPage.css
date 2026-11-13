@@ -1,6 +1,6 @@
 /* =========================================
    HISTORY PAGE - FINOTE
-   REVISI DESAIN UI/UX
+   REVISI DESAIN UI/UX (SQA FIX)
 ========================================= */
 
 .history-layout {
@@ -41,7 +41,7 @@
   width: 25px;
   height: 27px;
   margin-top: 1px;
-  color: #222;
+  color: #111; /* Lebih tegas */
 }
 
 .history-header-icon svg {
@@ -116,10 +116,7 @@
 
 .history-date-range-controls {
   display: grid;
-  grid-template-columns:
-    minmax(0, 1fr)
-    12px
-    minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 12px minmax(0, 1fr);
   align-items: center;
   gap: 6px;
   min-width: 0;
@@ -136,11 +133,14 @@
   background: #f0f3ff;
 }
 
-.history-date-control input {
+/* Placeholder kustom (01/10/2026) hanya tampil saat input kosong.
+   Catatan: input[type=date] tanpa "required" selalu :valid, jadi
+   kondisi kosong ditandai lewat class .is-empty dari JSX. */
+.history-date-control input[type="date"] {
   width: 100%;
   min-width: 0;
   height: 100%;
-  padding: 0 30px 0 10px;
+  padding: 0 32px 0 10px;
   border: 0;
   outline: 0;
   appearance: none;
@@ -151,33 +151,60 @@
   cursor: pointer;
 }
 
-.history-date-control input::-webkit-datetime-edit-text { color: transparent; }
-.history-date-control input::-webkit-datetime-edit-month-field { color: transparent; }
-.history-date-control input::-webkit-datetime-edit-day-field { color: transparent; }
-.history-date-control input::-webkit-datetime-edit-year-field { color: transparent; }
+/* Sembunyikan teks bawaan browser (dd/mm/yyyy) saat kosong */
+.history-date-control.is-empty input[type="date"] {
+  color: transparent;
+}
 
-.history-date-control input:valid::-webkit-datetime-edit-text { color: #555; }
-.history-date-control input:valid::-webkit-datetime-edit-month-field { color: #555; }
-.history-date-control input:valid::-webkit-datetime-edit-day-field { color: #555; }
-.history-date-control input:valid::-webkit-datetime-edit-year-field { color: #555; }
-
-.history-date-control input::-webkit-calendar-picker-indicator {
+.history-date-control.is-empty input[type="date"]::-webkit-datetime-edit {
   opacity: 0;
+}
+
+/* Saat difokus (mengetik manual), tampilkan kembali teks bawaan */
+.history-date-control.is-empty:focus-within input[type="date"] {
+  color: #555;
+}
+
+.history-date-control.is-empty:focus-within input[type="date"]::-webkit-datetime-edit {
+  opacity: 1;
+}
+
+.history-date-control.is-empty:focus-within .date-placeholder {
+  display: none;
+}
+
+.date-placeholder {
   position: absolute;
-  right: 0;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 11px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Ikon kalender bawaan dibuat transparan tapi menutupi seluruh kolom,
+   sehingga klik di mana pun membuka kalender */
+.history-date-control input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  opacity: 0;
   cursor: pointer;
 }
 
+/* Ikon kalender kustom di kanan */
 .custom-date-icon {
   position: absolute;
   right: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #555;
+  color: #333;
   pointer-events: none;
+  z-index: 2;
 }
 
 .custom-date-icon svg {
@@ -340,22 +367,22 @@
 }
 
 /* =========================================
-   TABEL RIWAYAT & PAGINATION AREA
+   TABEL RIWAYAT (UKURAN DISESUAIKAN DENGAN UI/UX)
 ========================================= */
 
 .history-table-section {
-  position: relative; /* Penting agar pagination bisa di-absolute */
   width: 100%;
-  min-height: 400px; /* Tinggi minimal agar tabel tidak terlalu pendek */
-  padding-bottom: 50px; /* Ruang untuk pagination di bagian bawah */
+  height: 470px; /* Diperbesar agar kotak lebih tinggi sesuai desain */
+  min-width: 0;
+  overflow: hidden;
   background: #fff;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #b8b8b8; /* Garis pinggir kotak dipertegas */
+  border-radius: 8px;
 }
 
 .history-table-scroll {
   width: 100%;
   height: 100%;
-  max-height: 400px; /* Scroll vertikal jika data sangat banyak */
   overflow: auto;
 }
 
@@ -375,36 +402,37 @@
 }
 
 .history-table th {
-  height: 24px;
+  height: 40px; /* Header tabel dibuat lebih tinggi agar proporsional */
   padding: 5px 10px;
   color: #182944;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-align: center;
+  border-bottom: 1px solid #b8b8b8;
 }
 
 .history-table td {
-  height: 24px;
+  height: 40px; /* Baris tabel diperbesar */
   padding: 4px 10px;
   color: #222;
-  font-size: 10px;
+  font-size: 11px;
   text-align: center;
   overflow-wrap: anywhere;
 }
 
 .history-table th:nth-child(1),
-.history-table td:nth-child(1) { width: 13%; text-align: center; }
+.history-table td:nth-child(1) { width: 10%; text-align: center; }
 .history-table th:nth-child(2),
 .history-table td:nth-child(2) { width: 20%; }
 .history-table th:nth-child(3),
-.history-table td:nth-child(3) { width: 20%; }
+.history-table td:nth-child(3) { width: 30%; }
 .history-table th:nth-child(4),
 .history-table td:nth-child(4) { width: 20%; }
 .history-table th:nth-child(5),
-.history-table td:nth-child(5) { width: 27%; text-align: center; }
+.history-table td:nth-child(5) { width: 20%; text-align: center; }
 
 .history-table td.history-number-column {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -421,7 +449,7 @@
 
 /* Empty State Badge Biru */
 .history-empty-state-cell {
-  height: 340px !important;
+  height: 400px !important;
   text-align: center !important;
   vertical-align: middle !important;
 }
@@ -437,22 +465,18 @@
 }
 
 /* =========================================
-   PAGINATION (FIXED BOTTOM RIGHT)
+   PAGINATION (DI LUAR KOTAK TABEL)
 ========================================= */
 
 .history-pagination {
-  position: absolute;
-  bottom: 0;
-  right: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 7px;
   width: 100%;
-  padding: 10px 15px;
-  background: #fff;
-  border-top: 1px solid #e0e0e0;
+  margin-top: 15px; /* Jarak antara kotak dan pagination */
+  padding-right: 2px;
 }
 
 .history-page-button,
@@ -513,7 +537,7 @@
   .history-range-fields, .history-filter-button { grid-column: auto; }
   .history-filter-button { width: 100%; }
   .history-reset-button { grid-column: auto; }
-  .history-table-scroll { max-height: 360px; }
+  .history-table-section { height: 360px; }
   .history-table th { font-size: 11px; }
   .history-table td { font-size: 10px; }
   .history-pagination { justify-content: center; }
