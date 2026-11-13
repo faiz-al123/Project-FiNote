@@ -205,6 +205,36 @@ test('pengingat terlewat yang ditandai selesai tidak dihitung terlewat lagi', as
   assert.strictEqual(sesudah.terlewat, sebelum.terlewat - 1);
 });
 
+test('tandai selesai -> tercatat sebagai transaksi dan muncul di Riwayat', async () => {
+  const r = await buat({ deskripsi: 'Bayar wifi', jumlah: 275000, tanggal: '2026-11-15' });
+  const riwayatSebelum = (await api('GET', '/transaksi?search=Bayar%20wifi')).json.data.pagination.total_items;
+  assert.strictEqual(riwayatSebelum, 0); // belum dibayar -> belum ada di Riwayat
+
+  assert.strictEqual((await api('PATCH', `/pengingat/${r.pengingat_id}/selesai`)).status, 200);
+
+  const riwayat = (await api('GET', '/transaksi?search=Bayar%20wifi')).json.data;
+  assert.strictEqual(riwayat.pagination.total_items, 1);
+  const t = riwayat.transactions[0];
+  assert.strictEqual(t.catatan, 'Bayar wifi');
+  assert.strictEqual(t.jumlah, 275000);
+  assert.strictEqual(t.kategori_id, r.kategori_id);
+});
+
+test('tandai selesai dua kali tidak membuat transaksi ganda', async () => {
+  const r = await buat({ deskripsi: 'Bayar air PDAM' });
+  await api('PATCH', `/pengingat/${r.pengingat_id}/selesai`);
+  await api('PATCH', `/pengingat/${r.pengingat_id}/selesai`); // 409
+  const riwayat = (await api('GET', '/transaksi?search=Bayar%20air%20PDAM')).json.data;
+  assert.strictEqual(riwayat.pagination.total_items, 1);
+});
+
+test('transaksi dari pengingat tidak terlihat oleh user lain', async () => {
+  const r = await buat({ deskripsi: 'Rahasia Budi' });
+  await api('PATCH', `/pengingat/${r.pengingat_id}/selesai`);
+  const riwayatLain = (await api('GET', '/transaksi?search=Rahasia', undefined, tokenLain)).json.data;
+  assert.strictEqual(riwayatLain.pagination.total_items, 0);
+});
+
 test('tandai selesai dua kali -> 409', async () => {
   const r = await buat();
   assert.strictEqual((await api('PATCH', `/pengingat/${r.pengingat_id}/selesai`)).status, 200);
