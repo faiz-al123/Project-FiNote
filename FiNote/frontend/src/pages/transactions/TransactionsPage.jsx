@@ -16,6 +16,7 @@ import {
   getTransactionCategories,
 } from '../../api/transaction.api'
 
+import TransactionCategorySkeleton from './TransactionCategorySkeleton'
 import './TransactionsPage.css'
 import '../dashboard/DashboardPage.css'
 
@@ -223,7 +224,13 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
       setCategoryError('')
 
       try {
-        const result = await getTransactionCategories()
+        // Skeleton tampil minimal 400 atau 500 ms agar tidak berkedip
+        const minimumLoading = new Promise((r) => setTimeout(r, 500))
+
+        const [result] = await Promise.all([
+          getTransactionCategories(),
+          minimumLoading,
+        ])
 
         const rows = getCategoriesFromResponse(result)
 
@@ -713,9 +720,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
               </div>
 
               {loadingCategories ? (
-                <p role="status">
-                  Memuat kategori dari server...
-                </p>
+                <TransactionCategorySkeleton />
               ) : categoryError ? (
                 <p
                   className="transaction-inline-error"

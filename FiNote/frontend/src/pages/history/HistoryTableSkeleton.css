@@ -1,0 +1,13 @@
+/* Sel skeleton mengikuti tinggi baris asli (.history-table td = 40px),
+   jadi tabel tidak bergeser saat data muncul. */
+
+.skeleton-cell {
+  height: 14px;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+
+.skeleton-cell-no       { width: 22px; }
+.skeleton-cell-date     { width: 75%; }
+.skeleton-cell-category { width: 60%; }
+.skeleton-cell-amount   { width: 70%; }

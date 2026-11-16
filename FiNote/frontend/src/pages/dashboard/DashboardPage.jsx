@@ -9,6 +9,7 @@ import {
   getDashboardCategorySummary,
 } from '../../api/dashboard.api'
 import { formatRupiah } from '../../utils/format'
+import DashboardSkeleton from './DashboardSkeleton'
 import './DashboardPage.css'
 
 // 6 kategori yang ditampilkan pada grafik.
@@ -35,6 +36,9 @@ function DashboardPage({ user, onLogout, onNavigate }) {
       try {
         setLoading(true)
         setError('')
+
+        await new Promise((r) => setTimeout(r, 500)) 
+        // boleh dihapus atau tidak
 
         const [summaryData, categoryData] = await Promise.all([
           getDashboardSummary(),
@@ -85,7 +89,6 @@ function DashboardPage({ user, onLogout, onNavigate }) {
     totalBulan === 0
 
   const tampil = (nilai) => {
-    if (loading) return '...'
     if (error) return '-'
     return formatRupiah(nilai)
   }
@@ -291,6 +294,10 @@ function DashboardPage({ user, onLogout, onNavigate }) {
             </div>
           )}
 
+          {loading ? (
+            <DashboardSkeleton />
+          ) : (
+            <>
           <section
             className="dashboard-summary"
             aria-label="Ringkasan pengeluaran"
@@ -391,6 +398,8 @@ function DashboardPage({ user, onLogout, onNavigate }) {
               <span>Tertinggi</span>
             </div>
           </section>
+            </>
+          )}
         </main>
       </div>
     </div>

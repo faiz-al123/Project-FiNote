@@ -10,6 +10,7 @@ import {
 
 import { formatRupiah } from '../../utils/format'
 
+import HistoryTableSkeleton from './HistoryTableSkeleton'
 import './HistoryPage.css'
 import '../dashboard/DashboardPage.css'
 
@@ -217,9 +218,13 @@ function HistoryPage({ user, onLogout, onNavigate }) {
       setError('')
 
       try {
+        // Skeleton tampil minimal 500 ms agar tidak berkedip
+        const minimumLoading = new Promise((r) => setTimeout(r, 500))
+
         const [categoryResult, historyResult] = await Promise.all([
           getTransactionCategories(),
           getAllTransactionHistory(),
+          minimumLoading,
         ])
 
         if (cancelled) return
@@ -566,11 +571,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
 
                 <tbody>
                   {loading ? (
-                    <tr>
-                      <td colSpan="5" className="history-state-cell">
-                        Memuat riwayat transaksi...
-                      </td>
-                    </tr>
+                    <HistoryTableSkeleton />
                   ) : visibleTransactions.length > 0 ? (
                     visibleTransactions.map((item, index) => (
                       <tr key={item.transaksi_id || index}>

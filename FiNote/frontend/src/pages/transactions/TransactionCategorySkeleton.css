@@ -1,0 +1,15 @@
+/* Kotak skeleton memakai .transaction-category dan
+   .transaction-categories dari TransactionsPage.css,
+   jadi ukuran dan grid-nya sama dengan kategori asli. */
+
+.skeleton-category {
+  border-color: #d5dbee;
+  cursor: default;
+  pointer-events: none;
+}
+
+.skeleton-category-label {
+  width: 55%;
+  max-width: 90px;
+  height: 14px;
+}

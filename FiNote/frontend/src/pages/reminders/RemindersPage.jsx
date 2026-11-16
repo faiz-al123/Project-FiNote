@@ -27,6 +27,7 @@ import {
 import { getTransactionCategories } from '../../api/transaction.api'
 
 import '../dashboard/DashboardPage.css'
+import { ReminderCountSkeleton, ReminderTableSkeleton } from './ReminderSkeleton'
 import './RemindersPage.css'
 
 const NOTICE_DURATION = 3500
@@ -105,7 +106,10 @@ function formatNominal(value) {
 
 // Fungsi untuk merapikan input nominal (hanya angka)
 function formatNumberInput(value) {
-  const number = String(value).replace(/[^\d]/g, '')
+  const text = String(value)
+  // Biarkan karakter selain angka tetap terlihat agar validasi dapat mendeteksinya.
+  if (text && !/^[\d.]+$/.test(text)) return text
+  const number = text.replace(/[^\d]/g, '')
   if (!number) return ''
   return new Intl.NumberFormat('id-ID').format(Number(number))
 }
@@ -232,6 +236,9 @@ function RemindersPage({ user, onLogout, onNavigate }) {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [loading, setLoading] = useState(true)
+  // Menandai apakah data pertama sudah selesai dimuat
+  const [hasLoaded, setHasLoaded] = useState(false)
+  const hasLoadedRef = useRef(false)
   const [error, setError] = useState('')
   const [refreshKey, setRefreshKey] = useState(0)
   const [notice, setNotice] = useState(null)
@@ -242,6 +249,8 @@ function RemindersPage({ user, onLogout, onNavigate }) {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
   const [formError, setFormError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
+  const datePickerRef = useRef(null)
   const [saving, setSaving] = useState(false)
 
   const monthOptions = useMemo(() => buildMonthOptions(), [])
@@ -289,12 +298,21 @@ function RemindersPage({ user, onLogout, onNavigate }) {
       setLoading(true)
       setError('')
       try {
-        const result = await getReminders({
-          bulan: activeMonth,
-          tanggal: getToday(),
-          filter: activeFilter,
-          search: debouncedSearch,
-        })
+        // Skeleton tampil minimal 500 ms, hanya pada pemuatan pertama
+        // (agar pencarian dan filter berikutnya tidak diperlambat)
+        const minimumLoading = hasLoadedRef.current
+          ? null
+          : new Promise((r) => setTimeout(r, 500))
+
+        const [result] = await Promise.all([
+          getReminders({
+            bulan: activeMonth,
+            tanggal: getToday(),
+            filter: activeFilter,
+            search: debouncedSearch,
+          }),
+          minimumLoading,
+        ])
         if (cancelled) return
         setReminders(Array.isArray(result?.reminders) ? result.reminders : [])
         setSummary({ ...EMPTY_SUMMARY, ...(result?.ringkasan || {}) })
@@ -305,7 +323,11 @@ function RemindersPage({ user, onLogout, onNavigate }) {
         setSummary(EMPTY_SUMMARY)
         setError(err.message || 'Gagal memuat daftar pengingat.')
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) {
+          hasLoadedRef.current = true
+          setHasLoaded(true)
+          setLoading(false)
+        }
       }
     }
     loadReminders()
@@ -353,7 +375,21 @@ function RemindersPage({ user, onLogout, onNavigate }) {
   function openForm() {
     setForm(EMPTY_FORM)
     setFormError('')
+    setFieldErrors({})
     setShowForm(true)
+  }
+
+  function resetForm() {
+    setForm(EMPTY_FORM)
+    setFormError('')
+    setFieldErrors({})
+  }
+
+  function openDatePicker() {
+    const picker = datePickerRef.current
+    if (!picker) return
+    if (typeof picker.showPicker === 'function') picker.showPicker()
+    else picker.click()
   }
 
   function closeForm() {
@@ -374,32 +410,50 @@ function RemindersPage({ user, onLogout, onNavigate }) {
       [name]: formattedValue,
     }))
 
+    setFieldErrors((previous) => ({ ...previous, [name]: '' }))
     if (formError) setFormError('')
   }
 
   async function handleAddReminder(event) {
     event.preventDefault()
 
-    // Ambil nilai mentah (angka murni) dari string berformat
-    const rawJumlah = parseRawNumber(form.jumlah)
+    const nextErrors = {
+      tanggal: !form.tanggal,
+      deskripsi: !form.deskripsi.trim(),
+      kategori_id: !form.kategori_id,
+      jumlah: !String(form.jumlah).trim(),
+    }
 
-    if (!form.deskripsi.trim() || !form.kategori_id || !form.jumlah || !form.tanggal) {
-      setFormError('Lengkapi seluruh data pengingat.')
+    if (Object.values(nextErrors).some(Boolean)) {
+      setFieldErrors(nextErrors)
+      setFormError('Kolom Tidak Boleh Kosong')
       return
     }
 
-    if (rawJumlah <= 0) {
-      setFormError('Nominal harus lebih dari 0.')
+    // Validasi dilakukan sebelum mengambil angka murni agar input seperti "gocap"
+    // tidak diam-diam berubah menjadi 0.
+    if (!/^[\d.]+$/.test(String(form.jumlah).trim())) {
+      setFieldErrors({ tanggal: false, deskripsi: false, kategori_id: false, jumlah: true })
+      setFormError('Nominal Harus Berupa Angka')
+      return
+    }
+
+    const rawJumlah = parseRawNumber(form.jumlah)
+    if (!Number.isFinite(rawJumlah) || rawJumlah <= 0) {
+      setFieldErrors({ tanggal: false, deskripsi: false, kategori_id: false, jumlah: true })
+      setFormError('Nominal harus lebih dari 0')
       return
     }
 
     if (form.deskripsi.trim().length > 200) {
-      setFormError('Deskripsi maksimal 200 karakter.')
+      setFieldErrors({ tanggal: false, deskripsi: true, kategori_id: false, jumlah: false })
+      setFormError('Deskripsi maksimal 200 karakter')
       return
     }
 
     setSaving(true)
     setFormError('')
+    setFieldErrors({})
 
     try {
       await createReminder({
@@ -490,7 +544,11 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                     <div className="reminder-summary-body">
                       <div className="reminder-summary-top">
                         <img src={card.icon} alt="" />
-                        <strong className={count === 0 ? 'zero' : ''}>{count}</strong>
+                        {hasLoaded ? (
+                          <strong className={count === 0 ? 'zero' : ''}>{count}</strong>
+                        ) : (
+                          <ReminderCountSkeleton />
+                        )}
                       </div>
                       <h3>{card.title}</h3>
                       <p>{card.note}</p>
@@ -538,7 +596,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
               </div>
             </div>
 
-            <div className={`reminder-table-wrapper ${loading ? 'is-loading' : ''}`}>
+            <div className={`reminder-table-wrapper ${loading && !showLoadingMessage ? 'is-loading' : ''}`}>
               <table className="reminder-table">
                 <thead>
                   <tr>
@@ -550,6 +608,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                   </tr>
                 </thead>
                 <tbody>
+                  {showLoadingMessage && <ReminderTableSkeleton />}
                   {sortedReminders.map((item) => {
                     const isDone = item.status === 'selesai'
                     const blocked = !isDone && BLOCK_OVERDUE_COMPLETE && Boolean(item.terlewat)
@@ -585,7 +644,6 @@ function RemindersPage({ user, onLogout, onNavigate }) {
               </table>
 
               {error && <div className="reminder-empty error">{error}</div>}
-              {showLoadingMessage && <div className="reminder-empty">memuat daftar pengingat...</div>}
               {showEmpty && <div className="reminder-empty">{getEmptyMessage(activeFilter, isSearching)}</div>}
             </div>
           </section>
@@ -623,22 +681,43 @@ function RemindersPage({ user, onLogout, onNavigate }) {
             <div className="reminder-create-divider" />
 
             <form className="reminder-create-form" onSubmit={handleAddReminder}>
+              {formError && (
+                <p className="reminder-form-error" role="alert">
+                  {formError}
+                </p>
+              )}
+
               <label className="reminder-create-field">
                 <span>tanggal<span className="required-mark">*</span></span>
-                <div className="reminder-date-input-wrapper">
+                <div className={`reminder-date-input-wrapper ${fieldErrors.tanggal ? 'is-invalid' : ''}`} onClick={openDatePicker}>
                   <input
+                    type="text"
+                    className="reminder-date-display"
+                    value={form.tanggal ? formatDate(form.tanggal) : ''}
+                    placeholder="tanggal"
+                    readOnly
+                    aria-label="tanggal"
+                  />
+                  <button type="button" className="reminder-date-icon" onClick={(event) => { event.preventDefault(); event.stopPropagation(); openDatePicker() }} aria-label="Pilih tanggal">
+                    <FormCalendarIcon />
+                  </button>
+                  <input
+                    ref={datePickerRef}
                     name="tanggal"
                     type="date"
+                    className="reminder-native-date"
                     value={form.tanggal}
                     onChange={handleFormChange}
+                    tabIndex={-1}
+                    aria-hidden="true"
                   />
-                  <span className="reminder-date-icon"><FormCalendarIcon /></span>
                 </div>
               </label>
 
               <label className="reminder-create-field">
                 <span>Deskripsi<span className="required-mark">*</span></span>
                 <input
+                  className={fieldErrors.deskripsi ? 'is-invalid' : ''}
                   name="deskripsi"
                   type="text"
                   maxLength={200}
@@ -650,7 +729,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
 
               <label className="reminder-create-field">
                 <span>Kategori<span className="required-mark">*</span></span>
-                <select name="kategori_id" value={form.kategori_id} onChange={handleFormChange}>
+                <select className={fieldErrors.kategori_id ? 'is-invalid' : ''} name="kategori_id" value={form.kategori_id} onChange={handleFormChange}>
                   <option value="">Pilih kategori</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>{category.name}</option>
@@ -660,7 +739,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
 
               <label className="reminder-create-field">
                 <span>Nominal<span className="required-mark">*</span></span>
-                <div className="reminder-nominal-input">
+                <div className={`reminder-nominal-input ${fieldErrors.jumlah ? 'is-invalid' : ''}`}>
                   <span>Rp</span>
                   <input
                     name="jumlah"
@@ -673,10 +752,8 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                 </div>
               </label>
 
-              {formError && <p className="reminder-form-error" role="alert">{formError}</p>}
-
               <div className="reminder-create-buttons">
-                <button type="button" className="reminder-create-cancel" onClick={closeForm} disabled={saving}>Batal</button>
+                <button type="button" className="reminder-create-cancel" onClick={resetForm} disabled={saving}>↶&nbsp; Reset</button>
                 <button type="submit" className="reminder-create-save" disabled={saving}>
                   {saving ? 'Menyimpan...' : 'Simpan'}
                 </button>

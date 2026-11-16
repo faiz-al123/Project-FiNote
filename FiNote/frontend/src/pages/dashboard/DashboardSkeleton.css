@@ -1,0 +1,81 @@
+/* ========================================
+   SKELETON DASHBOARD
+   Memakai class layout dari DashboardPage.css
+   (dashboard-summary, dashboard-chart-card, dst)
+   sehingga ukurannya sama persis dan tidak ada
+   layout shift saat data muncul.
+======================================== */
+
+.skeleton {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    #e3e8f5 25%,
+    #f1f4fc 50%,
+    #e3e8f5 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* Kartu ringkasan */
+.skeleton-title {
+  width: 60%;
+  max-width: 240px;
+  height: 24px;
+}
+
+.skeleton-value {
+  width: 45%;
+  max-width: 180px;
+  height: 30px;
+  margin-top: 28px;
+}
+
+/* Kartu grafik */
+.skeleton-chart-icon {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+
+.skeleton-chart-title {
+  width: 280px;
+  max-width: 70%;
+  height: 18px;
+}
+
+.skeleton-bar {
+  width: min(46px, 65%);
+  border-radius: 9px 9px 0 0;
+}
+
+.skeleton-label {
+  width: 70%;
+  height: 13px;
+  margin: 8px 0 15px;
+}
+
+/* Teks khusus screen reader */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Hormati pengguna yang mematikan animasi */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

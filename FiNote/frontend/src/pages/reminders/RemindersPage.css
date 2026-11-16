@@ -1237,3 +1237,173 @@
   .reminder-create-buttons { gap: 10px; margin-top: 16px; }
   .reminder-create-buttons button { flex: 1; width: auto; }
 }
+/* =========================================
+   PENYESUAIAN SKENARIO VALIDASI UI/UX TERBARU
+========================================= */
+.reminder-create-modal {
+  position: relative;
+  width: min(100%, 630px);
+  min-height: 700px;
+  padding: 27px 27px 55px;
+  box-sizing: border-box;
+}
+
+.reminder-create-form {
+  gap: 18px;
+}
+
+.reminder-create-field > input.is-invalid,
+.reminder-create-field > select.is-invalid,
+.reminder-date-input-wrapper.is-invalid .reminder-date-display,
+.reminder-nominal-input.is-invalid {
+  border-color: #ff3030 !important;
+  box-shadow: none !important;
+}
+
+.reminder-create-field > input.is-invalid:focus,
+.reminder-create-field > select.is-invalid:focus,
+.reminder-date-input-wrapper.is-invalid .reminder-date-display:focus,
+.reminder-nominal-input.is-invalid:focus-within {
+  border-color: #ff3030 !important;
+  box-shadow: 0 0 0 1px rgba(255, 48, 48, 0.08) !important;
+}
+
+.reminder-date-input-wrapper {
+  position: relative;
+  box-sizing: border-box;
+  height: 52px;
+  cursor: pointer;
+}
+
+.reminder-date-input-wrapper .reminder-date-display {
+  box-sizing: border-box;
+  width: 100%;
+  height: 52px;
+  padding: 0 52px 0 18px;
+  border: 1px solid #929292;
+  border-radius: 16px;
+  outline: none;
+  background: #fff;
+  color: #222;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.reminder-date-input-wrapper .reminder-date-display::placeholder {
+  color: #858585;
+  opacity: 1;
+}
+
+.reminder-date-input-wrapper .reminder-date-display:focus {
+  border-color: #4787f7;
+  box-shadow: 0 0 0 2px rgba(71, 135, 247, 0.13);
+}
+
+.reminder-date-input-wrapper .reminder-date-icon {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #111;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.reminder-date-input-wrapper .reminder-date-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.reminder-native-date {
+  position: absolute;
+  left: 18px;
+  bottom: 2px;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.reminder-create-form > .reminder-form-error {
+  /* Pesan selalu menjadi elemen pertama form: tepat di bawah divider. */
+  position: static !important;
+  inset: auto !important;
+  z-index: auto;
+  display: block;
+  align-self: center;
+  order: -1;
+  width: max-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto 2px;
+  padding: 11px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: #ffc9c9;
+  color: #ed1717;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+  transform: none !important;
+  pointer-events: none;
+}
+
+.reminder-create-buttons {
+  gap: 17px;
+  margin-top: 26px;
+}
+
+.reminder-create-buttons button {
+  height: 50px;
+  border-radius: 16px;
+}
+
+.reminder-create-cancel {
+  border-width: 2px !important;
+  background: #fff;
+  color: #4787ff;
+}
+
+@media (max-width: 600px) {
+  .reminder-create-modal {
+    min-height: 0;
+    padding: 20px 17px 28px;
+  }
+
+  .reminder-create-form > .reminder-form-error {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
+.reminder-date-input-wrapper input.reminder-native-date {
+  position: absolute;
+  left: 18px;
+  bottom: 2px;
+  width: 1px;
+  min-width: 1px;
+  height: 1px;
+  min-height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.reminder-create-field > select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}

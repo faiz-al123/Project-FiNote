@@ -16,6 +16,42 @@ import {
 
 import './App.css'
 
+// Halaman yang boleh dibuka setelah login
+const ALLOWED_PAGES = [
+  'dashboard',
+  'transaksi',
+  'riwayat',
+  'pengingat',
+]
+
+const PAGE_STORAGE_KEY = 'finote_page'
+
+// Membaca halaman terakhir yang tersimpan (aman jika storage gagal)
+function getSavedPage() {
+  try {
+    const saved = sessionStorage.getItem(PAGE_STORAGE_KEY)
+    return ALLOWED_PAGES.includes(saved) ? saved : 'dashboard'
+  } catch {
+    return 'dashboard'
+  }
+}
+
+function savePage(page) {
+  try {
+    sessionStorage.setItem(PAGE_STORAGE_KEY, page)
+  } catch {
+    // diabaikan, aplikasi tetap berjalan tanpa penyimpanan
+  }
+}
+
+function clearSavedPage() {
+  try {
+    sessionStorage.removeItem(PAGE_STORAGE_KEY)
+  } catch {
+    // diabaikan
+  }
+}
+
 function App() {
   const [user, setUser] = useState(null)
   const [page, setPage] = useState('login')
@@ -37,7 +73,7 @@ function App() {
       .then((currentUser) => {
         if (!cancelled) {
           setUser(currentUser)
-          setPage('dashboard')
+          setPage(getSavedPage())
         }
       })
       .catch((error) => {
@@ -46,6 +82,7 @@ function App() {
           error.status === 404
         ) {
           clearSession()
+          clearSavedPage()
         }
       })
       .finally(() => {
@@ -61,29 +98,26 @@ function App() {
 
   const handleLoginSuccess = (loggedInUser) => {
     setUser(loggedInUser)
+    savePage('dashboard')
     setPage('dashboard')
   }
 
   const handleRegisterSuccess = (registeredUser) => {
     setUser(registeredUser)
+    savePage('dashboard')
     setPage('dashboard')
   }
 
   const handleLogout = useCallback(() => {
     clearSession()
+    clearSavedPage()
     setUser(null)
     setPage('login')
   }, [])
 
   const handleNavigate = (destination) => {
-    const allowedPages = [
-      'dashboard',
-      'transaksi',
-      'riwayat',
-      'pengingat',
-    ]
-
-    if (allowedPages.includes(destination)) {
+    if (ALLOWED_PAGES.includes(destination)) {
+      savePage(destination)
       setPage(destination)
     }
   }
