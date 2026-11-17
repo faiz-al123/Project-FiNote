@@ -2,7 +2,7 @@
 import '../dashboard/DashboardSkeleton.css'
 import './HistoryTableSkeleton.css'
 
-// 10 baris cukup memenuhi kotak tabel (tinggi 470px)
+// 10 baris cukup memenuhi kotak tabel
 const JUMLAH_BARIS = 10
 
 // Lebar tiap kolom divariasikan agar terlihat natural
@@ -18,9 +18,6 @@ function HistoryTableSkeleton() {
           className="history-skeleton-row"
           aria-hidden="true"
         >
-          <td className="history-number-column">
-            <span className="skeleton skeleton-cell skeleton-cell-no" />
-          </td>
           <td>
             <span className="skeleton skeleton-cell skeleton-cell-date" />
           </td>

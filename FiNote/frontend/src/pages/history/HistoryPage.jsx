@@ -8,8 +8,6 @@ import {
   getTransactionCategories,
 } from '../../api/transaction.api'
 
-import { formatRupiah } from '../../utils/format'
-
 import HistoryTableSkeleton from './HistoryTableSkeleton'
 import './HistoryPage.css'
 import '../dashboard/DashboardPage.css'
@@ -45,6 +43,13 @@ function getCategoryName(category) {
     category.namaKategori ??
     ''
   )
+}
+
+// Desain menampilkan nominal tanpa "Rp" (contoh: 50.000)
+function formatNominal(value) {
+  return new Intl.NumberFormat('id-ID', {
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0)
 }
 
 function formatDate(dateString) {
@@ -219,7 +224,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
 
       try {
         // Skeleton tampil minimal 500 ms agar tidak berkedip
-        const minimumLoading = new Promise((r) => setTimeout(r, 500))
+        const minimumLoading = new Promise((r) => setTimeout(r, 400))
 
         const [categoryResult, historyResult] = await Promise.all([
           getTransactionCategories(),
@@ -439,7 +444,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                     aria-label="Tanggal awal"
                   />
                   {!startDate && (
-                    <span className="date-placeholder">01/10/2026</span>
+                    <span className="date-placeholder">dd/mm/yyyy</span>
                   )}
                   <span className="custom-date-icon"><FilterCalendarIcon /></span>
                 </div>
@@ -457,7 +462,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                     aria-label="Tanggal akhir"
                   />
                   {!endDate && (
-                    <span className="date-placeholder">23/10/2026</span>
+                    <span className="date-placeholder">dd/mm/yyyy</span>
                   )}
                   <span className="custom-date-icon"><FilterCalendarIcon /></span>
                 </div>
@@ -561,11 +566,10 @@ function HistoryPage({ user, onLogout, onNavigate }) {
               <table className="history-table">
                 <thead>
                   <tr>
-                    <th className="history-number-column">NO</th>
                     <th>Tanggal</th>
                     <th>Deskripsi</th>
-                    <th>Kategori</th>
-                    <th>Nominal</th>
+                    <th>kategori</th>
+                    <th>nominal</th>
                   </tr>
                 </thead>
 
@@ -575,20 +579,17 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                   ) : visibleTransactions.length > 0 ? (
                     visibleTransactions.map((item, index) => (
                       <tr key={item.transaksi_id || index}>
-                        <td className="history-number-column">
-                          {(currentPage - 1) * ROWS_PER_PAGE + index + 1}
-                        </td>
                         <td>{formatDate(item.tanggal)}</td>
                         <td>{item.catatan || '-'}</td>
                         <td>{item.nama_kategori || '-'}</td>
                         <td className="history-amount">
-                          {formatRupiah(item.jumlah)}
+                          {formatNominal(item.jumlah)}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="history-empty-state-cell">
+                      <td colSpan="4" className="history-empty-state-cell">
                         <div className="history-empty-badge">
                           {appliedFilters 
                             ? '"Data Tidak Ditemukan"' 
@@ -612,7 +613,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                 disabled={currentPage === 1}
                 aria-label="Halaman sebelumnya"
               >
-                ‹
+                ←
               </button>
 
               {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
@@ -634,7 +635,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                 disabled={currentPage === totalPages}
                 aria-label="Halaman berikutnya"
               >
-                ›
+                →
               </button>
             </nav>
           )}

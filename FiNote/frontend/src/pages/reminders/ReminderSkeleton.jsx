@@ -42,6 +42,7 @@ export function ReminderTableSkeleton() {
             <div className="reminder-actions">
               <span className="skeleton reminder-skeleton reminder-skeleton-done" />
               <span className="skeleton reminder-skeleton reminder-skeleton-delete" />
+              <span className="skeleton reminder-skeleton reminder-skeleton-delete" />
             </div>
           </td>
         </tr>

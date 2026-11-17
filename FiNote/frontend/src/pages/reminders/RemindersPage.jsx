@@ -20,6 +20,7 @@ import BadgeTransportasi from '../../assets/pengingat-assets/Tansportasi.png'
 import {
   getReminders,
   createReminder,
+  updateReminder,
   completeReminder,
   deleteReminder,
 } from '../../api/reminder.api'
@@ -119,6 +120,16 @@ function parseRawNumber(value) {
   return Number(String(value).replace(/[^\d]/g, ''))
 }
 
+// Mengisi form edit dengan data pengingat yang dipilih
+function buildEditForm(item) {
+  return {
+    tanggal: String(item.tanggal || '').slice(0, 10),
+    deskripsi: item.deskripsi || '',
+    kategori_id: item.kategori_id != null ? String(item.kategori_id) : '',
+    jumlah: formatNumberInput(String(Math.round(Number(item.jumlah) || 0))),
+  }
+}
+
 function buildMonthOptions() {
   const currentYear = new Date().getFullYear()
   const options = []
@@ -160,7 +171,9 @@ function getEmptyMessage(filter, searching) {
 const iconProps = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }
 
 function BellIcon() { return <svg {...iconProps}><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" /><path d="M10 21h4M5 5 7 3M19 3l2 2" /></svg> }
-function PlusSquareIcon() { return <svg {...iconProps}><rect x="3.5" y="3.5" width="17" height="17" rx="2" /><path d="M12 8v8M8 12h8" /></svg> }
+function PlusIcon() { return <svg {...iconProps}><path d="M12 4v16M4 12h16" /></svg> }
+function ResetIcon() { return <svg {...iconProps}><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg> }
+function EditIcon() { return <svg {...iconProps}><path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" /><path d="M18.4 2.6a2 2 0 0 1 2.8 2.8L12 14.6 8 15.6l1-4 9.4-9Z" /></svg> }
 function SearchIcon() { return <svg {...iconProps}><circle cx="10.8" cy="10.8" r="7" /><path d="m16 16 5 5" /></svg> }
 function ChevronRight() { return <svg {...iconProps}><path d="m9 18 6-6-6-6" /></svg> }
 function ChevronDown() { return <svg {...iconProps}><path d="m6 9 6 6 6-6" /></svg> }
@@ -248,6 +261,8 @@ function RemindersPage({ user, onLogout, onNavigate }) {
 
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
+  // Pengingat yang sedang diedit (null = form buat pengingat baru)
+  const [editTarget, setEditTarget] = useState(null)
   const [formError, setFormError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const datePickerRef = useRef(null)
@@ -373,14 +388,24 @@ function RemindersPage({ user, onLogout, onNavigate }) {
   }
 
   function openForm() {
+    setEditTarget(null)
     setForm(EMPTY_FORM)
     setFormError('')
     setFieldErrors({})
     setShowForm(true)
   }
 
+  function openEdit(item) {
+    setEditTarget(item)
+    setForm(buildEditForm(item))
+    setFormError('')
+    setFieldErrors({})
+    setShowForm(true)
+  }
+
+  // Reset: form baru dikosongkan, form edit dikembalikan ke data awal
   function resetForm() {
-    setForm(EMPTY_FORM)
+    setForm(editTarget ? buildEditForm(editTarget) : EMPTY_FORM)
     setFormError('')
     setFieldErrors({})
   }
@@ -424,9 +449,22 @@ function RemindersPage({ user, onLogout, onNavigate }) {
       jumlah: !String(form.jumlah).trim(),
     }
 
-    if (Object.values(nextErrors).some(Boolean)) {
+    const FIELD_LABELS = {
+      tanggal: 'Tanggal',
+      deskripsi: 'Deskripsi',
+      kategori_id: 'Kategori',
+      jumlah: 'Nominal',
+    }
+    const emptyFields = Object.keys(nextErrors).filter((key) => nextErrors[key])
+
+    if (emptyFields.length > 0) {
       setFieldErrors(nextErrors)
-      setFormError('Kolom Tidak Boleh Kosong')
+      // Satu kolom kosong -> sebut nama kolomnya; lebih dari satu -> pesan umum
+      setFormError(
+        emptyFields.length === 1
+          ? `${FIELD_LABELS[emptyFields[0]]} Tidak Boleh Kosong`
+          : 'Kolom Tidak Boleh Kosong',
+      )
       return
     }
 
@@ -434,7 +472,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
     // tidak diam-diam berubah menjadi 0.
     if (!/^[\d.]+$/.test(String(form.jumlah).trim())) {
       setFieldErrors({ tanggal: false, deskripsi: false, kategori_id: false, jumlah: true })
-      setFormError('Nominal Harus Berupa Angka')
+      setFormError('Nominal harus berupa angka')
       return
     }
 
@@ -455,16 +493,25 @@ function RemindersPage({ user, onLogout, onNavigate }) {
     setFormError('')
     setFieldErrors({})
 
+    const isEditing = Boolean(editTarget)
+
     try {
-      await createReminder({
+      const payload = {
         deskripsi: form.deskripsi.trim(),
         kategori_id: Number(form.kategori_id),
         jumlah: rawJumlah, // Kirim angka murni, misal 10000
         tanggal: form.tanggal,
-      })
+      }
+
+      if (isEditing) {
+        await updateReminder(editTarget.pengingat_id, payload)
+      } else {
+        await createReminder(payload)
+      }
 
       setShowForm(false)
-      showNotice('pengingat berhasil disimpan', 'success')
+      setEditTarget(null)
+      showNotice(isEditing ? 'pengingat berhasil di ubah' : 'Berhasil disimpan', 'success')
       const newMonth = form.tanggal.slice(0, 7)
       if (newMonth !== activeMonth) setSelectedMonth(newMonth)
       setActiveFilter('semua')
@@ -482,6 +529,14 @@ function RemindersPage({ user, onLogout, onNavigate }) {
   const isSearching = Boolean(debouncedSearch.trim())
   const showEmpty = !error && !loading && sortedReminders.length === 0
   const showLoadingMessage = !error && loading && sortedReminders.length === 0
+
+  // Form edit menampilkan badge kategori di dalam kolom kategori (sesuai desain)
+  const selectedCategory = categories.find(
+    (category) => String(category.id) === String(form.kategori_id),
+  )
+  const selectedBadge = editTarget && selectedCategory
+    ? CATEGORY_BADGES[String(selectedCategory.name).trim().toLowerCase()]
+    : null
 
   return (
     <div className="dashboard-layout reminder-layout">
@@ -524,7 +579,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
             </div>
           </div>
           <button className="reminder-add-button" type="button" onClick={openForm} disabled={saving}>
-            <PlusSquareIcon /> tambah pengingat
+            <PlusIcon /> tambah pengingat
           </button>
         </header>
 
@@ -635,6 +690,14 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                             >
                               <img src={DeleteImage} alt="" />
                             </button>
+                            <button
+                              type="button"
+                              className="reminder-edit-button"
+                              aria-label="Ubah pengingat"
+                              onClick={() => openEdit(item)}
+                            >
+                              <EditIcon />
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -664,13 +727,15 @@ function RemindersPage({ user, onLogout, onNavigate }) {
 
       {showForm && (
         <div className="reminder-overlay reminder-form-overlay" onClick={closeForm}>
-          <div className="reminder-modal reminder-create-modal" onClick={(e) => e.stopPropagation()}>
+          <div className={`reminder-modal reminder-create-modal ${editTarget ? 'reminder-edit-modal' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div className="reminder-create-header">
               <div className="reminder-create-heading">
-                <span className="reminder-create-icon"><img src={ReminderBellImage} alt="" /></span>
+                <span className="reminder-create-icon">
+                  {editTarget ? <EditIcon /> : <img src={ReminderBellImage} alt="" />}
+                </span>
                 <div>
-                  <h2>Buat pengingat baru</h2>
-                  <p>lengkapi form untuk pengingat</p>
+                  <h2>{editTarget ? 'Edit pengingat' : 'Buat pengingat baru'}</h2>
+                  <p>{editTarget ? 'edit form untuk ubah pengingat' : 'lengkapi form untuk pengingat'}</p>
                 </div>
               </div>
               <button type="button" className="reminder-create-close" onClick={closeForm} disabled={saving}>
@@ -681,12 +746,6 @@ function RemindersPage({ user, onLogout, onNavigate }) {
             <div className="reminder-create-divider" />
 
             <form className="reminder-create-form" onSubmit={handleAddReminder}>
-              {formError && (
-                <p className="reminder-form-error" role="alert">
-                  {formError}
-                </p>
-              )}
-
               <label className="reminder-create-field">
                 <span>tanggal<span className="required-mark">*</span></span>
                 <div className={`reminder-date-input-wrapper ${fieldErrors.tanggal ? 'is-invalid' : ''}`} onClick={openDatePicker}>
@@ -694,7 +753,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                     type="text"
                     className="reminder-date-display"
                     value={form.tanggal ? formatDate(form.tanggal) : ''}
-                    placeholder="tanggal"
+                    placeholder="dd/mm/yyyy"
                     readOnly
                     aria-label="tanggal"
                   />
@@ -729,12 +788,15 @@ function RemindersPage({ user, onLogout, onNavigate }) {
 
               <label className="reminder-create-field">
                 <span>Kategori<span className="required-mark">*</span></span>
-                <select className={fieldErrors.kategori_id ? 'is-invalid' : ''} name="kategori_id" value={form.kategori_id} onChange={handleFormChange}>
+                <select className={`${fieldErrors.kategori_id ? 'is-invalid' : ''} ${selectedBadge ? 'has-badge' : ''}`} name="kategori_id" value={form.kategori_id} onChange={handleFormChange}>
                   <option value="">Pilih kategori</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>{category.name}</option>
                   ))}
                 </select>
+                {selectedBadge && (
+                  <img className="reminder-select-badge" src={selectedBadge} alt="" aria-hidden="true" />
+                )}
               </label>
 
               <label className="reminder-create-field">
@@ -752,8 +814,14 @@ function RemindersPage({ user, onLogout, onNavigate }) {
                 </div>
               </label>
 
+              {formError && (
+                <p className="reminder-form-error" role="alert">
+                  {formError}
+                </p>
+              )}
+
               <div className="reminder-create-buttons">
-                <button type="button" className="reminder-create-cancel" onClick={resetForm} disabled={saving}>↶&nbsp; Reset</button>
+                <button type="button" className="reminder-create-cancel" onClick={resetForm} disabled={saving}><ResetIcon /> Reset</button>
                 <button type="submit" className="reminder-create-save" disabled={saving}>
                   {saving ? 'Menyimpan...' : 'Simpan'}
                 </button>

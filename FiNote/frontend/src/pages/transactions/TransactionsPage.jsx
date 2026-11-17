@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react'
 
 import Logo from '../../assets/Logo.png'
@@ -31,12 +30,12 @@ const CATEGORY_DEFAULTS = [
 ]
 
 const CATEGORY_ORDER = [
-  'Belanja',
-  'Hiburan',
-  'Lainnya',
   'Makanan',
-  'Tagihan',
   'Transportasi',
+  'Lainnya',
+  'Tagihan',
+  'Hiburan',
+  'Belanja',
 ]
 
 // Mengambil daftar kategori dari response API
@@ -224,8 +223,8 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
       setCategoryError('')
 
       try {
-        // Skeleton tampil minimal 400 atau 500 ms agar tidak berkedip
-        const minimumLoading = new Promise((r) => setTimeout(r, 500))
+        // Skeleton tampil minimal 400 ms agar tidak berkedip
+        const minimumLoading = new Promise((r) => setTimeout(r, 400))
 
         const [result] = await Promise.all([
           getTransactionCategories(),
@@ -778,18 +777,6 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                 onClick={openDatePicker}
               >
 
-                <button
-                  type="button"
-                  className="transaction-date-icon-button"
-                  aria-label="Pilih tanggal transaksi"
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    openDatePicker()
-                  }}
-                >
-                  <img src={CalendarDotsIcon} alt="" />
-                </button>
-
                 <span
                   className={`transaction-date-display ${
                     tanggal ? 'has-date' : ''
@@ -806,8 +793,20 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
                           year: 'numeric',
                         },
                       )
-                    : 'tanggal'}
+                    : 'dd/mm/yyyy'}
                 </span>
+
+                <button
+                  type="button"
+                  className="transaction-date-icon-button"
+                  aria-label="Pilih tanggal transaksi"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    openDatePicker()
+                  }}
+                >
+                  <img src={CalendarDotsIcon} alt="" />
+                </button>
 
                 <input
                   ref={tanggalInputRef}

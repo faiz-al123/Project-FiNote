@@ -36,7 +36,6 @@
   gap: 20px;
   min-height: 110px;
   padding: 16px 5.5% 16px 62px;
-  border-bottom: 1px solid #555;
   background: #f0f3ff;
 }
 
@@ -121,13 +120,13 @@
 
 .reminder-notice {
   position: absolute;
-  top: 99px;
+  top: 112px;
   left: 50%;
   z-index: 20;
   max-width: calc(100% - 30px);
-  padding: 13px 24px;
-  border-radius: 9px;
-  font-size: 15px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
   font-weight: 700;
   text-align: center;
   transform: translateX(-50%);
@@ -141,8 +140,8 @@
 }
 
 .reminder-notice.success {
-  background: #cdf5cf;
-  color: #087b1e;
+  background: #dfffcc;
+  color: #0b8605;
 }
 
 @keyframes reminder-notice-in {
@@ -459,7 +458,7 @@
 
 .reminder-table {
   width: 100%;
-  min-width: 820px;
+  min-width: 880px;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -613,6 +612,37 @@
 
 .reminder-done-button:focus-visible,
 .reminder-delete-button:focus-visible {
+  outline: 2px solid #347cf6;
+  outline-offset: 2px;
+}
+
+/* Tombol edit (ikon pensil) */
+.reminder-edit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #111;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.reminder-edit-button svg {
+  width: 26px;
+  height: 26px;
+}
+
+.reminder-edit-button:hover {
+  background: #dbe6fb;
+}
+
+.reminder-edit-button:focus-visible {
   outline: 2px solid #347cf6;
   outline-offset: 2px;
 }
@@ -971,7 +1001,7 @@
   height: 100%;
   cursor: pointer;
 }
-/* Ganti placeholder dd/mm/yyyy menjadi "tanggal" */
+/* Placeholder tanggal mengikuti atribut placeholder (dd/mm/yyyy) */
 .reminder-date-input-wrapper input[type="date"]::before {
   content: attr(placeholder);
   color: #858585;
@@ -1337,17 +1367,17 @@
 }
 
 .reminder-create-form > .reminder-form-error {
-  /* Pesan selalu menjadi elemen pertama form: tepat di bawah divider. */
+  /* Pesan error tampil di bagian bawah form (di atas tombol), sesuai user story. */
   position: static !important;
   inset: auto !important;
   z-index: auto;
   display: block;
   align-self: center;
-  order: -1;
+  order: 0;
   width: max-content;
   max-width: 100%;
   box-sizing: border-box;
-  margin: 0 auto 2px;
+  margin: 4px auto 0;
   padding: 11px 20px;
   border: 0;
   border-radius: 8px;
@@ -1406,4 +1436,169 @@
 
 .reminder-create-field > select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+
+/* =========================================
+   MODAL EDIT PENGINGAT (UI-09)
+   Memakai kerangka modal buat pengingat, ukuran mengikuti desain edit.
+========================================= */
+.reminder-create-modal.reminder-edit-modal {
+  width: min(100%, 708px);
+  max-width: 708px;
+  min-height: 791px;
+  padding: 31px 31px 64px;
+  border: 2px solid #757575;
+  border-radius: 20px;
+}
+
+.reminder-edit-modal .reminder-create-icon {
+  flex-basis: 80px;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  background: #757575;
+  color: #fff;
+}
+
+.reminder-edit-modal .reminder-create-icon svg {
+  width: 40px;
+  height: 40px;
+  stroke-width: 1.6;
+}
+
+.reminder-edit-modal .reminder-create-heading h2 {
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.reminder-edit-modal .reminder-create-heading p {
+  font-size: 16px;
+}
+
+.reminder-edit-modal .reminder-create-close svg {
+  width: 34px;
+  height: 34px;
+  stroke-width: 1.4;
+}
+
+.reminder-edit-modal .reminder-create-divider {
+  height: 2px;
+  margin: 28px 0 44px;
+}
+
+.reminder-edit-modal .reminder-create-form {
+  gap: 22px;
+}
+
+.reminder-edit-modal .reminder-create-field {
+  position: relative;
+  gap: 12px;
+  font-size: 20px;
+}
+
+.reminder-edit-modal .reminder-create-field > input,
+.reminder-edit-modal .reminder-create-field > select,
+.reminder-edit-modal .reminder-nominal-input,
+.reminder-edit-modal .reminder-date-input-wrapper,
+.reminder-edit-modal .reminder-date-input-wrapper .reminder-date-display {
+  height: 58px;
+  border-color: #757575;
+  border-radius: 14px;
+  font-size: 16px;
+}
+
+.reminder-edit-modal .reminder-nominal-input > span,
+.reminder-edit-modal .reminder-nominal-input input {
+  font-size: 16px;
+}
+
+.reminder-edit-modal .reminder-nominal-input > span {
+  font-weight: 700;
+}
+
+.reminder-edit-modal .reminder-date-input-wrapper {
+  border: 0;
+}
+
+.reminder-edit-modal .reminder-date-input-wrapper .reminder-date-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Badge kategori di dalam kolom kategori */
+.reminder-edit-modal .reminder-create-field > select.has-badge {
+  color: transparent;
+}
+
+.reminder-edit-modal .reminder-create-field > select option {
+  color: #222;
+}
+
+.reminder-select-badge {
+  position: absolute;
+  bottom: 14px;
+  left: 20px;
+  height: 30px;
+  width: auto;
+  pointer-events: none;
+}
+
+.reminder-edit-modal .reminder-create-buttons {
+  gap: 21px;
+  margin-top: 28px;
+}
+
+.reminder-edit-modal .reminder-create-buttons button {
+  width: 180px;
+  height: 54px;
+  border-radius: 14px;
+  border-color: #498cf9;
+  font-size: 20px;
+}
+
+.reminder-edit-modal .reminder-create-save {
+  background: #498cf9;
+}
+
+.reminder-edit-modal .reminder-create-cancel {
+  color: #498cf9;
+}
+
+@media (max-width: 600px) {
+  .reminder-create-modal.reminder-edit-modal {
+    min-height: 0;
+    padding: 20px 17px 28px;
+  }
+
+  .reminder-edit-modal .reminder-create-icon {
+    flex-basis: 58px;
+    width: 58px;
+    height: 58px;
+  }
+
+  .reminder-edit-modal .reminder-create-field {
+    font-size: 16px;
+  }
+
+  .reminder-edit-modal .reminder-create-buttons button {
+    flex: 1;
+    width: auto;
+    font-size: 16px;
+  }
+}
+
+/* Tombol Reset: ikon panah melingkar sejajar dengan teks (sesuai desain) */
+.reminder-create-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.reminder-create-cancel svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
 }
