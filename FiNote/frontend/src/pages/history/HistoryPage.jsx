@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import Logo from '../../assets/Logo.png'
 import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
+import CalendarIcon from '../../assets/riwayat-assets/calender.png'
 
 import {
   getAllTransactionHistory,
@@ -12,7 +13,7 @@ import HistoryTableSkeleton from './HistoryTableSkeleton'
 import './HistoryPage.css'
 import '../dashboard/DashboardPage.css'
 
-const ROWS_PER_PAGE = 15
+const ROWS_PER_PAGE = 10
 
 function getCategoriesFromResponse(result) {
   const candidates = [
@@ -80,42 +81,55 @@ function formatNominalInput(value) {
   return new Intl.NumberFormat('id-ID').format(number)
 }
 
-// Ikon Header (Sesuai desain UI/UX)
-function HeaderCalendarIcon() {
+// Kolom tanggal: teks selalu tampil dd/mm/yyyy (tidak mengikuti bahasa browser).
+// Input tanggal asli dibuat transparan di atasnya agar kalender tetap bisa dibuka.
+function DateControl({ value, onChange, label }) {
+  function openPicker(event) {
+    try {
+      event.currentTarget.showPicker?.()
+    } catch {
+      // browser lama: kalender dibuka lewat klik bawaan
+    }
+  }
+
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <path d="M16 3v4M8 3v4M3 10h18" />
-      <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" />
-    </svg>
+    <div className={`history-date-control ${value ? '' : 'is-empty'}`}>
+      <span className={`history-date-text ${value ? '' : 'is-placeholder'}`}>
+        {value ? formatDate(value) : 'dd/mm/yyyy'}
+      </span>
+      <img className="custom-date-icon" src={CalendarIcon} alt="" />
+      <input
+        type="date"
+        className="history-native-date"
+        value={value}
+        onChange={onChange}
+        onClick={openPicker}
+        aria-label={label}
+      />
+    </div>
   )
 }
 
-// Ikon Filter Tanggal
-function FilterCalendarIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
-      <path d="M8 3v4M16 3v4M3.5 10h17" />
-      <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" />
-    </svg>
-  )
+// Nomor halaman: halaman pertama, terakhir, dan sekitar halaman aktif
+function getPageNumbers(current, total) {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, index) => index + 1)
+  }
+
+  const pages = new Set([1, total, current - 1, current, current + 1])
+  const sorted = [...pages]
+    .filter((page) => page >= 1 && page <= total)
+    .sort((a, b) => a - b)
+
+  const result = []
+  sorted.forEach((page, index) => {
+    if (index > 0 && page - sorted[index - 1] > 1) {
+      result.push(`gap-${page}`)
+    }
+    result.push(page)
+  })
+
+  return result
 }
 
 function SearchIcon() {
@@ -224,7 +238,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
 
       try {
         // Skeleton tampil minimal 500 ms agar tidak berkedip
-        const minimumLoading = new Promise((r) => setTimeout(r, 400))
+        const minimumLoading = new Promise((r) => setTimeout(r, 500))
 
         const [categoryResult, historyResult] = await Promise.all([
           getTransactionCategories(),
@@ -417,7 +431,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
           {/* HEADER */}
           <header className="history-header">
             <span className="history-header-icon">
-              <HeaderCalendarIcon />
+              <img src={CalendarIcon} alt="" />
             </span>
             <div>
               <h1>Riwayat transaksi</h1>
@@ -433,39 +447,25 @@ function HistoryPage({ user, onLogout, onNavigate }) {
               <label className="history-range-label">Rentang tanggal</label>
 
               <div className="history-date-range-controls">
-                <div className={`history-date-control ${startDate ? '' : 'is-empty'}`}>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(event) => {
-                      setStartDate(event.target.value)
-                      setFilterError('')
-                    }}
-                    aria-label="Tanggal awal"
-                  />
-                  {!startDate && (
-                    <span className="date-placeholder">dd/mm/yyyy</span>
-                  )}
-                  <span className="custom-date-icon"><FilterCalendarIcon /></span>
-                </div>
+                <DateControl
+                  value={startDate}
+                  label="Tanggal awal"
+                  onChange={(event) => {
+                    setStartDate(event.target.value)
+                    setFilterError('')
+                  }}
+                />
 
                 <span className="history-date-arrow">→</span>
 
-                <div className={`history-date-control ${endDate ? '' : 'is-empty'}`}>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(event) => {
-                      setEndDate(event.target.value)
-                      setFilterError('')
-                    }}
-                    aria-label="Tanggal akhir"
-                  />
-                  {!endDate && (
-                    <span className="date-placeholder">dd/mm/yyyy</span>
-                  )}
-                  <span className="custom-date-icon"><FilterCalendarIcon /></span>
-                </div>
+                <DateControl
+                  value={endDate}
+                  label="Tanggal akhir"
+                  onChange={(event) => {
+                    setEndDate(event.target.value)
+                    setFilterError('')
+                  }}
+                />
               </div>
             </div>
 
@@ -604,7 +604,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
           </section>
 
           {/* PAGINATION (DIPINDAHKAN KE LUAR TABEL SECTION AGAR DI BAWAH KOTAK PUTIH) */}
-          {!loading && (
+          {!loading && filteredTransactions.length > 0 && (
             <nav className="history-pagination" aria-label="Pagination riwayat transaksi">
               <button
                 type="button"
@@ -616,16 +616,20 @@ function HistoryPage({ user, onLogout, onNavigate }) {
                 ←
               </button>
 
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                <button
-                  key={page}
-                  type="button"
-                  className={`history-page-button ${currentPage === page ? 'active' : ''}`}
-                  onClick={() => changePage(page)}
-                  aria-current={currentPage === page ? 'page' : undefined}
-                >
-                  {page}
-                </button>
+              {getPageNumbers(currentPage, totalPages).map((page) => (
+                typeof page === 'string' ? (
+                  <span key={page} className="history-page-ellipsis">…</span>
+                ) : (
+                  <button
+                    key={page}
+                    type="button"
+                    className={`history-page-button ${currentPage === page ? 'active' : ''}`}
+                    onClick={() => changePage(page)}
+                    aria-current={currentPage === page ? 'page' : undefined}
+                  >
+                    {page}
+                  </button>
+                )
               ))}
 
               <button
