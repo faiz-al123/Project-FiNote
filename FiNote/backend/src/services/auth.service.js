@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user.model');
@@ -15,6 +16,10 @@ function buatToken(user) {
     JWT_SECRET,
     {
       expiresIn: JWT_EXPIRES_IN,
+      // Nomor unik per token. Tanpa ini, dua token yang dibuat pada detik yang sama
+      // untuk user yang sama bisa identik, sehingga login ulang tepat setelah logout
+      // ikut tertolak karena token yang sama sudah dicabut.
+      jwtid: crypto.randomUUID(),
     },
   );
 }

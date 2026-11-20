@@ -38,6 +38,34 @@ function findById(userId) {
     .get(userId);
 }
 
+// Mencari user lain (bukan userId ini) yang memakai nama tersebut.
+function findByNamaExcept(nama, userId) {
+  return db
+    .prepare('SELECT user_id FROM User WHERE LOWER(nama) = LOWER(?) AND user_id <> ?')
+    .get(nama, userId);
+}
+
+// Mencari user lain (bukan userId ini) yang memakai email tersebut.
+function findByEmailExcept(email, userId) {
+  return db
+    .prepare('SELECT user_id FROM User WHERE LOWER(email) = LOWER(?) AND user_id <> ?')
+    .get(email, userId);
+}
+
+function findPasswordHash(userId) {
+  return db
+    .prepare('SELECT password FROM User WHERE user_id = ?')
+    .get(userId);
+}
+
+function updateProfil(userId, { nama, email }) {
+  db.prepare('UPDATE User SET nama = ?, email = ? WHERE user_id = ?').run(nama, email, userId);
+}
+
+function updatePassword(userId, hashedPassword) {
+  db.prepare('UPDATE User SET password = ? WHERE user_id = ?').run(hashedPassword, userId);
+}
+
 function create({ nama, email, hashedPassword }) {
   const hasil = db
     .prepare(`
@@ -54,5 +82,10 @@ module.exports = {
   findByNama,
   findByIdentifier,
   findById,
+  findByNamaExcept,
+  findByEmailExcept,
+  findPasswordHash,
+  updateProfil,
+  updatePassword,
   create,
 };
