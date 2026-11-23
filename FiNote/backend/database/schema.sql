@@ -111,3 +111,22 @@ CREATE TABLE IF NOT EXISTS Pengingat (
 );
 
 CREATE INDEX IF NOT EXISTS idx_pengingat_user_tanggal ON Pengingat(user_id, tanggal);
+
+-- ------------------------------------------------------------
+-- TOKEN DICABUT (BE-09: logout)
+-- Token JWT yang sudah dipakai logout. Token disimpan sebagai hash (SHA-256),
+-- bukan token aslinya. Setelah lewat masa berlakunya (kedaluwarsa_pada),
+-- baris tidak berguna lagi dan dibersihkan otomatis saat ada logout berikutnya.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS TokenDicabut (
+  token_hash        TEXT PRIMARY KEY,
+  user_id           INTEGER NOT NULL,
+  kedaluwarsa_pada  TEXT NOT NULL,
+  dicabut_pada      TEXT NOT NULL DEFAULT (datetime('now')),
+
+  FOREIGN KEY (user_id)
+    REFERENCES User(user_id)
+    ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_token_dicabut_kedaluwarsa ON TokenDicabut(kedaluwarsa_pada);

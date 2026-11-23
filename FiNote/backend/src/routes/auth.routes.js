@@ -15,4 +15,7 @@ router.post('/login', validate(validateLogin), authController.login);
 // GET /api/auth/me
 router.get('/me', authMiddleware, authController.me);
 
+// POST /api/auth/logout (BE-09)
+router.post('/logout', authMiddleware, authController.logout);
+
 module.exports = router;

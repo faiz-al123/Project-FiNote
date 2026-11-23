@@ -72,7 +72,7 @@ Payload JWT yang dibuat backend:
 
 `iat` dan `exp` diisi otomatis oleh library JWT.
 
-> Saat ini hanya ada satu token JWT. Belum terdapat `refreshToken` maupun endpoint logout. Setelah token kedaluwarsa, pengguna harus login kembali.
+> Saat ini hanya ada satu token JWT dan belum terdapat `refreshToken`. Setelah token kedaluwarsa, pengguna harus login kembali. Logout tersedia di `POST /api/auth/logout` (lihat bagian 14): token yang dipakai logout langsung tidak berlaku lagi.
 
 ---
 
@@ -1007,7 +1007,7 @@ Response `200 OK`: `message` `Berhasil dihapus`, `data` berisi `{ "pengingat_id"
 PATCH /api/pengingat/:id/selesai
 ```
 
-Response `200 OK`: `message` `Pengingat ditandai selesai.` dan `data.reminder` dengan `status` `selesai` serta `selesai_pada` terisi. Pengingat tidak dihapus: ia tetap muncul di daftar dengan status selesai, masuk hitungan "selesai", dan tidak lagi dihitung "terdekat" atau "terlewat". Pada saat yang sama, pengeluarannya otomatis dicatat sebagai transaksi baru di tabel `Transaksi` (kategori, nominal, dan deskripsi diambil dari pengingat; `catatan` = deskripsi pengingat; `tanggal` = hari ini di server), sehingga muncul di halaman **Riwayat** (`GET /api/transaksi`). Pembaruan status dan pencatatan transaksi dijalankan dalam satu transaksi database: jika salah satu gagal, keduanya dibatalkan. Menandai selesai untuk kedua kalinya ditolak (`409`), jadi tidak membuat transaksi ganda.
+Response `200 OK`: `message` `Pengingat ditandai selesai.` dan `data.reminder` dengan `status` `selesai` serta `selesai_pada` terisi. Pengingat tidak dihapus: ia tetap muncul di daftar dengan status selesai, masuk hitungan "selesai", dan tidak lagi dihitung "terdekat" atau "terlewat".
 
 ### Pesan error
 
@@ -1028,6 +1028,119 @@ Response `200 OK`: `message` `Pengingat ditandai selesai.` dan `data.reminder` d
 | `409` | `Pengingat sudah ditandai selesai.` | Ditandai selesai untuk kedua kalinya |
 
 Pesan yang tertulis di kartu Trello (`Berhasil disimpan`, `Berhasil diubah`, `Berhasil dihapus`, `Nominal harus berupa angka`) sengaja ditulis persis tanpa titik akhir agar sama dengan kartu.
+
+---
+
+## 13. Profil: lihat, ubah informasi akun, ganti password (BE-08)
+
+Semua endpoint memerlukan header `Authorization: Bearer <token>`. Di halaman profil, `username` sama dengan kolom `nama` pada `/api/auth/me`.
+
+### Lihat profil
+
+```http
+GET /api/profil
+```
+
+Response `200 OK`:
+
+```json
+{
+  "success": true,
+  "message": "Data profil berhasil diambil.",
+  "data": {
+    "profile": {
+      "user_id": 6,
+      "username": "tanu",
+      "email": "tanu.mahasiswa@email.com",
+      "bergabung_sejak": "2026-11-03",
+      "total_transaksi": 4,
+      "pengingat_aktif": 4
+    }
+  }
+}
+```
+
+- `total_transaksi`: jumlah transaksi pengeluaran milik pengguna.
+- `pengingat_aktif`: jumlah pengingat yang belum ditandai selesai (pengingat terlewat ikut dihitung).
+- Password tidak pernah dikirim.
+- Peran ("Mahasiswa"), status akun, dan status verifikasi email di desain belum ada di database, jadi belum dikirim oleh API.
+
+### Ubah username dan/atau email
+
+```http
+PUT /api/profil
+```
+
+Body (kirim salah satu atau keduanya; yang tidak dikirim tidak berubah):
+
+```json
+{ "username": "tanu", "email": "tanu.mahasiswa@email.com" }
+```
+
+Response `200 OK`: `message` `Informasi Profile berhasil diubah` dan `data.profile` terbaru. Username dirapikan (spasi di ujung dibuang) dan email disimpan dalam huruf kecil. Menyimpan data milik sendiri yang tidak berubah tidak dianggap duplikat. Tombol **Batal** (Skenario 3, "Perubahan dibatalkan") ditangani frontend dengan mengembalikan isian ke data dari `GET /api/profil`; tidak ada request ke backend.
+
+### Ganti password
+
+```http
+PUT /api/profil/password
+```
+
+Body:
+
+```json
+{
+  "password_lama": "passwordAman123",
+  "password_baru": "PasswordBaru456",
+  "konfirmasi_password": "PasswordBaru456"
+}
+```
+
+Response `200 OK`: `message` `Password berhasil dirubah`. Password disimpan sebagai hash bcrypt.
+
+### Pesan error
+
+| Status | `message` | Kondisi |
+|---|---|---|
+| `400` | `Format Email tidak valid` | Email bukan format email (Skenario 2) |
+| `400` | `Username atau email wajib diisi.` | Body kosong |
+| `400` | `Username tidak boleh kosong.` | Username kosong, hanya spasi, atau bukan teks |
+| `400` | `Username maksimal 50 karakter.` | Username lebih dari 50 karakter |
+| `400` | `Email tidak boleh kosong.` | Email kosong atau bukan teks |
+| `409` | `Username sudah dipakai.` | Dipakai pengguna lain (huruf besar/kecil dianggap sama) |
+| `409` | `Email sudah terdaftar.` | Dipakai pengguna lain |
+| `400` | `Password lama, password baru, dan konfirmasi password wajib diisi.` | Ada isian password yang kosong |
+| `400` | `Password min.8 karakter tanpa spasi` | Password baru kurang dari 8 karakter atau mengandung spasi (Skenario 6) |
+| `400` | `Password maksimal 72 karakter.` | Password baru lebih dari 72 karakter |
+| `400` | `Password tidak sesuai` | Konfirmasi tidak sama dengan password baru (Skenario 7). Password tidak diubah |
+| `400` | `Password saat ini tidak sesuai` | Password lama salah (Skenario 5). Memakai 400, bukan 401, supaya frontend tidak mengira sesi habis |
+| `401` | `Token tidak ditemukan. Silakan login.` | Tidak ada token |
+| `401` | `Sesi sudah berakhir. Silakan login kembali.` | Token sudah dipakai logout |
+
+Pesan yang tertulis di kartu Trello ditulis persis, termasuk tanpa titik akhir.
+
+---
+
+## 14. Logout (BE-09)
+
+```http
+POST /api/auth/logout
+```
+
+Header: `Authorization: Bearer <token>`. Tidak memerlukan body.
+
+Response `200 OK`:
+
+```json
+{ "success": true, "message": "Logout berhasil.", "data": null }
+```
+
+Cara kerja: token yang dikirim dicatat sebagai sudah dicabut (disimpan sebagai hash SHA-256 di tabel `TokenDicabut`). Setelah itu token tersebut ditolak oleh **semua** endpoint dengan `401` dan pesan `Sesi sudah berakhir. Silakan login kembali.`, meskipun masa berlakunya belum habis. Token dari login lain (perangkat lain) tidak terpengaruh. Setelah logout, frontend menghapus token dari penyimpanan lalu menampilkan halaman login. Untuk masuk lagi, panggil `POST /api/auth/login` dan pakai token baru. Setiap token memuat nomor unik (`jti`), sehingga login tepat setelah logout selalu menghasilkan token yang berbeda.
+
+| Status | `message` | Kondisi |
+|---|---|---|
+| `401` | `Token tidak ditemukan. Silakan login.` | Tidak ada token |
+| `401` | `Token tidak valid atau sudah kedaluwarsa.` | Token palsu atau kedaluwarsa |
+| `401` | `Sesi sudah berakhir. Silakan login kembali.` | Token sudah pernah dipakai logout |
 
 ---
 

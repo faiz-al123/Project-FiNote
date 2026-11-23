@@ -52,4 +52,5 @@ function validateLogin(body) {
 module.exports = {
   validateRegister,
   validateLogin,
+  EMAIL_REGEX,
 };
