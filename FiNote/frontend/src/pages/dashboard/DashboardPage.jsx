@@ -1,14 +1,12 @@
-
 import { useEffect, useState } from 'react'
-import Logo from '../../assets/Logo.png'
 import BellRinging from '../../assets/dashboard-assets/BellRinging.png'
 import CalendarDots from '../../assets/dashboard-assets/CalendarDots.png'
-import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
 import {
   getDashboardSummary,
   getDashboardCategorySummary,
 } from '../../api/dashboard.api'
 import { formatRupiah } from '../../utils/format'
+import AppLayout from '../../components/layout/AppLayout'
 import DashboardSkeleton from './DashboardSkeleton'
 import './DashboardPage.css'
 
@@ -23,7 +21,6 @@ const KATEGORI_GRAFIK = [
 ]
 
 function DashboardPage({ user, onLogout, onNavigate }) {
-  const [activeMenu, setActiveMenu] = useState('dashboard')
   const [summary, setSummary] = useState(null)
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
@@ -93,11 +90,6 @@ function DashboardPage({ user, onLogout, onNavigate }) {
     return formatRupiah(nilai)
   }
 
-  const username =
-    user?.username ||
-    user?.nama ||
-    user?.name ||
-    'Pengguna'
 
   // Grafik selalu menampilkan 6 kategori (termasuk "Lainnya").
   // Nilainya diambil dari API; jika data belum ada, nilainya 0.
@@ -120,145 +112,14 @@ function DashboardPage({ user, onLogout, onNavigate }) {
     ...kategoriGrafik.map((item) => Number(item.total) || 0),
   )
 
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'transaksi', label: 'Transaksi', icon: 'transaksi' },
-    { id: 'riwayat', label: 'Riwayat', icon: 'riwayat' },
-    { id: 'pengingat', label: 'pengingat', icon: 'pengingat' },
-  ]
-
-  const renderIcon = (icon) => {
-    const props = {
-      viewBox: '0 0 24 24',
-      fill: 'none',
-      stroke: 'currentColor',
-      strokeWidth: 1.8,
-      strokeLinecap: 'round',
-      strokeLinejoin: 'round',
-      'aria-hidden': true,
-    }
-
-    switch (icon) {
-      case 'dashboard':
-        return (
-          <svg {...props}>
-            <circle cx="7" cy="7" r="3" />
-            <circle cx="17" cy="7" r="3" />
-            <circle cx="7" cy="17" r="3" />
-            <circle cx="17" cy="17" r="3" />
-          </svg>
-        )
-
-      case 'transaksi':
-        return (
-          <svg {...props}>
-            <rect x="3.5" y="3.5" width="17" height="17" rx="1" />
-            <path d="M12 7v10M7 12h10" />
-          </svg>
-        )
-
-      case 'riwayat':
-        return (
-          <svg {...props}>
-            <path d="M6 3h9l5 5v13H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
-            <path d="M15 3v5h5" />
-          </svg>
-        )
-
-      case 'pengingat':
-        return (
-          <svg {...props}>
-            <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-            <path d="M10 21h4" />
-            <path d="M5 5 7 3M19 3l2 2" />
-          </svg>
-        )
-
-      default:
-        return null
-    }
-  }
-
- 
-  const handleMenuClick = (menuId) => {
-  if (
-    menuId === 'dashboard' ||
-    menuId === 'transaksi' ||
-    menuId === 'riwayat' ||
-    menuId === 'pengingat'
-  ) {
-    onNavigate?.(menuId)
-  }
-}
-
-
   return (
-    <div className="dashboard-layout">
-      <aside className="dashboard-sidebar">
-        <div className="dashboard-brand">
-          <img src={Logo} alt="FINote" />
-        </div>
-
-        <nav
-          className="dashboard-navigation"
-          aria-label="Navigasi utama"
-        >
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`dashboard-menu-item ${
-                activeMenu === item.id ? 'active' : ''
-              }`}
-              aria-current={
-                activeMenu === item.id ? 'page' : undefined
-              }
-              onClick={() => handleMenuClick(item.id)}
-            >
-              <span className="dashboard-menu-icon">
-                {renderIcon(item.icon)}
-              </span>
-
-              <span className="dashboard-menu-label">
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </nav>
-
-        <div className="dashboard-sidebar-bottom">
-          <div className="dashboard-user-profile">
-            <img
-              src={ProfileIcon}
-              alt=""
-              className="dashboard-user-icon"
-            />
-
-            <div className="dashboard-user-info">
-              <span
-                className="dashboard-user-name"
-                title={username}
-              >
-                {username}
-              </span>
-
-              <span className="dashboard-user-role">
-                mahasiswa
-              </span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="dashboard-logout"
-            onClick={onLogout}
-          >
-            Keluar
-          </button>
-        </div>
-      </aside>
-
-      <div className="dashboard-workspace">
+    <AppLayout
+      activePage="dashboard"
+      user={user}
+      onNavigate={onNavigate}
+      onLogout={onLogout}
+    >
+      <div className="app-workspace">
         <header className="dashboard-header">
           <div className="dashboard-header-left">
             <span className="dashboard-header-calendar">
@@ -278,7 +139,7 @@ function DashboardPage({ user, onLogout, onNavigate }) {
             className="dashboard-notification"
             aria-label="Buka pengingat"
             title="Pengingat"
-            onClick={() => handleMenuClick('pengingat')}
+            onClick={() => onNavigate?.('pengingat')}
           >
             <img src={BellRinging} alt="" />
           </button>
@@ -402,7 +263,7 @@ function DashboardPage({ user, onLogout, onNavigate }) {
           )}
         </main>
       </div>
-    </div>
+    </AppLayout>
   )
 }
 

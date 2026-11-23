@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 
-import Logo from '../../assets/Logo.png'
-import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
 
 import ForkKnifeIcon from '../../assets/transaksi-assets/ForkKnife.png'
 import TransportIcon from '../../assets/transaksi-assets/mdi_transportation.png'
@@ -15,9 +13,9 @@ import {
   getTransactionCategories,
 } from '../../api/transaction.api'
 
+import AppLayout from '../../components/layout/AppLayout'
 import TransactionCategorySkeleton from './TransactionCategorySkeleton'
 import './TransactionsPage.css'
-import '../dashboard/DashboardPage.css'
 
 // Urutan kategori mengikuti desain UI/UX
 const CATEGORY_DEFAULTS = [
@@ -205,11 +203,6 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
   const [fieldErrors, setFieldErrors] = useState({})
   const [notice, setNotice] = useState(null)
 
-  const username =
-    user?.username ||
-    user?.nama ||
-    user?.name ||
-    'Pengguna'
 
   // ========================================
   // MENGAMBIL KATEGORI DARI BACKEND
@@ -483,158 +476,19 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
   // MENU SIDEBAR
   // ========================================
 
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'transaksi', label: 'Transaksi', icon: 'transaksi' },
-    { id: 'riwayat', label: 'Riwayat', icon: 'riwayat' },
-    { id: 'pengingat', label: 'pengingat', icon: 'pengingat' },
-  ]
-
-  // ========================================
-  // IKON SIDEBAR
-  // ========================================
-
-  function renderMenuIcon(icon) {
-    const props = {
-      viewBox: '0 0 24 24',
-      fill: 'none',
-      stroke: 'currentColor',
-      strokeWidth: 1.8,
-      strokeLinecap: 'round',
-      strokeLinejoin: 'round',
-      'aria-hidden': true,
-    }
-
-    switch (icon) {
-      case 'dashboard':
-        return (
-          <svg {...props}>
-            <circle cx="7" cy="7" r="3" />
-            <circle cx="17" cy="7" r="3" />
-            <circle cx="7" cy="17" r="3" />
-            <circle cx="17" cy="17" r="3" />
-          </svg>
-        )
-
-      case 'transaksi':
-        return (
-          <svg {...props}>
-            <rect
-              x="3.5"
-              y="3.5"
-              width="17"
-              height="17"
-              rx="1"
-            />
-            <path d="M12 7v10M7 12h10" />
-          </svg>
-        )
-
-      case 'riwayat':
-        return (
-          <svg {...props}>
-            <path d="M6 3h9l5 5v13H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
-            <path d="M15 3v5h5" />
-          </svg>
-        )
-
-      default:
-        return (
-          <svg {...props}>
-            <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-            <path d="M10 21h4" />
-          </svg>
-        )
-    }
-  }
-
   // ========================================
   // TAMPILAN HALAMAN TRANSAKSI
   // ========================================
 
   return (
-    <div className="dashboard-layout transaction-layout">
-
-      {/* SIDEBAR */}
-      <aside className="dashboard-sidebar">
-
-        <div className="dashboard-brand">
-          <img src={Logo} alt="FiNote" />
-        </div>
-
-        <nav
-          className="dashboard-navigation"
-          aria-label="Navigasi utama"
-        >
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`dashboard-menu-item ${
-                item.id === 'transaksi' ? 'active' : ''
-              }`}
-              aria-current={
-                item.id === 'transaksi' ? 'page' : undefined
-              }
-              onClick={() => {
-                if (
-                  item.id === 'dashboard' ||
-                  item.id === 'transaksi' ||
-                  item.id === 'riwayat' ||
-                  item.id === 'pengingat'
-                ) {
-                  onNavigate?.(item.id)
-                }
-              }}
-            >
-              <span className="dashboard-menu-icon">
-                {renderMenuIcon(item.icon)}
-              </span>
-
-              <span className="dashboard-menu-label">
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </nav>
-
-        {/* PROFIL DAN LOGOUT */}
-        <div className="dashboard-sidebar-bottom">
-
-          <div className="dashboard-user-profile">
-            <img
-              src={ProfileIcon}
-              alt=""
-              className="dashboard-user-icon"
-            />
-
-            <div className="dashboard-user-info">
-              <span
-                className="dashboard-user-name"
-                title={username}
-              >
-                {username}
-              </span>
-
-              <span className="dashboard-user-role">
-                mahasiswa
-              </span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="dashboard-logout"
-            onClick={onLogout}
-          >
-            Keluar
-          </button>
-
-        </div>
-      </aside>
-
-      {/* AREA KONTEN */}
-      <div className="dashboard-workspace transaction-workspace">
+    <AppLayout
+      activePage="transaksi"
+      user={user}
+      onNavigate={onNavigate}
+      onLogout={onLogout}
+      className="transaction-layout"
+    >
+      <div className="app-workspace transaction-workspace">
 
         {/* HEADER */}
         <header className="transaction-header">
@@ -949,7 +803,7 @@ function TransactionsPage({ user, onLogout, onNavigate }) {
         </main>
 
       </div>
-    </div>
+    </AppLayout>
   )
 }
 

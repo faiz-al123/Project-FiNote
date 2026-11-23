@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import Logo from '../../assets/Logo.png'
-import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
 
 import DeleteImage from '../../assets/pengingat-assets/Delete.png'
 import ReminderBellImage from '../../assets/pengingat-assets/Bell.png'
@@ -27,7 +25,7 @@ import {
 
 import { getTransactionCategories } from '../../api/transaction.api'
 
-import '../dashboard/DashboardPage.css'
+import AppLayout from '../../components/layout/AppLayout'
 import { ReminderCountSkeleton, ReminderTableSkeleton } from './ReminderSkeleton'
 import './RemindersPage.css'
 
@@ -76,13 +74,6 @@ const CATEGORY_BADGES = {
   hiburan: BadgeHiburan,
   transportasi: BadgeTransportasi,
 }
-
-const MENU_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'transaksi', label: 'Transaksi' },
-  { id: 'riwayat', label: 'Riwayat' },
-  { id: 'pengingat', label: 'pengingat' },
-]
 
 /* =========================================
    FUNGSI BANTU
@@ -192,13 +183,6 @@ function FormCalendarIcon() {
   )
 }
 
-function renderSidebarIcon(id) {
-  if (id === 'dashboard') return <svg {...iconProps}><circle cx="7" cy="7" r="3" /><circle cx="17" cy="7" r="3" /><circle cx="7" cy="17" r="3" /><circle cx="17" cy="17" r="3" /></svg>
-  if (id === 'transaksi') return <svg {...iconProps}><rect x="3.5" y="3.5" width="17" height="17" rx="1" /><path d="M12 7v10M7 12h10" /></svg>
-  if (id === 'riwayat') return <svg {...iconProps}><path d="M6 3h9l5 5v13H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" /><path d="M15 3v5h5" /></svg>
-  return <BellIcon />
-}
-
 /* =========================================
    BADGE KATEGORI & MODAL
 ========================================= */
@@ -270,7 +254,6 @@ function RemindersPage({ user, onLogout, onNavigate }) {
 
   const monthOptions = useMemo(() => buildMonthOptions(), [])
   const activeMonth = selectedMonth || getToday().slice(0, 7)
-  const username = user?.username || user?.nama || user?.name || 'Pengguna'
 
   function showNotice(message, type = 'danger') {
     window.clearTimeout(noticeTimer.current)
@@ -539,34 +522,13 @@ function RemindersPage({ user, onLogout, onNavigate }) {
     : null
 
   return (
-    <div className="dashboard-layout reminder-layout">
-      {/* SIDEBAR */}
-      <aside className="dashboard-sidebar">
-        <div className="dashboard-brand"><img src={Logo} alt="FiNote" /></div>
-        <nav className="dashboard-navigation">
-          {MENU_ITEMS.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`dashboard-menu-item ${item.id === 'pengingat' ? 'active' : ''}`}
-              onClick={() => onNavigate?.(item.id)}
-            >
-              <span className="dashboard-menu-icon">{renderSidebarIcon(item.id)}</span>
-              <span className="dashboard-menu-label">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-        <div className="dashboard-sidebar-bottom">
-          <div className="dashboard-user-profile">
-            <img src={ProfileIcon} alt="" className="dashboard-user-icon" />
-            <div className="dashboard-user-info">
-              <span className="dashboard-user-name">{username}</span>
-              <span className="dashboard-user-role">mahasiswa</span>
-            </div>
-          </div>
-          <button type="button" className="dashboard-logout" onClick={onLogout}>keluar</button>
-        </div>
-      </aside>
+    <AppLayout
+      activePage="pengingat"
+      user={user}
+      onNavigate={onNavigate}
+      onLogout={onLogout}
+      className="reminder-layout"
+    >
 
       {/* AREA KERJA */}
       <div className="reminder-workspace">
@@ -830,7 +792,7 @@ function RemindersPage({ user, onLogout, onNavigate }) {
           </div>
         </div>
       )}
-    </div>
+    </AppLayout>
   )
 }
 

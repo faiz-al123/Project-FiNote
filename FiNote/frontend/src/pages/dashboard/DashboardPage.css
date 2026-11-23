@@ -1,189 +1,8 @@
 /* ========================================
-   DASHBOARD FINOTE
+   DASHBOARD FINOTE (isi halaman dashboard saja)
+   Sidebar : components/layout/Sidebar.css
+   Kerangka: components/layout/Layout.css
 ======================================== */
-
-.dashboard-layout {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
-  background: #f0f3ff;
-  color: #111;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.dashboard-sidebar {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex;
-  flex: 0 0 218px;
-  flex-direction: column;
-  align-self: flex-start;
-  width: 218px;
-  height: 100vh;
-  height: 100dvh;
-  overflow-y: auto;
-  border-right: 1px solid #333;
-  background: #f0f3ff;
-}
-
-.dashboard-brand {
-  display: flex;
-  flex: 0 0 160px;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 20px;
-}
-
-.dashboard-brand img {
-  display: block;
-  width: 140px;
-  max-width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
-/* Navigasi sidebar */
-
-.dashboard-navigation {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  padding: 0 10px;
-}
-
-.dashboard-menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-  width: 100%;
-  min-height: 49px;
-  padding: 0 20px;
-  border: 1px solid #333;
-  border-radius: 6px;
-  background: #fff;
-  color: #111;
-  text-align: left;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.dashboard-menu-item.active {
-  border-color: #347cf6;
-  background: #347cf6;
-  color: #fff;
-}
-
-.dashboard-menu-item:not(.active):hover {
-  background: #e6ebff;
-}
-
-.dashboard-menu-icon {
-  display: flex;
-  flex: 0 0 24px;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-}
-
-.dashboard-menu-icon svg {
-  display: block;
-  width: 22px;
-  height: 22px;
-}
-
-.dashboard-menu-label {
-  display: block;
-  white-space: nowrap;
-}
-
-/* Profil dan tombol keluar */
-
-.dashboard-sidebar-bottom {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-top: auto;
-  padding: 0 10px 20px;
-}
-
-.dashboard-user-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  margin-bottom: 12px;
-  padding: 10px 8px;
-  border-radius: 8px;
-  background: #d8e6ff;
-}
-
-.dashboard-user-icon {
-  display: block;
-  flex: 0 0 30px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: contain;
-}
-
-.dashboard-user-info {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.dashboard-user-name {
-  display: block;
-  overflow: hidden;
-  color: #111;
-  font-size: 13px;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dashboard-user-role {
-  color: #526078;
-  font-size: 11px;
-}
-
-.dashboard-sidebar .dashboard-logout {
-  width: 100%;
-  padding: 8px 12px;
-  border: none;
-  background: transparent;
-  color: #e53e3e;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
-}
-
-.dashboard-sidebar .dashboard-logout:hover {
-  color: #c53030;
-  text-decoration: underline;
-}
-
-/* Area konten */
-
-.dashboard-workspace {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
-  background: #f0f3ff;
-}
 
 .dashboard-main {
   flex: 1;
@@ -269,9 +88,7 @@
   object-fit: contain;
 }
 
-.dashboard-menu-item:focus-visible,
-.dashboard-notification:focus-visible,
-.dashboard-logout:focus-visible {
+.dashboard-notification:focus-visible {
   outline: 2px solid #4285ed;
   outline-offset: 2px;
 }
@@ -494,11 +311,6 @@
 /* Tablet */
 
 @media (max-width: 1024px) {
-  .dashboard-sidebar {
-    flex-basis: 200px;
-    width: 200px;
-  }
-
   .dashboard-main {
     padding: 24px;
   }
@@ -525,53 +337,6 @@
 /* Ponsel */
 
 @media (max-width: 768px) {
-  .dashboard-layout {
-    flex-direction: column;
-  }
-
-  .dashboard-sidebar {
-    position: static;
-    flex: 0 0 auto;
-    align-self: stretch;
-    width: 100%;
-    height: auto;
-    min-height: auto;
-    overflow-y: visible;
-    border-right: none;
-    border-bottom: 1px solid #333;
-  }
-
-  .dashboard-brand {
-    flex-basis: 90px;
-  }
-
-  .dashboard-brand img {
-    width: 105px;
-  }
-
-  .dashboard-navigation {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: 0 12px 14px;
-  }
-
-  .dashboard-menu-item {
-    gap: 8px;
-    padding: 0 10px;
-  }
-
-  .dashboard-sidebar-bottom {
-    padding: 0 12px 12px;
-  }
-
-  .dashboard-user-profile {
-    max-width: 260px;
-  }
-
-  .dashboard-sidebar .dashboard-logout {
-    text-align: left;
-  }
-
   .dashboard-main {
     padding: 20px 14px;
   }

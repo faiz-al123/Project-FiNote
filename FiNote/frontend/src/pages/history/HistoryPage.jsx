@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import Logo from '../../assets/Logo.png'
-import ProfileIcon from '../../assets/dashboard-assets/ikon profile.png'
 import CalendarIcon from '../../assets/riwayat-assets/calender.png'
 
 import {
@@ -9,9 +7,9 @@ import {
   getTransactionCategories,
 } from '../../api/transaction.api'
 
+import AppLayout from '../../components/layout/AppLayout'
 import HistoryTableSkeleton from './HistoryTableSkeleton'
 import './HistoryPage.css'
-import '../dashboard/DashboardPage.css'
 
 const ROWS_PER_PAGE = 10
 
@@ -165,44 +163,6 @@ function ChevronDownIcon() {
   )
 }
 
-function DashboardIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <circle cx="7" cy="7" r="3" />
-      <circle cx="17" cy="7" r="3" />
-      <circle cx="7" cy="17" r="3" />
-      <circle cx="17" cy="17" r="3" />
-    </svg>
-  )
-}
-
-function TransactionIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <rect x="3.5" y="3.5" width="17" height="17" rx="1" />
-      <path d="M12 7v10M7 12h10" />
-    </svg>
-  )
-}
-
-function HistoryIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path d="M6 3h9l5 5v13H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
-      <path d="M15 3v5h5" />
-    </svg>
-  )
-}
-
-function ReminderIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
-      <path d="M10 21h4M5 5 7 3M19 3l2 2" />
-    </svg>
-  )
-}
-
 function HistoryPage({ user, onLogout, onNavigate }) {
   const [categories, setCategories] = useState([])
   const [transactions, setTransactions] = useState([])
@@ -222,11 +182,6 @@ function HistoryPage({ user, onLogout, onNavigate }) {
   const [error, setError] = useState('')
   const [filterError, setFilterError] = useState('')
 
-  const username =
-    user?.username ||
-    user?.nama ||
-    user?.name ||
-    'Pengguna'
 
   // Memuat kategori dan seluruh riwayat transaksi.
   useEffect(() => {
@@ -379,53 +334,15 @@ function HistoryPage({ user, onLogout, onNavigate }) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
-    { id: 'transaksi', label: 'Transaksi', icon: <TransactionIcon /> },
-    { id: 'riwayat', label: 'Riwayat', icon: <HistoryIcon /> },
-    { id: 'pengingat', label: 'pengingat', icon: <ReminderIcon /> },
-  ]
-
   return (
-    <div className="dashboard-layout history-layout">
-
-      {/* SIDEBAR */}
-      <aside className="dashboard-sidebar">
-        <div className="dashboard-brand">
-          <img src={Logo} alt="FiNote" />
-        </div>
-
-        <nav className="dashboard-navigation" aria-label="Navigasi utama">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`dashboard-menu-item ${item.id === 'riwayat' ? 'active' : ''}`}
-              aria-current={item.id === 'riwayat' ? 'page' : undefined}  
-              onClick={() => onNavigate?.(item.id)}
-            >
-              <span className="dashboard-menu-icon">{item.icon}</span>
-              <span className="dashboard-menu-label">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        <div className="dashboard-sidebar-bottom">
-          <div className="dashboard-user-profile">
-            <img src={ProfileIcon} alt="" className="dashboard-user-icon" />
-            <div className="dashboard-user-info">
-              <span className="dashboard-user-name" title={username}>{username}</span>
-              <span className="dashboard-user-role">mahasiswa</span>
-            </div>
-          </div>
-          <button type="button" className="dashboard-logout" onClick={onLogout}>
-            Keluar
-          </button>
-        </div>
-      </aside>
-
-      {/* KONTEN RIWAYAT */}
-      <div className="dashboard-workspace history-workspace">
+    <AppLayout
+      activePage="riwayat"
+      user={user}
+      onNavigate={onNavigate}
+      onLogout={onLogout}
+      className="history-layout"
+    >
+      <div className="app-workspace history-workspace">
         <main className="history-main">
 
           {/* HEADER */}
@@ -646,7 +563,7 @@ function HistoryPage({ user, onLogout, onNavigate }) {
 
         </main>
       </div>
-    </div>
+    </AppLayout>
   )
 }
 
