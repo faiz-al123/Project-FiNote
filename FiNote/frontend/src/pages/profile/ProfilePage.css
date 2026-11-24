@@ -1,0 +1,731 @@
+/* ========================================
+   HALAMAN PROFIL (UI-10)
+   Sidebar: components/layout/Sidebar.css
+   Kerangka: components/layout/Layout.css
+======================================== */
+
+.profile-layout {
+  --pf-blue: #2468f2;
+  --pf-blue-soft: #e3edff;
+  --pf-navy: #0f1f46;
+  --pf-muted: #5d6b8a;
+  --pf-line: #dfe7f5;
+  --pf-red: #e5484d;
+  --pf-green: #12a36b;
+
+  background: #f1f4fd;
+  font-family: Inter, 'Segoe UI', Arial, sans-serif;
+}
+
+.profile-workspace {
+  position: relative;
+  background: #f1f4fd;
+}
+
+/* ---------- Header ---------- */
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 110px;
+  padding: 0 clamp(20px, 2.3vw, 40px) 0 clamp(20px, 3.6vw, 64px);
+}
+
+.profile-header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #dfe8f7;
+  color: #111;
+}
+
+.profile-header-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.profile-heading h1 {
+  margin: 0;
+  color: #0b1220;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.profile-heading p {
+  margin: 4px 0 0;
+  color: #111;
+  font-size: 15px;
+}
+
+/* ---------- Notifikasi ---------- */
+
+.profile-notice {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  z-index: 30;
+  max-width: calc(100% - 30px);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  transform: translateX(-50%);
+  box-shadow: 0 6px 20px rgba(15, 31, 70, 0.1);
+}
+
+.profile-notice.success {
+  background: #dfffcc;
+  color: #0b8605;
+}
+
+.profile-notice.info {
+  background: var(--pf-blue-soft);
+  color: #1a47b8;
+}
+
+.profile-notice.error {
+  background: #ffe3e3;
+  color: #b3261e;
+}
+
+/* ---------- Grid isi halaman ---------- */
+
+.profile-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.76fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  padding: 12px clamp(20px, 2.3vw, 40px) 40px;
+}
+
+.profile-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.profile-card {
+  padding: 28px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 10px 32px rgba(36, 104, 242, 0.07);
+}
+
+/* ---------- Judul kartu ---------- */
+
+.profile-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.profile-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--pf-blue-soft);
+  color: var(--pf-blue);
+}
+
+.profile-card-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.profile-card-icon.danger {
+  background: #fde8e9;
+  color: var(--pf-red);
+}
+
+.profile-card-head h2 {
+  margin: 0;
+  color: var(--pf-navy);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.profile-card-head p {
+  margin: 4px 0 0;
+  color: var(--pf-muted);
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+/* ---------- Form ---------- */
+
+.profile-fields-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.profile-password-row {
+  margin-top: 24px;
+}
+
+.profile-field {
+  min-width: 0;
+}
+
+.profile-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.profile-label-row label {
+  color: var(--pf-navy);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.profile-verified-text {
+  color: var(--pf-green);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.profile-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 18px;
+  border: 1px solid var(--pf-line);
+  border-radius: 14px;
+  background: #fff;
+  color: #3b4763;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.profile-input:focus-within {
+  border-color: var(--pf-blue);
+  box-shadow: 0 0 0 3px rgba(36, 104, 242, 0.14);
+}
+
+.profile-input-icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.profile-input-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-input input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--pf-navy);
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.profile-input input::placeholder {
+  color: #9aa6c2;
+}
+
+/* Kondisi error: border dan ikon merah */
+.profile-input.is-invalid {
+  border-color: var(--pf-red);
+  background: #fffafa;
+  color: var(--pf-red);
+}
+
+.profile-input.is-invalid:focus-within {
+  box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.14);
+}
+
+.profile-eye-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--pf-muted);
+  cursor: pointer;
+}
+
+.profile-eye-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.profile-eye-button:focus-visible {
+  outline: 2px solid var(--pf-blue);
+}
+
+.profile-field-hint {
+  margin: 8px 0 0;
+  color: var(--pf-muted);
+  font-size: 14px;
+}
+
+.profile-field-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  color: var(--pf-red);
+  font-size: 14px;
+}
+
+.profile-field-error svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--pf-red);
+}
+
+/* ---------- Tombol ---------- */
+
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.profile-actions-password {
+  margin-top: 56px;
+}
+
+.profile-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 100px;
+  height: 52px;
+  padding: 0 24px;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.profile-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-button.primary {
+  min-width: 244px;
+  background: var(--pf-blue);
+  color: #fff;
+}
+
+.profile-button.primary:hover:not(:disabled) {
+  background: #1a56d6;
+}
+
+.profile-button.primary:disabled {
+  background: #8c8c8c;
+  cursor: not-allowed;
+}
+
+.profile-button.outline {
+  border-color: #13264f;
+  background: #fff;
+  color: #13264f;
+}
+
+.profile-button.outline:hover {
+  background: #f1f4fd;
+}
+
+.profile-button.danger {
+  background: var(--pf-red);
+  color: #fff;
+}
+
+.profile-button.danger:hover {
+  background: #cf3a3f;
+}
+
+.profile-button:focus-visible,
+.profile-logout-button:focus-visible,
+.profile-dialog-close:focus-visible {
+  outline: 2px solid var(--pf-blue);
+  outline-offset: 2px;
+}
+
+/* ---------- Kartu ringkasan akun ---------- */
+
+.profile-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-banner {
+  width: 100%;
+  height: 88px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #cadcfe, #e9f1ff);
+}
+
+.profile-avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  margin-top: -44px;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  background: var(--pf-blue);
+  color: #0a1a3a;
+}
+
+.profile-avatar svg {
+  width: 52px;
+  height: 52px;
+  stroke-width: 1.6;
+}
+
+.profile-avatar-dot {
+  position: absolute;
+  right: -2px;
+  bottom: 4px;
+  width: 22px;
+  height: 22px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--pf-green);
+}
+
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.profile-name-row h2 {
+  max-width: 260px;
+  margin: 0;
+  overflow: hidden;
+  color: var(--pf-navy);
+  font-size: 28px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-role-pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--pf-blue-soft);
+  color: var(--pf-blue);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.profile-summary-email {
+  max-width: 100%;
+  margin: 12px 0 14px;
+  overflow: hidden;
+  color: var(--pf-muted);
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border: 1px solid #cdeedd;
+  border-radius: 999px;
+  background: #ecf9f3;
+  color: #0e7a52;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.profile-verified-badge svg {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-facts {
+  width: 100%;
+  margin: 22px 0 0;
+  border-top: 1px solid var(--pf-line);
+}
+
+.profile-facts > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 66px;
+  border-bottom: 1px solid var(--pf-line);
+}
+
+.profile-facts > div:last-child {
+  border-bottom: 0;
+  min-height: 60px;
+}
+
+.profile-facts dt {
+  color: var(--pf-muted);
+  font-size: 15px;
+}
+
+.profile-facts dd {
+  margin: 0;
+  color: var(--pf-navy);
+  font-size: 16px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.profile-facts dd.active {
+  color: var(--pf-green);
+}
+
+/* ---------- Kartu sesi ---------- */
+
+.profile-session {
+  border: 1px solid #faddde;
+  background: #fff7f7;
+  box-shadow: none;
+}
+
+.profile-session .profile-card-head {
+  margin-bottom: 22px;
+}
+
+.profile-session .profile-card-head h2 {
+  font-size: 22px;
+}
+
+.profile-logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 52px;
+  border: 1px solid #f7c7c9;
+  border-radius: 12px;
+  background: #fde8e9;
+  color: var(--pf-red);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile-logout-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-logout-button:hover {
+  background: #fbd9db;
+}
+
+/* ---------- Gagal memuat ---------- */
+
+.profile-load-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 24px clamp(20px, 2.3vw, 40px);
+  padding: 40px 24px;
+  border-radius: 24px;
+  background: #fff;
+  color: var(--pf-red);
+  text-align: center;
+}
+
+.profile-load-error p {
+  margin: 0;
+}
+
+.profile-load-error .profile-button.primary {
+  min-width: 160px;
+}
+
+/* ---------- Dialog keluar ---------- */
+
+.profile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(229, 232, 240, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.profile-dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 440px);
+  padding: 40px 32px 32px;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(15, 31, 70, 0.18);
+  text-align: center;
+}
+
+.profile-dialog-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e3e9f6;
+  border-radius: 10px;
+  background: #fff;
+  color: #0f1f46;
+  cursor: pointer;
+}
+
+.profile-dialog-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.profile-dialog-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: #fde8e9;
+  color: var(--pf-red);
+}
+
+.profile-dialog-icon svg {
+  width: 44px;
+  height: 44px;
+  stroke-width: 1.6;
+}
+
+.profile-dialog h2 {
+  margin: 20px 0 12px;
+  color: var(--pf-navy);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.profile-dialog p {
+  margin: 0;
+  color: var(--pf-muted);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.profile-dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.profile-dialog-actions .profile-button {
+  min-width: 0;
+  padding: 0 12px;
+}
+
+/* ---------- Responsif ---------- */
+
+@media (max-width: 1100px) {
+  .profile-content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    min-height: 90px;
+    padding-left: 20px;
+  }
+
+  .profile-heading h1 {
+    font-size: 24px;
+  }
+
+  .profile-notice {
+    top: 84px;
+  }
+}
+
+@media (max-width: 700px) {
+  .profile-card {
+    padding: 20px;
+  }
+
+  .profile-fields-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .profile-actions {
+    flex-wrap: wrap;
+  }
+
+  .profile-actions .profile-button {
+    flex: 1 1 140px;
+  }
+
+  .profile-button.primary {
+    min-width: 0;
+  }
+
+  .profile-actions-password {
+    margin-top: 32px;
+  }
+
+  .profile-dialog {
+    padding: 36px 20px 24px;
+  }
+}

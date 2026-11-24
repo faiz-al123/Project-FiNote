@@ -113,8 +113,24 @@
   width: 100%;
   margin-bottom: 12px;
   padding: 10px 8px;
+  border: 1px solid transparent;
   border-radius: 8px;
   background: #d8e6ff;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.sidebar-user:hover {
+  background: #cddffd;
+}
+
+/* Aktif saat halaman Profil terbuka */
+.sidebar-user.active {
+  border-color: #3d83f6;
+  background: #d8e6fd;
 }
 
 .sidebar-user-icon {
@@ -168,6 +184,7 @@
 }
 
 .sidebar-item:focus-visible,
+.sidebar-user:focus-visible,
 .sidebar-logout:focus-visible {
   outline: 2px solid #4285ed;
   outline-offset: 2px;

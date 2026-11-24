@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from 'react'
 
 import LoginPage from './pages/auth/LoginPage'
@@ -7,11 +6,13 @@ import DashboardPage from './pages/dashboard/DashboardPage'
 import TransactionsPage from './pages/transactions/TransactionsPage'
 import HistoryPage from './pages/history/HistoryPage'
 import RemindersPage from './pages/reminders/RemindersPage'
+import ProfilePage from './pages/profile/ProfilePage'
 
 import {
   clearSession,
   getCurrentUser,
   getToken,
+  saveSession,
 } from './api/auth.api'
 
 import './App.css'
@@ -22,6 +23,7 @@ const ALLOWED_PAGES = [
   'transaksi',
   'riwayat',
   'pengingat',
+  'profil',
 ]
 
 const PAGE_STORAGE_KEY = 'finote_page'
@@ -115,6 +117,19 @@ function App() {
     setPage('login')
   }, [])
 
+  // Dipanggil halaman Profil setelah username/email berhasil diubah,
+  // agar nama di sidebar ikut berubah tanpa login ulang.
+  const handleUserUpdated = (profile) => {
+    const updatedUser = {
+      ...user,
+      nama: profile.username,
+      email: profile.email,
+    }
+
+    setUser(updatedUser)
+    saveSession({ user: updatedUser })
+  }
+
   const handleNavigate = (destination) => {
     if (ALLOWED_PAGES.includes(destination)) {
       savePage(destination)
@@ -170,6 +185,17 @@ function App() {
         user={user}
         onLogout={handleLogout}
         onNavigate={handleNavigate}
+      />
+    )
+  }
+
+  if (page === 'profil') {
+    return (
+      <ProfilePage
+        user={user}
+        onLogout={handleLogout}
+        onNavigate={handleNavigate}
+        onUserUpdated={handleUserUpdated}
       />
     )
   }

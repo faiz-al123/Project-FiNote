@@ -66,7 +66,7 @@ function MenuIcon({ id }) {
  * Sidebar yang dipakai semua halaman setelah login.
  *
  * Props:
- * - activePage : id menu yang sedang aktif ('dashboard' | 'transaksi' | 'riwayat' | 'pengingat')
+ * - activePage : id menu yang sedang aktif ('dashboard' | 'transaksi' | 'riwayat' | 'pengingat' | 'profil')
  * - user       : data pengguna dari App.jsx
  * - onNavigate : dipanggil dengan id halaman tujuan
  * - onLogout   : dipanggil saat tombol keluar ditekan
@@ -107,7 +107,14 @@ function Sidebar({ activePage, user, onNavigate, onLogout }) {
       </nav>
 
       <div className="sidebar-bottom">
-        <div className="sidebar-user">
+        {/* Kartu profil: klik untuk membuka halaman Profil */}
+        <button
+          type="button"
+          className={`sidebar-user ${activePage === 'profil' ? 'active' : ''}`}
+          aria-current={activePage === 'profil' ? 'page' : undefined}
+          aria-label={`Buka profil ${username}`}
+          onClick={() => onNavigate?.('profil')}
+        >
           <img src={ProfileIcon} alt="" className="sidebar-user-icon" />
 
           <div className="sidebar-user-info">
@@ -117,10 +124,10 @@ function Sidebar({ activePage, user, onNavigate, onLogout }) {
 
             <span className="sidebar-user-role">mahasiswa</span>
           </div>
-        </div>
+        </button>
 
         <button type="button" className="sidebar-logout" onClick={onLogout}>
-          keluar
+          
         </button>
       </div>
     </aside>
