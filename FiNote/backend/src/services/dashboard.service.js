@@ -62,7 +62,50 @@ function getTotalPerKategori(userId, { periode = 'bulanan', tanggal } = {}) {
     tertinggi: tertinggi > 0 && b.total === tertinggi,
   }));
 
-  return { periode, tanggal: acuan, bulan, categories };
+  // kosong = belum ada pengeluaran sama sekali pada periode ini (BE-10, Skenario 2):
+  // frontend menampilkan tombol yang mengarahkan ke halaman catat transaksi.
+  return { periode, tanggal: acuan, bulan, kosong: tertinggi === 0, categories };
 }
 
-module.exports = { getSummary, getTotalPerKategori };
+// Widget "Total Transaksi" (BE-10): jumlah catatan transaksi, bukan jumlah uangnya.
+//  - total_transaksi            : seluruh transaksi milik pengguna
+//  - total_transaksi_bulan_ini  : transaksi pada bulan dari tanggal acuan
+function getTotalTransaksi(userId, tanggal) {
+  const acuan = tanggal || tanggalHariIni();
+  const bulan = bulanDariTanggal(acuan);
+
+  const { n: semua } = db
+    .prepare('SELECT COUNT(*) AS n FROM Transaksi WHERE user_id = ?')
+    .get(userId);
+
+  const { n: bulanIni } = db
+    .prepare('SELECT COUNT(*) AS n FROM Transaksi WHERE user_id = ? AND tanggal >= ? AND tanggal <= ?')
+    .get(userId, `${bulan}-01`, `${bulan}-31`);
+
+  return {
+    tanggal: acuan,
+    bulan,
+    total_transaksi: semua,
+    total_transaksi_bulan_ini: bulanIni,
+  };
+}
+
+// Widget "Daftar Pengeluaran Terbaru" (BE-10): transaksi paling baru milik pengguna.
+// Diurutkan dari tanggal terbaru; pada tanggal yang sama, yang dicatat terakhir di atas.
+function getTransaksiTerbaru(userId, limit) {
+  const transactions = db
+    .prepare(`
+      SELECT t.transaksi_id, t.tanggal, t.catatan, t.kategori_id,
+             k.nama_kategori, t.jumlah
+      FROM Transaksi t
+      JOIN Kategori k ON k.kategori_id = t.kategori_id
+      WHERE t.user_id = ?
+      ORDER BY t.tanggal DESC, t.transaksi_id DESC
+      LIMIT ?
+    `)
+    .all(userId, limit);
+
+  return { limit, transactions };
+}
+
+module.exports = { getSummary, getTotalPerKategori, getTotalTransaksi, getTransaksiTerbaru };

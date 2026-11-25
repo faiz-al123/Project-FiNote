@@ -847,6 +847,7 @@ Response `200 OK`:
     "periode": "bulanan",
     "tanggal": "2026-10-29",
     "bulan": "2026-10",
+    "kosong": false,
     "categories": [
       { "kategori_id": 1, "nama_kategori": "Makanan", "total": 10000, "tertinggi": false },
       { "kategori_id": 2, "nama_kategori": "Transportasi", "total": 20000, "tertinggi": false },
@@ -861,6 +862,7 @@ Response `200 OK`:
 
 - Semua kategori selalu dikembalikan, yang belum ada pengeluaran bernilai `total: 0` (batang kosong di grafik).
 - `tertinggi: true` menandai kategori dengan total terbesar (batang merah "Tertinggi"). Jika ada yang sama besar, semuanya ditandai. Jika belum ada pengeluaran sama sekali, tidak ada yang ditandai.
+- `kosong: true` berarti belum ada pengeluaran sama sekali pada periode itu. Frontend memakainya untuk menampilkan tombol yang mengarahkan ke halaman catat transaksi (BE-10, Skenario 2).
 - Hanya pengeluaran milik pengguna yang login.
 
 | Status | Kondisi |
@@ -1141,6 +1143,79 @@ Cara kerja: token yang dikirim dicatat sebagai sudah dicabut (disimpan sebagai h
 | `401` | `Token tidak ditemukan. Silakan login.` | Tidak ada token |
 | `401` | `Token tidak valid atau sudah kedaluwarsa.` | Token palsu atau kedaluwarsa |
 | `401` | `Sesi sudah berakhir. Silakan login kembali.` | Token sudah pernah dipakai logout |
+
+---
+
+## 15. Widget halaman dashboard (BE-10)
+
+Halaman dashboard memuat lima widget. Setiap widget punya endpoint sendiri, semuanya memerlukan header `Authorization: Bearer <token>` dan hanya memuat data milik pengguna yang login:
+
+| Widget | Endpoint | Bagian |
+|---|---|---|
+| Total pengeluaran harian dan bulanan | `GET /api/dashboard/summary` | 9 |
+| Grafik pengeluaran berdasarkan kategori | `GET /api/dashboard/kategori` | 10 |
+| Total transaksi | `GET /api/dashboard/total-transaksi` | di bawah |
+| Daftar pengeluaran terbaru | `GET /api/dashboard/terbaru` | di bawah |
+
+Kondisi data kosong (Skenario 2): semua endpoint tetap menjawab `200`, bukan error. Total bernilai `0`, daftar kosong, dan grafik memakai `kosong: true`.
+
+### Total transaksi
+
+```http
+GET /api/dashboard/total-transaksi
+```
+
+Query opsional: `tanggal=YYYY-MM-DD` (tanggal acuan untuk menentukan "bulan ini"; jika kosong memakai hari ini di server).
+
+```json
+{
+  "success": true,
+  "message": "Total transaksi berhasil diambil.",
+  "data": {
+    "tanggal": "2026-11-20",
+    "bulan": "2026-11",
+    "total_transaksi": 12,
+    "total_transaksi_bulan_ini": 5
+  }
+}
+```
+
+`total_transaksi` menghitung **jumlah catatan** transaksi (bukan jumlah uangnya). `total_transaksi` mencakup seluruh transaksi pengguna, sedangkan `total_transaksi_bulan_ini` hanya bulan acuan. Frontend memilih salah satu sesuai kebutuhan tampilan.
+
+### Daftar pengeluaran terbaru
+
+```http
+GET /api/dashboard/terbaru
+```
+
+Query opsional: `limit` (1 sampai 20, bawaan 5).
+
+```json
+{
+  "success": true,
+  "message": "Pengeluaran terbaru berhasil diambil.",
+  "data": {
+    "limit": 5,
+    "transactions": [
+      {
+        "transaksi_id": 14,
+        "tanggal": "2026-11-20",
+        "catatan": "nasi padang",
+        "kategori_id": 1,
+        "nama_kategori": "Makanan",
+        "jumlah": 10000
+      }
+    ]
+  }
+}
+```
+
+Diurutkan dari tanggal terbaru. Pada tanggal yang sama, transaksi yang dicatat paling akhir tampil di atas. Daftar ini tidak dibatasi bulan: yang tampil adalah transaksi terbaru secara keseluruhan. Jika pengguna belum punya transaksi: `200`, `transactions: []`, dan `message` bernilai `Data tidak ditemukan.`
+
+| Status | Kondisi |
+|---|---|
+| `400` | `tanggal` tidak valid, atau `limit` bukan angka 1 sampai 20. Untuk `limit`, `message` adalah `Input tidak valid.` dan rincian di `data.detail` |
+| `401` | Tidak ada token |
 
 ---
 
