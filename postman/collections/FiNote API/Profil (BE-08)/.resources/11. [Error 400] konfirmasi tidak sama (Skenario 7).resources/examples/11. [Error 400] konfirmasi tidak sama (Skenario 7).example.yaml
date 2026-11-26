@@ -1,0 +1,36 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/profil/password
+  method: PUT
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "password_lama": "passwordAman123",
+        "password_baru": "PasswordBaru456",
+        "konfirmasi_password": "BedaSekali789"
+      }
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "63"
+    ETag: W/"3f-pWtsUoywf5fjNOD0lSIz089x8N4"
+    Date: Thu, 26 Nov 2026 09:33:16 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Password tidak sesuai",
+        "data": null
+      }
+order: 1000

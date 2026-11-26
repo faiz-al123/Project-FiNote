@@ -1,0 +1,26 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/auth/logout
+  method: POST
+response:
+  statusCode: 401
+  statusText: Unauthorized
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "85"
+    ETag: W/"55-tE2qZla3CHq+o0qs7/xjAWWekt4"
+    Date: Thu, 26 Nov 2026 09:37:17 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Sesi sudah berakhir. Silakan login kembali.",
+        "data": null
+      }
+order: 1000

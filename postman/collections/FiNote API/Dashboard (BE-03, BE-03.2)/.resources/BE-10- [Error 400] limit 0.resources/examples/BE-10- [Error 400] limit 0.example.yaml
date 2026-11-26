@@ -1,0 +1,31 @@
+$kind: http-example
+name: "BE-10: [Error 400] limit 0"
+request:
+  url: http://localhost:3000/api/dashboard/terbaru?limit=0
+  method: GET
+  queryParams:
+    limit: "0"
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "106"
+    ETag: W/"6a-o3UigSk5PfOfa+W+/iVaxRoIgjo"
+    Date: Thu, 26 Nov 2026 09:44:51 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Input tidak valid.",
+        "data": {
+          "detail": "limit harus berupa angka 1 sampai 20."
+        }
+      }
+order: 1000

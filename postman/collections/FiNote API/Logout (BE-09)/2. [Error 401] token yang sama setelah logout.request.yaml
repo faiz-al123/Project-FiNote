@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:3000/api/profil
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_14zi}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 401', () => pm.response.to.have.status(401));
+      pm.test('Pesan: Sesi sudah berakhir. Silakan login kembali.', () => pm.expect(pm.response.json().message).to.eql("Sesi sudah berakhir. Silakan login kembali."));
+    language: text/javascript
+examples: .resources/2. [Error 401] token yang sama setelah logout.resources/examples
+order: 2000

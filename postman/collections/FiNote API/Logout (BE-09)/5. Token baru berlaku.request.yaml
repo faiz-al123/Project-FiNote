@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:3000/api/profil
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_15u1}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+examples: .resources/5. Token baru berlaku.resources/examples
+order: 5000

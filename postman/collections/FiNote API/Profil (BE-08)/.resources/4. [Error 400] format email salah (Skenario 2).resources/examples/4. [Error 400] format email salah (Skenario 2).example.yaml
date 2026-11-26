@@ -1,0 +1,34 @@
+$kind: http-example
+request:
+  url: http://localhost:3000/api/profil
+  method: PUT
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "email": "bukan-email"
+      }
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "66"
+    ETag: W/"42-cUutxcgCYFQT0/fHnLHQySi1urM"
+    Date: Thu, 26 Nov 2026 09:28:51 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Format Email tidak valid",
+        "data": null
+      }
+order: 1000

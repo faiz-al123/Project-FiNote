@@ -1,0 +1,35 @@
+$kind: http-example
+name: "[Error 400] Riwayat: nominal_min > nominal_max"
+request:
+  url: http://localhost:3000/api/transaksi?nominal_min=5000&nominal_max=1000
+  method: GET
+  queryParams:
+    nominal_min: "5000"
+    nominal_max: "1000"
+  body:
+    type: json
+    content: ""
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "122"
+    ETag: W/"7a-n7ZRzKhVQJEwR1X0tSrtJcQb2sI"
+    Date: Thu, 26 Nov 2026 09:16:52 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "message": "Input tidak valid.",
+        "data": {
+          "detail": "nominal_min tidak boleh lebih besar dari nominal_max."
+        }
+      }
+order: 1000

@@ -1,0 +1,21 @@
+$kind: http-request
+url: http://localhost:3000/api/profil
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "Contoh"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_14zi}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+examples: .resources/3. Kembalikan username (supaya bisa diulang).resources/examples
+order: 3000

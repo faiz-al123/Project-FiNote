@@ -1,0 +1,32 @@
+$kind: http-example
+name: "BE-10: Total transaksi"
+request:
+  url: http://localhost:3000/api/dashboard/total-transaksi
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "162"
+    ETag: W/"a2-kzsFCRj/mcRNFWUM2EtAhxEfPk0"
+    Date: Thu, 26 Nov 2026 09:42:38 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Total transaksi berhasil diambil.",
+        "data": {
+          "tanggal": "2026-11-26",
+          "bulan": "2026-11",
+          "total_transaksi": 2,
+          "total_transaksi_bulan_ini": 1
+        }
+      }
+order: 1000

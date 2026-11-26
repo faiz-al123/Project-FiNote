@@ -1,0 +1,14 @@
+$kind: http-request
+name: "BE-10: Total transaksi"
+url: http://localhost:3000/api/dashboard/total-transaksi
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_15u1}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+examples: .resources/BE-10- Total transaksi.resources/examples
+order: 6000

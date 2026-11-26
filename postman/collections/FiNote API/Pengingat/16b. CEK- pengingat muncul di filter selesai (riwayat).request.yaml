@@ -1,0 +1,24 @@
+$kind: http-request
+name: "16b. CEK: pengingat muncul di filter selesai (riwayat)"
+url: http://localhost:3000/api/pengingat?bulan=2026-11&filter=selesai
+method: GET
+queryParams:
+  bulan: 2026-11
+  filter: selesai
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_14zi}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      const j = pm.response.json();
+      const id = Number(pm.collectionVariables.get('pengingat_id'));
+      pm.test('Pengingat yang ditandai selesai ada di daftar selesai', () => {
+        pm.expect(j.data.reminders.map(r => r.pengingat_id)).to.include(id);
+        pm.expect(j.data.reminders.find(r => r.pengingat_id === id).status).to.eql('selesai');
+      });
+    language: text/javascript
+examples: .resources/16b. CEK- pengingat muncul di filter selesai (riwayat).resources/examples
+order: 17638

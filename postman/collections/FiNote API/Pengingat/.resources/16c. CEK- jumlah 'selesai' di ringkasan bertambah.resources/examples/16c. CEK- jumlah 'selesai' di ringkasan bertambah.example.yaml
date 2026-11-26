@@ -1,0 +1,41 @@
+$kind: http-example
+name: "16c. CEK: jumlah 'selesai' di ringkasan bertambah"
+request:
+  url: http://localhost:3000/api/pengingat?bulan=2026-11
+  method: GET
+  queryParams:
+    bulan: 2026-11
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "214"
+    ETag: W/"d6-1Dk4PJh3HXvuNCi7qy6bhsEDehk"
+    Date: Thu, 26 Nov 2026 09:25:10 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Data tidak ditemukan.",
+        "data": {
+          "bulan": "2026-11",
+          "tanggal_acuan": "2026-11-26",
+          "filter": "semua",
+          "search": null,
+          "ringkasan": {
+            "terdekat": 0,
+            "total": 0,
+            "selesai": 0,
+            "terlewat": 0
+          },
+          "reminders": []
+        }
+      }
+order: 1000

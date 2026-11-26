@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:3000/api/auth/logout
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_14zi}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 401', () => pm.response.to.have.status(401));
+    language: text/javascript
+examples: .resources/3. [Error 401] logout dua kali dengan token yang sama.resources/examples
+order: 3000

@@ -1,0 +1,55 @@
+$kind: http-example
+name: "Riwayat: rentang nominal"
+request:
+  url: http://localhost:3000/api/transaksi?nominal_min=10000&nominal_max=30000
+  method: GET
+  queryParams:
+    nominal_min: "10000"
+    nominal_max: "30000"
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "399"
+    ETag: W/"18f-WG2DjfsEtRnTKO2G3rBX6mzcLLM"
+    Date: Thu, 26 Nov 2026 09:15:07 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Riwayat transaksi berhasil diambil.",
+        "data": {
+          "transactions": [
+            {
+              "transaksi_id": 2,
+              "tanggal": "2026-11-11",
+              "catatan": null,
+              "kategori_id": 2,
+              "nama_kategori": "Transportasi",
+              "jumlah": 15000
+            },
+            {
+              "transaksi_id": 1,
+              "tanggal": "2026-10-23",
+              "catatan": "nasi padang",
+              "kategori_id": 1,
+              "nama_kategori": "Makanan",
+              "jumlah": 10000
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 15,
+            "total_items": 2,
+            "total_pages": 1
+          }
+        }
+      }
+order: 1000

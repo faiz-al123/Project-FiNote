@@ -1,0 +1,23 @@
+$kind: http-request
+url: http://localhost:3000/api/auth/login
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "contoh@example.com",
+      "password": "passwordAman123"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      const j = pm.response.json();
+      if (j.data && j.data.token) { pm.collectionVariables.set('token', j.data.token); }
+    language: text/javascript
+examples: .resources/4. LOGIN lagi (token baru otomatis tersimpan).resources/examples
+order: 4000

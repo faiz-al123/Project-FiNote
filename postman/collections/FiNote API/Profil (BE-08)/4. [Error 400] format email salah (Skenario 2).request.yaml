@@ -1,0 +1,23 @@
+$kind: http-request
+url: http://localhost:3000/api/profil
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "bukan-email"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_14zi}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 400', () => pm.response.to.have.status(400));
+      pm.test('Pesan: Format Email tidak valid', () => pm.expect(pm.response.json().message).to.eql("Format Email tidak valid"));
+    language: text/javascript
+examples: .resources/4. [Error 400] format email salah (Skenario 2).resources/examples
+order: 4000

@@ -1,0 +1,47 @@
+$kind: http-example
+name: "BE-10: Pengeluaran terbaru (bawaan 5)"
+request:
+  url: http://localhost:3000/api/dashboard/terbaru
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    X-Powered-By: Express
+    Vary: Origin
+    Access-Control-Allow-Credentials: "true"
+    Content-Type: application/json; charset=utf-8
+    Content-Length: "344"
+    ETag: W/"158-ogCoSEG+eqOQqg05HYA227frgzU"
+    Date: Thu, 26 Nov 2026 09:43:41 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "Pengeluaran terbaru berhasil diambil.",
+        "data": {
+          "limit": 5,
+          "transactions": [
+            {
+              "transaksi_id": 2,
+              "tanggal": "2026-11-11",
+              "catatan": null,
+              "kategori_id": 2,
+              "nama_kategori": "Transportasi",
+              "jumlah": 15000
+            },
+            {
+              "transaksi_id": 1,
+              "tanggal": "2026-10-23",
+              "catatan": "nasi padang",
+              "kategori_id": 1,
+              "nama_kategori": "Makanan",
+              "jumlah": 10000
+            }
+          ]
+        }
+      }
+order: 1000

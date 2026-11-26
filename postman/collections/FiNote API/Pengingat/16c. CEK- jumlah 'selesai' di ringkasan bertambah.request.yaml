@@ -1,0 +1,20 @@
+$kind: http-request
+name: "16c. CEK: jumlah 'selesai' di ringkasan bertambah"
+url: http://localhost:3000/api/pengingat?bulan=2026-11
+method: GET
+queryParams:
+  bulan: 2026-11
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_14zi}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      const j = pm.response.json();
+      pm.test('Jumlah selesai minimal 1', () => pm.expect(j.data.ringkasan.selesai).to.be.at.least(1));
+      pm.test('Pengingat tidak hilang dari total', () => pm.expect(j.data.ringkasan.total).to.be.at.least(j.data.ringkasan.selesai));
+    language: text/javascript
+examples: .resources/16c. CEK- jumlah 'selesai' di ringkasan bertambah.resources/examples
+order: 17761

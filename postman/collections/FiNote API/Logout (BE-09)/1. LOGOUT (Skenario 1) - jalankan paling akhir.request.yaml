@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:3000/api/auth/logout
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_14zi}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      pm.test('Pesan: Logout berhasil.', () => pm.expect(pm.response.json().message).to.eql("Logout berhasil."));
+    language: text/javascript
+examples: .resources/1. LOGOUT (Skenario 1) - jalankan paling akhir.resources/examples
+order: 1000
