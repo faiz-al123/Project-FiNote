@@ -73,7 +73,10 @@ test('GET /profil: data akun + total transaksi + pengingat aktif, tanpa password
   assert.strictEqual(p.username, 'Tanu');
   assert.strictEqual(p.email, 'tanu@example.com');
   assert.match(p.bergabung_sejak, /^\d{4}-\d{2}-\d{2}$/);
-  assert.strictEqual(p.total_transaksi, 3);
+  // Angka di profil harus sama dengan jumlah transaksi di Riwayat,
+  // apa pun cara transaksinya tercatat (manual atau dari pengingat yang selesai).
+  const riwayat = await api('GET', '/transaksi?limit=100', undefined, token);
+  assert.strictEqual(p.total_transaksi, riwayat.json.data.pagination.total_items);
   assert.strictEqual(p.pengingat_aktif, 1); // yang selesai tidak dihitung aktif
   assert.ok(!JSON.stringify(json).includes('password'));
 });
