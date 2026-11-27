@@ -1,6 +1,7 @@
 /* ========================================
    SIDEBAR FINOTE
    Dipakai semua halaman lewat components/layout/Sidebar.jsx
+   Aset gambar: src/assets1/sidebar
 ======================================== */
 
 .sidebar {
@@ -8,92 +9,83 @@
   top: 0;
   z-index: 2;
   display: flex;
-  flex: 0 0 218px;
-  flex-direction: column;
+  flex: 0 0 256px;
   align-self: flex-start;
-  width: 218px;
+  width: 256px;
   height: 100vh;
   height: 100dvh;
-  overflow-y: auto;
-  border-right: 1px solid #333;
+  padding: 12px;
   background: #f0f3ff;
+}
+
+/* Kartu putih membulat */
+.sidebar-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(37, 99, 235, 0.08);
 }
 
 .sidebar-brand {
   display: flex;
-  flex: 0 0 160px;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  padding: 20px;
+  padding: 24px 16px 8px;
 }
 
 .sidebar-brand img {
   display: block;
-  width: 140px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 190px;
   height: auto;
   object-fit: contain;
 }
 
-/* Navigasi sidebar */
+/* Menu: gambar sudah berisi ikon + teks, jadi tombol hanya sebagai pembungkus */
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  padding: 0 10px;
+  gap: 4px;
+  margin-top: 16px;
+  padding: 0 8px;
 }
 
 .sidebar-item {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
+  display: block;
   width: 100%;
-  min-height: 49px;
-  padding: 0 20px;
-  border: 1px solid #333;
-  border-radius: 6px;
-  background: #fff;
-  color: #111;
-  text-align: left;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease;
 }
 
-.sidebar-item.active {
-  border-color: #347cf6;
-  background: #347cf6;
-  color: #fff;
+.sidebar-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
 }
 
 .sidebar-item:not(.active):hover {
-  background: #e6ebff;
+  background: #eef2ff;
 }
 
-.sidebar-item-icon {
-  display: flex;
-  flex: 0 0 24px;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
+/* Aktif: latar biru, gambar gelap diubah jadi putih lewat filter */
+.sidebar-item.active {
+  background: #2563eb;
 }
 
-.sidebar-item-icon svg {
-  display: block;
-  width: 22px;
-  height: 22px;
-}
-
-.sidebar-item-label {
-  display: block;
-  white-space: nowrap;
+.sidebar-item.active img {
+  filter: brightness(0) invert(1);
 }
 
 /* Profil dan tombol keluar */
@@ -101,9 +93,8 @@
 .sidebar-bottom {
   display: flex;
   flex-direction: column;
-  width: 100%;
   margin-top: auto;
-  padding: 0 10px 20px;
+  padding: 16px 8px 12px;
 }
 
 .sidebar-user {
@@ -111,11 +102,10 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  margin-bottom: 12px;
-  padding: 10px 8px;
+  padding: 10px 12px;
   border: 1px solid transparent;
-  border-radius: 8px;
-  background: #d8e6ff;
+  border-radius: 10px;
+  background: #e6edff;
   color: inherit;
   font: inherit;
   text-align: left;
@@ -124,35 +114,36 @@
 }
 
 .sidebar-user:hover {
-  background: #cddffd;
+  background: #dbe5ff;
 }
 
 /* Aktif saat halaman Profil terbuka */
 .sidebar-user.active {
-  border-color: #3d83f6;
-  background: #d8e6fd;
+  border-color: #2563eb;
+  background: #dbe5ff;
 }
 
 .sidebar-user-icon {
   display: block;
-  flex: 0 0 30px;
-  width: 30px;
-  height: 30px;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   object-fit: contain;
 }
 
 .sidebar-user-info {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
 }
 
 .sidebar-user-name {
   display: block;
   overflow: hidden;
-  color: #111;
+  color: #1e293b;
   font-size: 13px;
   font-weight: 700;
   text-overflow: ellipsis;
@@ -164,23 +155,35 @@
   font-size: 11px;
 }
 
+.sidebar-user-chevron {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  color: #334155;
+}
+
 .sidebar .sidebar-logout {
+  display: block;
   width: 100%;
-  margin-top: 24px;
-  padding: 8px 12px;
+  margin-top: 8px;
+  padding: 0;
   border: none;
+  border-radius: 10px;
   background: transparent;
-  color: #e53e3e;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  text-align: center;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sidebar .sidebar-logout img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
 }
 
 .sidebar .sidebar-logout:hover {
-  color: #c53030;
-  text-decoration: underline;
+  background: #fff1f1;
 }
 
 .sidebar-item:focus-visible,
@@ -194,12 +197,12 @@
 
 @media (max-width: 1024px) {
   .sidebar {
-    flex-basis: 200px;
-    width: 200px;
+    flex-basis: 240px;
+    width: 240px;
   }
 }
 
-/* Ponsel */
+/* Ponsel: sidebar pindah ke atas */
 
 @media (max-width: 768px) {
   .sidebar {
@@ -208,40 +211,29 @@
     align-self: stretch;
     width: 100%;
     height: auto;
-    min-height: auto;
+    padding: 10px;
+  }
+
+  .sidebar-card {
+    height: auto;
     overflow-y: visible;
-    border-right: none;
-    border-bottom: 1px solid #333;
   }
 
   .sidebar-brand {
-    flex-basis: 90px;
+    padding-top: 16px;
   }
 
   .sidebar-brand img {
-    width: 105px;
+    max-width: 130px;
   }
 
   .sidebar-nav {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: 0 12px 14px;
-  }
-
-  .sidebar-item {
-    gap: 8px;
-    padding: 0 10px;
+    margin-top: 8px;
   }
 
   .sidebar-bottom {
-    padding: 0 12px 12px;
-  }
-
-  .sidebar-user {
-    max-width: 260px;
-  }
-
-  .sidebar .sidebar-logout {
-    text-align: left;
+    padding-top: 8px;
   }
 }
