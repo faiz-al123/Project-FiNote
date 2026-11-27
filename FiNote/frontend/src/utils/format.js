@@ -8,3 +8,10 @@ export function formatRupiah(angka) {
     .format(Number(angka) || 0)
     .replace(/\u00a0/g, ' ')
 }
+
+// "2026-11-30" -> "30/11/2026"
+export function formatTanggal(tanggal) {
+  const bagian = String(tanggal || '').slice(0, 10).split('-')
+  if (bagian.length !== 3) return tanggal || '-'
+  return `${bagian[2]}/${bagian[1]}/${bagian[0]}`
+}

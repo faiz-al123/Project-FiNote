@@ -2,153 +2,30 @@
    DASHBOARD FINOTE (isi halaman dashboard saja)
    Sidebar : components/layout/Sidebar.css
    Kerangka: components/layout/Layout.css
+   Aset    : src/assets1/dashboardassets
 ======================================== */
 
 .dashboard-main {
   flex: 1;
   min-width: 0;
-  padding: 36px 32px 36px;
+  padding: 0 32px 32px;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
 }
 
-/* Header */
+/* Header: gambar sapaan */
 
 .dashboard-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
   width: 100%;
-  min-height: 100px;
-  padding: 16px 48px 16px 60px;
-  border-bottom: 1px solid #333;
-  background: #f0f3ff;
+  padding: 24px 32px 8px;
 }
 
-.dashboard-header-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-
-.dashboard-header-calendar {
-  display: flex;
-  flex: 0 0 50px;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  background: #dfe6fb;
-}
-
-.dashboard-header-calendar img {
-  display: block;
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
-.dashboard-heading h1 {
-  margin: 0;
-  color: #102039;
-  font-size: clamp(24px, 2.2vw, 32px);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.dashboard-heading p {
-  margin: 6px 0 0;
-  color: #626d85;
-  font-size: 15px;
-}
-
-.dashboard-notification {
-  display: flex;
-  flex: 0 0 52px;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  padding: 8px;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  cursor: pointer;
-}
-
-.dashboard-notification:hover {
-  transform: scale(1.06);
-}
-
-.dashboard-notification img {
+.dashboard-header img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.dashboard-notification:focus-visible {
-  outline: 2px solid #4285ed;
-  outline-offset: 2px;
-}
-
-/* Widget pengeluaran harian dan bulanan */
-
-.dashboard-summary {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 32px;
-  width: 100%;
-  max-width: 1040px;
-  margin: 0 auto 28px;
-}
-
-.dashboard-summary-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  min-height: 198px;
-  padding: 28px 20px;
-  border: 1px solid #444;
-  border-radius: 44px;
-  background: #fff;
-  text-align: center;
-}
-
-.dashboard-summary-card h2 {
-  margin: 0;
-  color: #111;
-  font-size: clamp(19px, 1.8vw, 26px);
-  font-weight: 700;
-}
-
-.dashboard-summary-value {
-  margin: 28px 0 0;
-  color: #111;
-  font-size: clamp(22px, 2vw, 28px);
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-
-/* Pesan belum ada catatan */
-
-.dashboard-empty-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto 28px;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background: #d8e6ff;
-  color: #2459ed;
-  font-size: 16px;
-  font-weight: 600;
-  text-align: center;
+  max-width: 440px;
+  height: auto;
 }
 
 .dashboard-error-message {
@@ -161,52 +38,90 @@
   font-size: 14px;
 }
 
-/* Grafik kategori */
+/* Tiga kartu ringkasan */
 
-.dashboard-chart-card {
-  width: 100%;
-  margin: 0 auto;
-  padding: 24px 26px 20px;
-  border: 1px solid #444;
-  border-radius: 42px;
+.dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 24px 0 24px;
+}
+
+.dashboard-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  min-height: 136px;
+  padding: 20px 24px;
+  border: 1px solid #333;
+  border-radius: 20px;
   background: #fff;
 }
 
-.dashboard-chart-heading {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-width: 0;
-  color: #102039;
+.dashboard-summary-card > img {
+  display: block;
+  flex: 0 0 60px;
+  width: 60px;
+  height: 60px;
 }
 
-.dashboard-chart-heading svg {
-  flex: 0 0 24px;
-  width: 24px;
-  height: 24px;
-}
-
-.dashboard-chart-heading h2 {
+.dashboard-summary-card h2 {
   margin: 0;
-  font-size: 18px;
+  color: #5b6478;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1.4;
 }
 
-.dashboard-chart-divider {
-  width: 100%;
-  height: 1px;
-  margin-top: 8px;
-  background: #d8e6ff;
+.dashboard-summary-value {
+  margin: 4px 0 0;
+  color: #111;
+  font-size: clamp(22px, 2.1vw, 32px);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* Grid utama: grafik kiri, kolom kanan */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 500px);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.dashboard-card {
+  min-width: 0;
+  padding: 24px 28px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.06);
+}
+
+.dashboard-title-img {
+  display: block;
+  height: 28px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left center;
+}
+
+/* Grafik */
+
+.dashboard-chart-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 560px;
 }
 
 .dashboard-chart {
   display: flex;
+  flex: 1;
   align-items: stretch;
-  gap: 16px;
-  width: 100%;
-  height: 220px;
-  padding: 20px 8px 0;
+  gap: 12px;
+  min-height: 400px;
+  padding-top: 16px;
 }
 
 .dashboard-chart-column {
@@ -216,121 +131,358 @@
   align-items: center;
   justify-content: flex-end;
   min-width: 0;
-  color: #347cf6;
 }
 
 .dashboard-chart-value {
-  display: block;
-  flex: 0 0 auto;
-  min-height: 19px;
-  margin-bottom: 5px;
-  color: #347cf6;
+  margin-bottom: 6px;
+  color: #2563eb;
   font-size: 13px;
-  text-align: center;
-  overflow-wrap: anywhere;
+  font-weight: 500;
 }
 
 .dashboard-chart-bar-area {
   display: flex;
+  flex: 1;
   align-items: flex-end;
   justify-content: center;
   width: 100%;
-  height: 112px;
-  flex: 0 0 112px;
+  /* tinggi area batang = sisa ruang kolom, dikurangi nilai & label */
+  max-height: 340px;
 }
 
 .dashboard-chart-bar {
-  width: min(46px, 65%);
-  min-height: 1px;
-  border-radius: 9px 9px 0 0;
-  background: #4385f5;
+  width: min(64px, 70%);
+  border-radius: 10px 10px 0 0;
+  background: #2563eb;
   transition: height 0.3s ease;
 }
 
-.dashboard-chart-column.highest {
-  color: #c51b1b;
-}
-
-.dashboard-chart-column.highest .dashboard-chart-value {
-  color: #c51b1b;
-}
-
-.dashboard-chart-column.highest .dashboard-chart-bar {
-  background: #c51b1b;
+.dashboard-chart-bar.empty {
+  height: 5px;
+  border-radius: 3px;
 }
 
 .dashboard-chart-label {
-  display: block;
-  width: 100%;
-  min-height: 28px;
-  margin-top: 8px;
-  color: #2463ed;
-  font-size: 13px;
+  margin-top: 10px;
+  color: #5b6478;
+  font-size: 14px;
   text-align: center;
   overflow-wrap: anywhere;
 }
 
-.dashboard-chart-column.highest .dashboard-chart-label {
-  color: #c51b1b;
-  font-weight: 700;
+.dashboard-chart-column.highest .dashboard-chart-value {
+  color: #f59e0b;
 }
 
-.dashboard-chart-baseline {
-  width: 100%;
-  height: 1px;
-  background: #222;
+.dashboard-chart-column.highest .dashboard-chart-bar {
+  background: #f59e0b;
+}
+
+.dashboard-chart-column.highest .dashboard-chart-label {
+  color: #111;
+  font-weight: 700;
 }
 
 .dashboard-chart-legend {
   display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 10px;
+  gap: 24px;
+  margin-top: 20px;
+  color: #5b6478;
   font-size: 13px;
 }
 
-.dashboard-legend-dot {
+.dashboard-chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
   display: inline-block;
   width: 11px;
   height: 11px;
-  flex: 0 0 11px;
   border-radius: 50%;
-  background: #c51b1b;
 }
 
-.dashboard-chart-state {
+.dot-blue { background: #2563eb; }
+.dot-orange { background: #f59e0b; }
+
+/* Kolom kanan */
+
+.dashboard-side {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.dashboard-highest-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboard-highest-pill {
+  display: block;
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  object-position: left center;
+  align-self: flex-start;
+}
+
+.dashboard-highest-value {
+  margin: 0;
+  color: #111;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.dashboard-highest-value.muted {
+  color: #5b6a8a;
+}
+
+.dashboard-progress {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e6ebf5;
+}
+
+.dashboard-progress span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #f59e0b;
+}
+
+.dashboard-highest-note {
+  margin: 0;
+  color: #5b6478;
+  font-size: 13px;
+}
+
+/* Transaksi terakhir */
+
+.dashboard-recent-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.dashboard-recent-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #2563eb;
+}
+
+.dashboard-recent-heading svg {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+}
+
+.dashboard-recent-heading h2 {
+  margin: 0;
+  color: #111;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.dashboard-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-recent-list li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.dashboard-recent-list img {
+  display: block;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.dashboard-recent-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.dashboard-recent-info strong {
+  overflow: hidden;
+  color: #111;
+  font-size: 15px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-recent-info span {
+  color: #7a8399;
+  font-size: 13px;
+}
+
+.dashboard-recent-amount {
+  flex: 0 0 auto;
+  color: #111;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.dashboard-recent-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-top: 18px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.dashboard-recent-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.dashboard-recent-link:hover {
+  text-decoration: underline;
+}
+
+/* State kosong */
+
+.dashboard-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.dashboard-empty-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 220px;
-  color: #626d85;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 12px;
+  border-radius: 24px;
+  background: #e6edff;
+  color: #2563eb;
+}
+
+.dashboard-empty-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
+.dashboard-empty h3 {
+  margin: 0;
+  color: #111;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.dashboard-empty p {
+  max-width: 320px;
+  margin: 0;
+  color: #5b6478;
   font-size: 14px;
-  text-align: center;
+  line-height: 1.5;
+}
+
+.dashboard-empty.small img {
+  width: 64px;
+  height: 64px;
+}
+
+.dashboard-empty.small h3 {
+  font-size: 16px;
+}
+
+.dashboard-empty.small p {
+  font-size: 13px;
+}
+
+.dashboard-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #3b72f0;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dashboard-cta svg {
+  width: 20px;
+  height: 20px;
+}
+
+.dashboard-cta:hover {
+  background: #2563eb;
+}
+
+.dashboard-cta:focus-visible,
+.dashboard-recent-link:focus-visible {
+  outline: 2px solid #4285ed;
+  outline-offset: 2px;
 }
 
 /* Tablet */
 
-@media (max-width: 1024px) {
-  .dashboard-main {
-    padding: 24px;
-  }
-
-  .dashboard-summary {
-    gap: 20px;
-  }
-
-  .dashboard-summary-card {
-    min-height: 175px;
-    border-radius: 32px;
+@media (max-width: 1280px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .dashboard-chart-card {
-    padding: 20px;
-    border-radius: 30px;
+    min-height: 480px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-main {
+    padding: 0 20px 24px;
   }
 
-  .dashboard-chart {
-    gap: 8px;
+  .dashboard-header {
+    padding: 20px 20px 4px;
+  }
+
+  .dashboard-summary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .dashboard-summary-card {
+    min-height: 110px;
   }
 }
 
@@ -338,90 +490,36 @@
 
 @media (max-width: 768px) {
   .dashboard-main {
-    padding: 20px 14px;
+    padding: 0 14px 20px;
   }
 
   .dashboard-header {
-    align-items: flex-start;
-    gap: 12px;
-    padding: 16px 14px;
+    padding: 16px 14px 0;
   }
 
-  .dashboard-header-left {
-    gap: 10px;
+  .dashboard-header img {
+    max-width: 320px;
   }
 
-  .dashboard-header-calendar {
-    flex-basis: 40px;
-    width: 40px;
-    height: 40px;
-  }
-
-  .dashboard-heading h1 {
-    font-size: 24px;
-  }
-
-  .dashboard-heading p {
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  .dashboard-notification {
-    flex-basis: 42px;
-    width: 42px;
-    height: 42px;
-  }
-
-  .dashboard-summary {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .dashboard-summary-card {
-    min-height: 145px;
-    border-radius: 28px;
-  }
-
-  .dashboard-summary-value {
-    margin-top: 20px;
-  }
-
-  .dashboard-empty-message {
-    margin-bottom: 20px;
-    font-size: 14px;
-  }
-
-  .dashboard-chart-card {
-    padding: 16px 12px;
-    border-radius: 24px;
-  }
-
-  .dashboard-chart-heading h2 {
-    font-size: 15px;
+  .dashboard-card {
+    padding: 18px 16px;
   }
 
   .dashboard-chart {
-    gap: 5px;
-    height: 195px;
-    padding-right: 0;
-    padding-left: 0;
-  }
-
-  .dashboard-chart-bar-area {
-    height: 90px;
-    flex-basis: 90px;
+    gap: 4px;
+    min-height: 320px;
   }
 
   .dashboard-chart-bar {
-    width: 65%;
+    width: 70%;
   }
 
+  .dashboard-chart-value,
   .dashboard-chart-label {
     font-size: 10px;
   }
 
-  .dashboard-chart-value {
-    font-size: 10px;
+  .dashboard-highest-value {
+    font-size: 28px;
   }
 }

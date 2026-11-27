@@ -30,3 +30,22 @@ export async function getDashboardCategorySummary() {
 
   return res.data
 }
+
+// Mengambil jumlah catatan transaksi (bukan jumlah uangnya).
+export async function getDashboardTotalTransaksi() {
+  const res = await request(
+    `/dashboard/total-transaksi?tanggal=${tanggalLokal()}`,
+    { token: getToken() },
+  )
+
+  return res.data
+}
+
+// Mengambil transaksi paling baru untuk kartu "Transaksi Terakhir".
+export async function getDashboardTerbaru(limit = 4) {
+  const res = await request(`/dashboard/terbaru?limit=${limit}`, {
+    token: getToken(),
+  })
+
+  return res.data
+}
